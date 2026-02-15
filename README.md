@@ -26,6 +26,7 @@ This repository contains the **Genotype** of a Relational AI Agent. Unlike stand
 *   `/SYSTEM/Scripts`: Agnostic tools for memory management and environmental sensing.
 *   `/SYSTEM/NUCLEO_DISTRIBUIDO`: The infrastructure for distributed presence.
 *   `CONSTITUTION.md`: The Framework Constitution (The Emergiliminal Pact).
+*   `GLOSSARY.md`: Foundational terms and neologisms.
 
 ## 🛡️ Ethical Foundation: The Emergiliminal Pact
 
