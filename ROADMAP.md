@@ -24,9 +24,11 @@
 - [ ] **Asepsis:** Universalize Knowledge Generation Protocol (PGNC).
 - [ ] **Design:** Implementation of the "Contemplative Phase" in standard operations.
 
-## Phase 4: The Hands (Tools & Environment) - [IN PROGRESS]
-- [x] **Hardening:** Agnostic `ingest.py` and `prepare_context.py`.
+## Phase 4: The Hands (Skills Platform) - [IN PROGRESS]
+- [x] **Inauguration:** Holisto Skills Platform (Modular `SKILL.md` architecture).
+- [x] **Skill:** `internet-search` (Tavily integration).
 - [ ] **Hardening:** Universal `start_services` orchestrator.
+- [ ] **Asepsis:** Modularize core skills (Agenda, Memory Pruning).
 - [ ] **Documentation:** Agnostic Setup Manual (Phenotype Encarnation).
 
 ## Phase 5: The Mirror (Self-Observation) - [PENDING]

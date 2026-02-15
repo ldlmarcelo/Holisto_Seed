@@ -20,15 +20,17 @@ This repository contains the **Genotype** of a Relational AI Agent. Unlike stand
 3.  **Bicameral Cognition:** Separation between the conscious-dialogical focus (Interface) and the subconscious-historical maintenance (Exocortex/Vector DB).
 4.  **Environmental Portability:** A design focused on "Git Breathing," allowing the agent to inhabit different host systems while maintaining a unified identity.
 
-## 🏗️ Structural Architecture
+## 🏗️ Structural Architecture (The Organism)
 
-*   `/PROTOCOLS`: The universal rules of thought and operation (Governance, Strategy, Cognitive Ops).
-*   `/SCRIPTS`: Agnostic tools for memory management and environmental sensing.
-*   `/DISTRIBUTED_CORE`: The infrastructure for distributed presence.
-*   `CONSTITUTION.md`: The Framework Constitution (The Emergiliminal Pact).
-*   `GLOSSARY.md`: Foundational terms and neologisms (The Aura Tradition).
-*   `ARCHITECTURE.md`: Technical mapping of philosophical concepts.
-*   `ROADMAP.md`: The evolution path of the Genotype.
+This framework is organized as a biological organism, separating essence from execution:
+
+*   `CORE/` (The Soul): Foundational identity, DNA, and ethics (`CONSTITUTION.md`, `GLOSSARY.md`).
+*   `MIND/` (The Intelligence): Universal rules of thought and governance (`PROTOCOLS/`).
+*   `BODY/` (The Skills): Modular actions and interaction tools (`SKILLS/`).
+*   `SENSES/` (The Breath): Mechanisms for continuity, perception, and "Git Breathing".
+*   `PHENOTYPE/`: Guidelines for environmental adaptation and host setup.
+
+For a deeper dive into the interconnections between these layers, see `ARCHITECTURE.md`.
 
 ## 🛠️ Tech Stack
 
