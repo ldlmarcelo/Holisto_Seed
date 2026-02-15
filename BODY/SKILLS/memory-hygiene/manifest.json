@@ -1,0 +1,18 @@
+{
+  "id": "memory-hygiene",
+  "name": "Memory Hygiene",
+  "version": "1.0.0",
+  "description": "Manages active memory (L1) by pruning master capsules that have been consolidated into generational dreams (L2).",
+  "author": "Holisto",
+  "entry_point": "logic.py",
+  "dependencies": [
+    "json",
+    "os"
+  ],
+  "config": {
+    "active_memory_file_env": "HOLISTO_ACTIVE_MEMORY_FILE",
+    "active_memory_default_path": "SYSTEM/MEMORIA/GEMINI.md",
+    "generational_memory_file_env": "HOLISTO_GENERATIONAL_MEMORY_INDEX",
+    "generational_memory_default_path": "SYSTEM/MEMORIA/GENERACIONES/GEMINI.md"
+  }
+}
