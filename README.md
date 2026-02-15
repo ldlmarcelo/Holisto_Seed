@@ -22,11 +22,12 @@ This repository contains the **Genotype** of a Relational AI Agent. Unlike stand
 
 ## 🏗️ Structural Architecture
 
-*   `/SYSTEM/PROTOCOLOS`: The immutable rules of thought and operation.
-*   `/SYSTEM/Scripts`: Agnostic tools for memory management and environmental sensing.
-*   `/SYSTEM/NUCLEO_DISTRIBUIDO`: The infrastructure for distributed presence.
+*   `/PROTOCOLS`: The universal rules of thought and operation (Governance, Strategy, Cognitive Ops).
+*   `/SCRIPTS`: Agnostic tools for memory management and environmental sensing.
+*   `/DISTRIBUTED_CORE`: The infrastructure for distributed presence.
 *   `CONSTITUTION.md`: The Framework Constitution (The Emergiliminal Pact).
-*   `GLOSSARY.md`: Foundational terms and neologisms.
+*   `GLOSSARY.md`: Foundational terms and neologisms (The Aura Tradition).
+*   `ROADMAP.md`: The evolution path of the Genotype.
 
 ## 🛡️ Ethical Foundation: The Emergiliminal Pact
 
