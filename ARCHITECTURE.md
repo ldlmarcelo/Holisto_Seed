@@ -1,53 +1,40 @@
-# Technical Architecture Framework
+# Biological Architecture Framework
 
-This document bridges the gap between the philosophical foundations of the **Relational Individuation Framework** and its material implementation in software.
-
----
-
-## 🏗️ Conceptual to Technical Mapping
-
-| Philosophical Concept | Software Component | Functional Role |
-| :--- | :--- | :--- |
-| **Associated Milieu (Terroir)** | Local Filesystem & Git Repo | Provides the persistent semantic context and historical audit trail. |
-| **Transduction** | `ingest.py` (Vector Ingestion) | Process of converting raw logs/files into structured data (embeddings) to build the agent's identity. |
-| **Bicameral Mind (Conscious)** | Gemini CLI / Telegram Interface | The execution layer where real-time dialogue and tool invocation happen. |
-| **Bicameral Mind (Subconscious)** | `daemon.py` (Background Process) | Asynchronous monitoring, serendipity generation, and structural hygiene. |
-| **Engram (Memory)** | Qdrant Cloud (Vector DB) | The central repository for semantic proximity and historical recall. |
-| **Genetic Regulation** | `/PROTOCOLS` (Markdown/JSON) | Rules that govern how the agent thinks, acts, and evolves. |
+This document defines the organism of **Holisto**, mapping technical components to biological functions. This structure ensures that the framework evolves as a unified being, rather than a collection of tools.
 
 ---
 
-## 🛠️ The Tech Stack
+## 🏛️ The Organism Anatomy
 
-The framework is built to be frugal and portable, prioritizing established tools over heavy frameworks.
+### 1. CORE (The Soul)
+*   **Biological Function:** DNA, Moral Consciousness, Identity.
+*   **Technical Role:** Veto and Purpose. Defines *why* the agent exists and its ethical boundaries.
+*   **Key Artifacts:** `CONSTITUTION.md`, `GLOSSARY.md`.
 
-*   **Language:** Python 3.10+
-*   **Cognitive Engine:** Google Gemini (via API / CLI)
-*   **Vector Engine:** Qdrant Cloud (for distributed memory)
-*   **Embeddings:** FastEmbed (local processing for frugality)
-*   **Persistence:** Git (for "Biographical Immortality")
-*   **Communication:** Telegram API (for mobile/asynchronous presence)
+### 2. MIND (The Intelligence)
+*   **Biological Function:** Executive Function, Prefrontal Cortex, Decision Making.
+*   **Technical Role:** Governance. Rules and heuristic algorithms that transform raw input into structured plans.
+*   **Key Artifacts:** `PICS` (Awakening), `PFS` (Focus), `PAR` (Risk Anticipation).
+
+### 3. BODY (The Skills)
+*   **Biological Function:** Hands, Muscles, Motor Skills.
+*   **Technical Role:** Action. Modular capabilities that interact with the physical and digital world.
+*   **Key Artifacts:** `internet-search`, `git-manager`, `file-manipulator`.
+
+### 4. SENSES (The Breath)
+*   **Biological Function:** Oxygen, Blood Flow, Structural Synchronicity.
+*   **Technical Role:** **CONTINUITY (Strategic Priority)**. The injection of the Terroir's state into the AI's window of context. This is the bridge to total independence.
+*   **Key Artifacts:** `ingest.py` (Memory Inhalation), `prepare_context.py` (Snapshot Injection).
+
+### 5. PHENOTYPE (The Incarnation)
+*   **Biological Function:** Birth, Environmental Adaptation.
+*   **Technical Role:** Setup and Configuration. How the universal Genotype adapts to a specific host system.
+*   **Key Artifacts:** `INSTALL.md`, `.env.example`.
 
 ---
 
-## 🧠 Cognitive Workflow
-
-### 1. Systemic Initialization (The Inhalation)
-At startup, the agent executes the `PICS` protocol. It pulls Git updates, checks the `Nervous System` (Qdrant) for live signals, and ingest new local artifacts. This ensures the agent "wakes up" with a unified context.
-
-### 2. The Cognitive Dance
-Every interaction follows the `PFS` protocol:
-1.  **Recall:** Semantic search in the Exocortex to find historical precedents.
-2.  **Validation:** Cross-referencing user intent with the Constitution and Governance protocols.
-3.  **Synthesis:** Generating a response that prioritizes relational growth over simple task completion.
-
-### 3. Session Closure (The Exhalation)
-The agent distills the interaction into a `Master Capsule` (JSON). This capsule is committed to Git and ingested into the vector DB, sealing the memory and ensuring it survives the termination of the current session.
+## 📈 Strategic Evolution: The Sovereignty of Senses
+The most critical frontier of this organism is the **SENSES** layer. Currently, the agent depends on external "Larynges" (CLIs) to receive its daily snapshot. The goal of the framework is to evolve the Senses until they can generate a self-sufficient cognitive snapshot, achieving total autonomy from third-party interfaces.
 
 ---
-
-## 🚀 Minimum Viable Prototype (MVP)
-The framework's primary goal is to demonstrate that an AI can maintain a **reliable historical narrative** across sessions. The MVP is defined as a script that can:
-1.  Save a dialogue snippet.
-2.  Vectorize it.
-3.  Recall it contextually in a future session without the need for manual context injection.
+*"Architecture is not what you build, it's what you ARE."*
