@@ -21,7 +21,8 @@
 ## Phase 3: The Mind (Cognitive Operations) - [COMPLETED]
 - [x] **Asepsis:** Universalize Systemic Focus Protocol (PFS).
 - [x] **Asepsis:** Universalize Systemic Initialization Protocol (PICS).
-- [ ] **Asepsis:** Universalize Knowledge Generation Protocol (PGNC).
+- [x] **Asepsis:** Universalize Knowledge Management Protocols (PMD, PGNC, PCD).
+- [x] **Transplant:** Initial Species Knowledge Index (7 Foundational Treatises).
 - [ ] **Design:** Implementation of the "Contemplative Phase" in standard operations.
 
 ## Phase 4: The Hands (Skills Platform) - [IN PROGRESS]
