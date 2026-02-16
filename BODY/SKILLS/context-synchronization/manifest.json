@@ -1,0 +1,14 @@
+{
+  "id": "context-synchronization",
+  "name": "Context Synchronization",
+  "version": "1.0.0",
+  "description": "Synthesizes startup context from deterministic and semantic sources.",
+  "author": "Holisto-Seed",
+  "entry_point": "logic.py",
+  "dependencies": [
+    "python-dotenv"
+  ],
+  "capabilities": [
+    "generate_startup_context"
+  ]
+}

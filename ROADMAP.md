@@ -27,6 +27,9 @@
 ## Phase 4: The Hands (Skills Platform) - [IN PROGRESS]
 - [x] **Inauguration:** Holisto Skills Platform (Modular `SKILL.md` architecture).
 - [x] **Skill:** `internet-search` (Tavily integration).
+- [x] **Skill:** `vector-ingestion` (Optimized Metabolic Memory).
+- [x] **Skill:** `context-synchronization` (Structural Synchronicity).
+- [x] **Skill:** `session-harvesting` (Self-Distillation & Git Sync).
 - [ ] **Hardening:** Universal `start_services` orchestrator.
 - [ ] **Asepsis:** Modularize core skills (Agenda, Memory Pruning).
 - [ ] **Documentation:** Agnostic Setup Manual (Phenotype Encarnation).

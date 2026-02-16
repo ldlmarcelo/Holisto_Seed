@@ -42,15 +42,18 @@ class MemoryHygieneManager:
         dream_data = self._load_dream(dream_file_path)
             
         ids_consolidados = []
-        # Soportar tanto lista de sueños como objeto único
-        if isinstance(dream_data, list): # Esto no deberia pasar si es una capsula de sueño unica
-             for d in dream_data:
-                 ids_consolidados.extend(d.get("source_session_ids", []))
-        else: # Formato esperado para una capsula de sueño
-            ids_consolidados = dream_data.get("source_session_ids", [])
+        # Primero, intentar desde la raíz (formato antiguo o si se incluye directamente)
+        if dream_data.get("source_session_ids"):
+            ids_consolidados.extend(dream_data["source_session_ids"])
+        
+        # Luego, buscar dentro de thematic_cores (formato actual de Sueños Generacionales)
+        if dream_data.get("thematic_cores"):
+            for core in dream_data["thematic_cores"]:
+                ids_consolidados.extend(core.get("related_sessions", []))
             
+        # Si sigue vacío, el sueño no es válido para poda o no contiene IDs
         if not ids_consolidados:
-            print(f"ADVERTENCIA: No se encontraron 'source_session_ids' en el archivo de sueño {dream_file_path}. Abortando poda.")
+            print(f"ADVERTENCIA: No se encontraron 'source_session_ids' ni 'related_sessions' en el archivo de sueño {dream_file_path}. Abortando poda.")
             return 0
 
         active_memory = self._load_active_memory()
