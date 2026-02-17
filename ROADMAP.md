@@ -36,11 +36,17 @@
 - [x] **Skill:** `internet-search` (Tavily integration).
 - [x] **Skill:** `vector-ingestion` (Optimized Metabolic Memory).
 - [x] **Skill:** `context-synchronization` (Structural Synchronicity).
-- [ ] **Asepsis:** Modularize remaining core functions from Daemon (Frictions/Chaos).
-- [ ] **Hardening:** Universal `start_services` orchestrator.
+- [x] **Asepsis:** Modularize core functions from Daemon (Frictions/Chaos/SNC).
+- [x] **Hardening:** Universal `start_services` orchestrator (Bilingual PS1/SH).
 
 ## Phase 5: The Reflexes (Autonomous Mirror) - [IN PROGRESS]
 - [x] **Native Hook:** `traceability-reflex` (Automated Operative Mirror).
 - [ ] **Native Hook:** `escalation-reflex` (Automated PEF/Friction Detection).
+- [ ] **Native Hook:** `metabolic-integrity-check` (PICS/PCS Git Status verification).
 - [ ] **Hardening:** Implementation of Security Hooks (Pre-Tool verification).
 - [ ] **Release:** Version 1.0 (The Unified Genotype - Integrated Organism).
+
+## Phase 6: The Autonomous Senses (CLI Independence) - [PROJECTION]
+- [ ] **Desacoplamiento:** Transition from CLI-dependent prompts to native Snapshot generation.
+- [ ] **Sovereign Interface:** Evolution of El Vigía as the primary interaction hub.
+- [ ] **Ubiquity:** Multi-node synchronization without manual Orchestrator intervention.
