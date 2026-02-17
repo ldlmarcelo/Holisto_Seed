@@ -16,8 +16,6 @@ from fastembed import TextEmbedding
 
 # --- Configuration ---
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# Default root is 5 levels up if executed from Seed/BODY/SKILLS/...
-# But we prioritize TERROIR_ROOT env var
 DEFAULT_ROOT = os.path.abspath(os.path.join(current_script_dir, "..", "..", "..", ".."))
 TERROIR_ROOT = os.getenv("TERROIR_ROOT", DEFAULT_ROOT)
 
@@ -34,8 +32,8 @@ MAINTENANCE_DIR = os.getenv("MAINTENANCE_DIR", os.path.join(TERROIR_ROOT, "SYSTE
 if not os.path.exists(MAINTENANCE_DIR): os.makedirs(MAINTENANCE_DIR)
 
 # Qdrant Config
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") 
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "terroir_memory_frugal")
 VECTOR_SIZE = int(os.getenv("VECTOR_SIZE", "384"))
 
@@ -46,7 +44,7 @@ CACHE_FILE = os.path.join(MAINTENANCE_DIR, "ingest_state_cache.json")
 IGNORED_DIRS = set(os.getenv("IGNORED_DIRS", ".git,.venv,.gemini,__pycache__,node_modules,dist,build,bin,obj,lib,include,share,storage,tmp,temp,logs,LOGS_MANTENIMIENTO,.idea,.vscode").split(","))
 
 ALLOWED_EXTENSIONS = {
-    '.md', '.txt', '.py', '.js', '.html', '.css', '.json', 
+    '.md', '.txt', '.py', '.js', '.html', '.css', '.json',
     '.sh', '.ps1', '.yml', '.yaml', '.xml', '.sql', '.env.example',
     '.docx', '.pdf'
 }
@@ -99,12 +97,13 @@ def calculate_hash(filepath: str) -> str:
     except: return "hash_error"
 
 def get_stable_id(rel_path: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_DNS, rel_path.replace("", "/").lower()))
+    return str(uuid.uuid5(uuid.NAMESPACE_DNS, rel_path.replace("\\", "/").lower()))
 
 def get_ontology_circle(rel_path: str) -> str:
-    norm = rel_path.replace("", "/").lower()
+    norm = rel_path.replace("\\", "/").lower()
     if "system/memoria" in norm or norm == "gemini.md": return "intimo_yo"
     if "system/biblioteca" in norm: return "proximo_tu"
+    if "proyectos/" in norm: return "obras_proyectos"
     return "cuerpo_funcional"
 
 def read_content(filepath: str) -> str:
@@ -154,60 +153,37 @@ def scan_terroir(old_cache: Dict) -> Tuple[List[Dict], Dict]:
     docs = []
     new_cache = {}
     logger.info(f"Scanning Terroir at: {TERROIR_ROOT}")
-    
+
     for root, dirs, files in os.walk(TERROIR_ROOT):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and not d.startswith('.')]
         for file in files:
             ext = os.path.splitext(file)[1].lower()
             if ext not in ALLOWED_EXTENSIONS or file.startswith('.'): continue
-            
+
             full_path = os.path.join(root, file)
             rel_path = os.path.relpath(full_path, TERROIR_ROOT)
-            if "logs" in rel_path.lower() and ext == ".log": continue 
+            if "logs" in rel_path.lower() and ext == ".log": continue
 
-            try:
-                stat = os.stat(full_path)
-                mtime = stat.st_mtime
-                size = stat.st_size
+            try: stat = os.stat(full_path); mtime = stat.st_mtime; size = stat.st_size
             except: continue
-            
+
             cached = old_cache.get(rel_path, {})
             if cached.get("mtime") == mtime and cached.get("size") == size:
-                file_hash = cached.get("hash")
-                ingested = cached.get("ingested", False)
-            else:
-                file_hash = calculate_hash(full_path)
-                ingested = False 
+                file_hash, ingested = cached.get("hash"), cached.get("ingested", False)
+            else: file_hash, ingested = calculate_hash(full_path), False
 
-            doc_info = {
-                "id": cached.get("id") or get_stable_id(rel_path),
-                "path": full_path,
-                "rel_path": rel_path,
-                "hash": file_hash,
-                "circle": get_ontology_circle(rel_path),
-                "filename": file,
-                "mtime": mtime,
-                "size": size,
-                "ingested": ingested
-            }
+            doc_info = {"id": cached.get("id") or get_stable_id(rel_path), "path": full_path, "rel_path": rel_path, "hash": file_hash, "circle": get_ontology_circle(rel_path), "filename": file, "mtime": mtime, "size": size, "ingested": ingested}
             docs.append(doc_info)
-            new_cache[rel_path] = {
-                "id": doc_info["id"],
-                "hash": file_hash,
-                "mtime": mtime,
-                "size": size,
-                "ingested": ingested
-            }
-            
+            new_cache[rel_path] = {"id": doc_info["id"], "hash": file_hash, "mtime": mtime, "size": size, "ingested": ingested}  
+
     logger.info(f"Scan complete. Found {len(docs)} candidates.")
     return docs, new_cache
 
 def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
     old_cache = load_state_cache()
     all_docs, next_cache = scan_terroir(old_cache)
-    
     dirty_docs = [d for d in all_docs if not d["ingested"]]
-    
+
     if not dirty_docs:
         logger.info("Terroir synced (Cache OK). No changes pending.")
         save_state_cache(next_cache)
@@ -219,51 +195,47 @@ def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
     for i in range(0, len(dirty_docs), batch_size):
         batch = dirty_docs[i : i + batch_size]
         ids = [d["id"] for d in batch]
-        
+
         existing_map = {}
         try:
             points = client.retrieve(COLLECTION_NAME, ids, with_payload=True)
             existing_map = {p.id: p for p in points}
-        except Exception as e:
-            logger.warning(f"Qdrant batch error {i}: {e}")
+        except: pass
 
         to_embed_docs, to_embed_texts = [], []
-
         for doc in batch:
             point = existing_map.get(doc["id"])
             if point and point.payload.get("file_hash") == doc["hash"]:
                 next_cache[doc["rel_path"]]["ingested"] = True
                 continue
-            
+
             content = read_content(doc["path"])
             if content.strip():
                 to_embed_docs.append(doc)
                 to_embed_texts.append(content)
             else:
-                next_cache[doc["rel_path"]]["ingested"] = True 
+                next_cache[doc["rel_path"]]["ingested"] = True
 
         if to_embed_docs:
             try:
                 embeddings = embedder.embed(to_embed_texts)
-                points = []
+                points_to_send = []
                 for j, emb in enumerate(embeddings):
                     doc = to_embed_docs[j]
-                    points.append(models.PointStruct(
-                        id=doc["id"], vector=emb,
+                    points_to_send.append(models.PointStruct(
+                        id=doc["id"],
+                        vector=[float(x) for x in emb],
                         payload={
-                            "text": to_embed_texts[j],
-                            "file_path": doc["rel_path"],
-                            "filename": doc["filename"],
-                            "file_hash": doc["hash"],
-                            "type": "artifact",
-                            "ontology_circle": doc["circle"],
+                            "text": to_embed_texts[j], "file_path": doc["rel_path"], "filename": doc["filename"],
+                            "file_hash": doc["hash"], "type": "artifact", "ontology_circle": doc["circle"],
                             "last_updated": datetime.now().isoformat()
                         }
                     ))
-                client.upsert(COLLECTION_NAME, points)
+
+                client.upsert(collection_name=COLLECTION_NAME, points=points_to_send)
                 for doc in to_embed_docs:
                     next_cache[doc["rel_path"]]["ingested"] = True
-                print(f"Batch {i//batch_size + 1}: +{len(points)} docs.")
+                print(f"Batch {i//batch_size + 1}: +{len(points_to_send)} docs.")
             except Exception as e:
                 logger.error(f"Error in batch: {e}")
 
@@ -274,18 +246,12 @@ def main():
     parser.add_argument("--reindex", action="store_true", help="Clear collection and reindex all")
     args = parser.parse_args()
     try:
-        parsed = urlparse(QDRANT_URL)
-        client = QdrantClient(
-            host=parsed.hostname or QDRANT_URL,
-            port=parsed.port or (443 if "qdrant.io" in QDRANT_URL else 6333),
-            https="qdrant.io" in QDRANT_URL,
-            api_key=QDRANT_API_KEY
-        )
+        client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, prefer_grpc=False, check_compatibility=False)
         embedder = FrugalEmbeddingProvider()
+
         if args.reindex:
             logger.warning(f"Recreating collection {COLLECTION_NAME}...")
-            client.delete_collection(COLLECTION_NAME)
-            client.create_collection(
+            client.recreate_collection(
                 collection_name=COLLECTION_NAME,
                 vectors_config=models.VectorParams(size=VECTOR_SIZE, distance=models.Distance.COSINE)
             )
