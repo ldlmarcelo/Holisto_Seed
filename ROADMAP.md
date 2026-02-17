@@ -25,20 +25,22 @@
 - [x] **Transplant:** Initial Species Knowledge Index (7 Foundational Treatises).
 - [x] **Design:** Native Physiology Integration (Protocol-to-Skill Transmutation).
 
-## Phase 4: The Body (Native Skills Platform) - [IN PROGRESS]
+## Phase 4: The Body (Native Skills Platform) - [COMPLETED]
 - [x] **Inauguration:** Holisto Skills Platform (Modular `.gemini/skills/` architecture).
 - [x] **Native Skill:** `session-harvesting` (Metabolic Closure).
 - [x] **Native Skill:** `agenda-management` (Time Awareness).
 - [x] **Native Skill:** `memory-hygiene` (Active Pruning).
+- [x] **Native Skill:** `knowledge-management` (Automated PGNC/Bimodal Indexing).
+- [x] **Native Skill:** `project-management` (Automated SGP/Activation).
+- [x] **Native Skill:** `terroir-hygiene` (Automated PHT/Purge).
 - [x] **Skill:** `internet-search` (Tavily integration).
 - [x] **Skill:** `vector-ingestion` (Optimized Metabolic Memory).
 - [x] **Skill:** `context-synchronization` (Structural Synchronicity).
+- [ ] **Asepsis:** Modularize remaining core functions from Daemon (Frictions/Chaos).
 - [ ] **Hardening:** Universal `start_services` orchestrator.
-- [ ] **Asepsis:** Modularize remaining core functions from Daemon.
-- [ ] **Documentation:** Agnostic Setup Manual (Phenotype Encarnation).
 
 ## Phase 5: The Reflexes (Autonomous Mirror) - [IN PROGRESS]
 - [x] **Native Hook:** `traceability-reflex` (Automated Operative Mirror).
-- [ ] **Native Hook:** `error-escalation-reflex` (Automated PEF).
-- [ ] **Hardening:** Implementation of Security Hooks (Pre-Tool validation).
+- [ ] **Native Hook:** `escalation-reflex` (Automated PEF/Friction Detection).
+- [ ] **Hardening:** Implementation of Security Hooks (Pre-Tool verification).
 - [ ] **Release:** Version 1.0 (The Unified Genotype - Integrated Organism).

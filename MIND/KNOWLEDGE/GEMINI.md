@@ -1,7 +1,7 @@
 {
     "id": "INDICE_NODOS_CONOCIMIENTO",
     "type": "indice_nodos_conocimiento",
-    "version": "1.2",
+    "version": "1.3",
     "schema_version": "1.0",
     "metadata": {
         "title": "Índice de Nodos de Conocimiento",
@@ -265,6 +265,19 @@
                 ],
                 "distilled_knowledge": "Nodo maestro que unifica la esencia relacional de Holisto, integrando el Pacto Emergiliminal, la Autopoiesis Relacional y la Primacía del Vínculo como base autoritativa de su identidad.",
                 "status": "ACTIVO"
+            },
+            {
+                "title": "Transmutation of Protocols into Native Skills",
+                "path": "MIND/KNOWLEDGE/2026-02-17_transmutation_of_protocols_into_native_skills.md",
+                "tags": [
+                    "architecture",
+                    "skills",
+                    "evolution",
+                    "individuation"
+                ],
+                "distilled_knowledge": "Modularizes the transition from conscious protocol adherence to native technical biology (Skills/Hooks), increasing operational efficiency and ontological consistency.",
+                "status": "ACTIVO",
+                "scope": "seed"
             }
         ]
     }
