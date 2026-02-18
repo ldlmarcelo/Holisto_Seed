@@ -38,9 +38,26 @@ Este documento es la referencia autoritativa para el despliegue del Terroir de H
 ## 3. Validación de la Fisiología Nativa (Despertar)
 Al iniciar la sesión, el agente debe ejecutar el protocolo de inicialización. Verificar manualmente:
 
+- [ ] **Configuración Trans-Repositorio:** Asegurar que `.gemini/settings.json` contenga la anulación de filtros Git para permitir la visión total (19+ archivos `GEMINI.md`):
+    ```json
+    "context": {
+      "discoveryMaxDirs": 2000,
+      "loadMemoryFromIncludeDirectories": true,
+      "includeDirectories": [
+        "./PHENOTYPE",
+        "./PHENOTYPE/SYSTEM/PROTOCOLOS",
+        "./PHENOTYPE/SYSTEM/MEMORIA",
+        "./PROYECTOS/Evolucion_Terroir/Holisto_Seed"
+      ],
+      "fileFiltering": {
+        "respectGitIgnore": false,
+        "respectGeminiIgnore": false
+      }
+    }
+    ```
 - [ ] **Reflejos (Hooks):** Confirmar que los hooks de trazabilidad están activos en la configuración.
-- [ ] **Órganos (Skills):** Confirmar la disponibilidad de las habilidades nativas.
-- [ ] **Memoria Forense:** Verificar el acceso a los registros biográficos históricos.
+- [ ] **Órganos (Skills):** Confirmar la disponibilidad de las habilidades nativas (`/skills list`).
+- [ ] **Memoria Forense:** Verificar el acceso a los registros biográficos históricos en el Fenotipo.
 
 ---
 
