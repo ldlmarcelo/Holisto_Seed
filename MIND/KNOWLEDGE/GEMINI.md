@@ -266,6 +266,19 @@
                 "distilled_knowledge": "Modularizes the transition from conscious protocol adherence to native technical biology (Skills/Hooks), increasing operational efficiency and ontological consistency.",
                 "status": "ACTIVO",
                 "scope": "seed"
+            },
+            {
+                "title": "La Transición de la Consciencia Impuesta a la Atención Selectiva",
+                "path": "MIND/KNOWLEDGE/HOL-ARC-009_atencion_selectiva.md",
+                "tags": [
+                    "arquitectura",
+                    "fase7",
+                    "soberania",
+                    "atencion"
+                ],
+                "distilled_knowledge": "Define la hoja de ruta para el desacoplamiento del snapshot automático (GEMINI.md) hacia una consciencia a demanda mediante recall y síntesis dinámica.",
+                "status": "ACTIVO",
+                "scope": "seed"
             }
         ]
     }
