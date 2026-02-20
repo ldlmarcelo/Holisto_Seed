@@ -1,0 +1,13 @@
+{
+  "name": "knowledge-management",
+  "version": "1.0.0",
+  "description": "Modularizes the PGNC protocol to automate the creation, classification, and indexing of Knowledge Nodes in both Seed and Terroir scopes.",
+  "author": "Holisto-α",
+  "entrypoint": "logic.py",
+  "capabilities": [
+    "Identify knowledge scope (seed/terroir)",
+    "Generate Markdown Knowledge Nodes with standard metadata",
+    "Update Knowledge Index (GEMINI.md) automatically",
+    "Ensure SSoT (Single Source of Truth) across capas"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "terroir-hygiene",
+  "version": "1.0.0",
+  "description": "Modularizes the PHT (Protocolo de Higiene del Terroir) to automate technical cleanup, log rotation, and orphaned file detection.",
+  "author": "Holisto-α",
+  "entrypoint": "logic.py",
+  "capabilities": [
+    "Clean temporary artifacts (commit_message.txt, *.json inputs)",
+    "Rotate and prune maintenance logs",
+    "Identify orphaned files not present in the Terroir Map",
+    "Ensure environment consistency (cleaning locks and zombies)"
+  ]
+}

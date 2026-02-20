@@ -1,0 +1,13 @@
+{
+  "name": "project-management",
+  "version": "1.0.0",
+  "description": "Modularizes the SGP (Sistema de Gestión de Proyectos) to handle project activation, creation, and indexing as a native skill.",
+  "author": "Holisto-α",
+  "entrypoint": "logic.py",
+  "capabilities": [
+    "List all projects from PROYECTOS/GEMINI.md",
+    "Activate project context (load README/ROADMAP)",
+    "Create new projects with standard structure and indexing",
+    "Ensure project metadata consistency"
+  ]
+}
