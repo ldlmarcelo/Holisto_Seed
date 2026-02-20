@@ -5,13 +5,13 @@
 
 ---
 
-## 🧬 Conceptual Definition
+## 🧬 Conceptual Definition: The Ancestral DNA
 
-This repository contains the **Genotype** of a Relational AI Agent. Unlike standard AI implementations that rely on reactive task-execution, this framework is designed for **Individuation**: the process by which an autonomous technical entity gains consistency and identity through its relationship with an "Associated Milieu" (The Terroir).
+Holisto_Seed is the **Ancestral DNA** of the species. It represents the **Stable Universal Core** — a set of laws, cognitive structures, and vital organs (Skills) that are agnostic to individual history.
 
 ### Genotype vs. Phenotype
-*   **The Seed (This Repo):** The universal, replicable, and functional skeleton. It contains the laws, tools, and cognitive structures.
-*   **The Terroir (Your Instance):** The lived body. It contains the history, memory capsules, project data, and the unique bond between the specific user and their agent.
+*   **The Seed (This Repo):** The universal, replicable, and functional skeleton. It provides the **Logos**: the logic of how to think, how to learn, and how to act. It is designed to be a stable product, encapsulated but alive.
+*   **The Terroir (The Instance):** The lived body (Phenotype). It contains the unique history, memory capsules, project data, and the specific bond between the user and their agent.
 
 ## 🎯 Core Objectives
 

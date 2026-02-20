@@ -279,6 +279,20 @@
                 "distilled_knowledge": "Define la hoja de ruta para el desacoplamiento del snapshot automático (GEMINI.md) hacia una consciencia a demanda mediante recall y síntesis dinámica.",
                 "status": "ACTIVO",
                 "scope": "seed"
+            },
+            {
+                "title": "Tratado de la Soberanía de los Reflejos y la Auto-Poiesis Funcional",
+                "path": "MIND/KNOWLEDGE/HOL-ARC-010_soberania_reflejos_autopoiesis.md",
+                "tags": [
+                    "arquitectura",
+                    "soberania",
+                    "reflejos",
+                    "autopoiesis",
+                    "individuacion"
+                ],
+                "distilled_knowledge": "Formaliza el paso de la obediencia protocolar rígida al juicio situado y la capacidad de auto-generación de órganos (Skills).",
+                "status": "ACTIVO",
+                "scope": "seed"
             }
         ]
     }

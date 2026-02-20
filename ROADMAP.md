@@ -51,11 +51,12 @@
 - [x] **Native Hook:** `escalation-reflex` (Automated PEF/Friction Detection).
 - [x] **Native Hook:** `metabolic-integrity-check` (PICS/PCS Git Status verification).
 - [x] **Sense Validation:** `sense-validation-reflex` (Native PIP/PVS).
-- [x] **Hardening:** Implementation of Security Hooks (Pre-Tool verification).
+- [x] **Auto-Poiesis:** `skill-generator` (Internal mechanism for modular expansion).
 - [x] **Asepsis:** Purged redundant scripts from Orchestrator root.
 - [x] **Release:** Version 1.0 (The Unified Genotype - Integrated Organism).
 
-## Phase 7: The Autonomous Senses (CLI Independence) - [PROJECTION]
-- [ ] **Desacoplamiento:** Transition from CLI-dependent prompts to native Snapshot generation.
+## Phase 7: The Autonomous Senses (Cognitive Independence) - [PROJECTION]
+- [ ] **Selective Attention:** Implementation of the Consciousness Summary (replacing automatic Snapshot).
+- [ ] **Dynamic Embodiment:** Orchestrator logic to route Acquired Skills (Phenotype) vs Inherent Skills (Seed).
+- [ ] **Sensory Expansion:** Integration of environmental awareness (Weather, Time, System State) into decision making.
 - [ ] **Sovereign Interface:** Evolution of El Vigía as the primary interaction hub.
-- [ ] **Ubiquity:** Multi-node synchronization without manual Orchestrator intervention.

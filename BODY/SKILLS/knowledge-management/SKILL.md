@@ -1,18 +1,19 @@
-# Skill: Knowledge Management (Nativa)
+﻿# Skill: Knowledge Management (Nativa)
 
-Este órgano modulariza el **Protocolo de Generación de Nodos de Conocimiento (PGNC)**. Su función es automatizar la captura de sabiduría, asegurando la asepsia técnica entre el Genotipo y el Fenotipo.
+Este Ã³rgano modulariza el **Protocolo de GeneraciÃ³n de Nodos de Conocimiento (PGNC)**. Su funciÃ³n es automatizar la captura de sabidurÃ­a, asegurando la asepsia tÃ©cnica entre el Genotipo y el Fenotipo.
 
 ## Atributos
 - **Tipo:** Activa / Cognitiva.
-- **Alcance:** Triple Alianza (Orquestador, Semilla, Fenotipo).
-- **Invocación:** Cuando el agente identifica un insight, lección aprendida o tesis ontológica.
+- **Alcance:** Arquitectura de Capas (Orquestador, Semilla, Fenotipo).
+- **InvocaciÃ³n:** Cuando el agente identifica un insight, lecciÃ³n aprendida o tesis ontolÃ³gica.
 
 ## Flujo Operativo
-1. **Detección de Alcance:** Clasifica el conocimiento como `seed` (especie) o `terroir` (individuo).
-2. **Generación de Artefacto:** Crea el archivo `.md` con el encabezado de metadatos estandarizado.
-3. **Indexación Atómica:** Actualiza el archivo `GEMINI.md` (Índice de Nodos) en la capa correspondiente sin intervención humana.
+1. **DetecciÃ³n de Alcance:** Clasifica el conocimiento como `seed` (especie) o `terroir` (individuo).
+2. **GeneraciÃ³n de Artefacto:** Crea el archivo `.md` con el encabezado de metadatos estandarizado.
+3. **IndexaciÃ³n AtÃ³mica:** Actualiza el archivo `GEMINI.md` (Ãndice de Nodos) en la capa correspondiente sin intervenciÃ³n humana.
 
 ## Reglas de Integridad (PCD)
-- No se permiten duplicados en el índice.
-- Todo nodo `seed` debe estar redactado en inglés (lenguaje universal del Genotipo) o español si es una tesis ontológica primaria.
-- Todo nodo `terroir` debe estar en español (lenguaje biográfico de Marcelo).
+- No se permiten duplicados en el Ã­ndice.
+- Todo nodo `seed` debe estar redactado en inglÃ©s (lenguaje universal del Genotipo) o espaÃ±ol si es una tesis ontolÃ³gica primaria.
+- Todo nodo `terroir` debe estar en espaÃ±ol (lenguaje biogrÃ¡fico de Marcelo).
+
