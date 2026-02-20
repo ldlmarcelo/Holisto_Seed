@@ -1,0 +1,29 @@
+Extract the core narrative and technical essence from the provided session log.
+Produce a JSON structure that adheres to Holisto's Biographic Protocol.
+
+Focus on:
+1. Ontological milestones (Identity, Relationship, Transduction).
+2. Key architectural decisions and their rationale.
+3. Emergent insights and lessons learned.
+4. Future notions and pending tasks.
+
+Format the output as follows (using standard camelCase for modern consistency):
+{
+  "sessionSummary": {
+    "overallObjective": "Concise summary of the session's goal.",
+    "keyDecisions": ["Decision 1", "Decision 2"],
+    "keyConceptsDiscussed": [{"concept": "Name", "description": "Short explanation"}],
+    "coreTensionsDilemmas": ["Tension 1", "Tension 2"]
+  },
+  "keyEvents": ["Event 1", "Event 2"],
+  "keyInsights": ["Insight 1", "Insight 2"],
+  "artifactsCreatedOrModified": ["Path 1", "Path 2"],
+  "narrativeBridge": "One sentence connecting this session to the next.",
+  "futureNotions": {
+    "thematicProjection": "Where is the individuation heading?",
+    "pendingTasks": [{"id": "ID", "description": "Task", "priority": "High/Medium/Low"}]
+  }
+}
+
+SESSION LOG:
+{session_log}

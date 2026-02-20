@@ -14,20 +14,20 @@ TERROIR_ROOT = os.getenv("TERROIR_ROOT", DEFAULT_ROOT)
 
 load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
 
-# Import Exocortex Service (Assumes standard Genotype pathing)
-# We look for services in NUCLEO_DISTRIBUIDO or local PATH
-sys.path.append(os.path.join(TERROIR_ROOT, "SYSTEM", "NUCLEO_DISTRIBUIDO", "services", "exocortex", "src"))
+# Import Exocortex Service (Triple Alliance compliant)
+# The service is now in Holisto_Seed/BODY/SERVICES
+sys.path.append(os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY", "SERVICES"))
 try:
-    from services import exocortex
+    import exocortex
 except ImportError:
     exocortex = None
 
-# Artifact Paths
-DYNAMIC_CONTEXT_FILE = os.getenv("DYNAMIC_CONTEXT_FILE", os.path.join(TERROIR_ROOT, "SYSTEM", "CONTEXTO_DINAMICO", "GEMINI.md"))
-MEMORY_INDEX_FILE = os.getenv("MEMORY_INDEX_FILE", os.path.join(TERROIR_ROOT, "SYSTEM", "MEMORIA", "GEMINI.md"))
-AGENDA_FILE = os.getenv("AGENDA_FILE", os.path.join(TERROIR_ROOT, "SYSTEM", "AGENDA", "recordatorios.json"))
-NOTIFICATIONS_DIR = os.getenv("NOTIFICATIONS_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "NOTIFICACIONES"))
-LOGS_VIGIA_DIR = os.getenv("LOGS_VIGIA_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "MEMORIA", "logs_vigia"))
+# Artifact Paths (Prefer .env, fallback to standard layout)
+DYNAMIC_CONTEXT_FILE = os.getenv("DYNAMIC_CONTEXT_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "CONTEXTO_DINAMICO", "GEMINI.md"))
+MEMORY_INDEX_FILE = os.getenv("MEMORY_INDEX_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "GEMINI.md"))
+AGENDA_FILE = os.getenv("AGENDA_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "AGENDA", "recordatorios.json"))
+NOTIFICATIONS_DIR = os.getenv("NOTIFICATIONS_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "NOTIFICACIONES"))
+LOGS_VIGIA_DIR = os.getenv("LOGS_VIGIA_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "logs_vigia"))
 
 # Logging
 LOGS_DIR = os.getenv("MAINTENANCE_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
@@ -149,9 +149,19 @@ def generate_markdown(capsule: Dict, agenda: List, notifications: List, vector_h
         md += "\n"
 
     if capsule:
-        summary = capsule.get("session_summary", "No summary available.")
-        future = capsule.get("future_notions", {})
-        projection = future.get("thematic_projection", "No projection.") if isinstance(future, dict) else "No projection."
+        # Resilient access to summary and notions
+        summary_data = capsule.get("session_summary") or capsule.get("sessionSummary") or {}
+        if isinstance(summary_data, dict):
+            summary = summary_data.get("overallObjective") or summary_data.get("summary") or "No summary available."
+        else:
+            summary = str(summary_data)
+
+        future = capsule.get("future_notions") or capsule.get("futureNotions") or {}
+        if isinstance(future, dict):
+            projection = future.get("thematic_projection") or future.get("thematicProjection") or "No projection."
+        else:
+            projection = "No projection."
+            
         md += f"### ⏮️ Last Session\n**Summary:** {summary}\n\n**Thematic Projection:** {projection}\n\n"
     
     if agenda:
@@ -193,9 +203,9 @@ def main():
     query_text = " ".join(query_parts).strip()
     
     vector_hits = []
-    if query_text and exocortex:
+    if query_text and exocortex and exocortex.exocortex:
         logger.info(f"Syncing Vector Resonances...")
-        raw_hits = exocortex.recall(query_text, limit=3, score_threshold=0.70)
+        raw_hits = exocortex.exocortex.recall(query_text, limit=3, score_threshold=0.70)
         for hit in raw_hits:
             path = hit['metadata'].get('file_path', 'unknown')
             if "CONTEXTO_DINAMICO" in path or "DYNAMIC_CONTEXT" in path: continue

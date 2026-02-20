@@ -13,17 +13,24 @@ from dotenv import load_dotenv
 
 # --- Configuration ---
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_ROOT = os.path.abspath(os.path.join(current_script_dir, "..", "..", "..", "..", ".."))
-TERROIR_ROOT = os.getenv("TERROIR_ROOT", os.path.abspath(os.path.join(current_script_dir, "../../../../..")))
-# Forzar deteccion si estamos en una estructura de carpetas profunda
-if 'PROYECTOS' in TERROIR_ROOT and os.path.exists(os.path.join(os.path.dirname(TERROIR_ROOT), '.env')):
-    TERROIR_ROOT = os.path.dirname(TERROIR_ROOT)
 
+def find_terroir_root(start_path: str) -> str:
+    """Busca la raiz del Terroir detectando el archivo .env."""
+    current = os.path.abspath(start_path)
+    while current != os.path.dirname(current):
+        if os.path.exists(os.path.join(current, ".env")):
+            return current
+        current = os.path.dirname(current)
+    # Fallback si no hay .env (no deberia ocurrir en un Terroir sano)
+    return os.path.abspath(os.path.join(start_path, "../../../../.."))
+
+TERROIR_ROOT = os.getenv("TERROIR_ROOT") or find_terroir_root(current_script_dir)
 load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
 
 # Internal Paths
-SCRIPTS_DIR = os.path.join(TERROIR_ROOT, "SYSTEM", "Scripts")
-PROMPTS_DIR = os.path.join(SCRIPTS_DIR, "prompts")
+SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
+PROMPT_FILE = os.path.join(SKILL_DIR, "final_distill_prompt.txt")
+APPEND_SCRIPT = os.path.join(SKILL_DIR, "append_master_capsule.py")
 
 # Detect Phenotype/Terroir Locus
 PHENOTYPE_DIR = os.path.join(TERROIR_ROOT, "PHENOTYPE")
@@ -32,12 +39,14 @@ if os.path.exists(PHENOTYPE_DIR):
 else:
     MEM_ROOT = os.path.join(TERROIR_ROOT, "SYSTEM", "MEMORIA")
 
+# --- OTHER SKILLS PATHS (Genotype BODY) ---
+BODY_DIR = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY")
+HYGIENE_SKILL = os.path.join(BODY_DIR, "SKILLS", "terroir-hygiene", "logic.py")
+INGEST_SKILL = os.path.join(BODY_DIR, "SKILLS", "vector-ingestion", "logic.py")
+CONTEXT_SKILL = os.path.join(BODY_DIR, "SKILLS", "context-synchronization", "logic.py")
+
 MASTER_CAPSULES_DIR = os.path.join(MEM_ROOT, "capsulas_maestras")
 RAW_LOGS_DIR = os.path.join(MEM_ROOT, "logs_de_sesion")
-APPEND_SCRIPT = os.path.join(SCRIPTS_DIR, "append_master_capsule.py")
-MAP_SCRIPT = os.path.join(SCRIPTS_DIR, "generate_terroir_map.py")
-INGEST_SCRIPT = os.path.join(SCRIPTS_DIR, "ingest.py")
-CONTEXT_SCRIPT = os.path.join(SCRIPTS_DIR, "prepare_context.py")
 PYTHON_EXEC = os.path.join(TERROIR_ROOT, ".venv", "Scripts", "python.exe")
 
 # API Key
@@ -120,8 +129,8 @@ def distill_only(log_path: str):
 
         if not GEMINI_API_KEY: raise ValueError("GEMINI_API_KEY missing")
         genai.configure(api_key=GEMINI_API_KEY)
-        prompt_file = os.path.join(PROMPTS_DIR, "final_distill_prompt.txt")
-        with open(prompt_file, 'r', encoding='utf-8') as f: template = f.read()
+        
+        with open(PROMPT_FILE, 'r', encoding='utf-8') as f: template = f.read()
 
         compact_log = compress_log(log_data)
         final_prompt = template.replace("{session_log}", compact_log)
@@ -185,12 +194,15 @@ def seal_only(draft_path: str):
     # 2. Anclaje al Ã­ndice
     subprocess.run([PYTHON_EXEC, APPEND_SCRIPT, final_path], check=True)
 
-    # 3. ActualizaciÃ³n del Mapa
-    subprocess.run([PYTHON_EXEC, MAP_SCRIPT], check=True)
+    # 3. Higiene y Actualización del Mapa
+    logger.info("Executing hygiene cycle...")
+    subprocess.run([PYTHON_EXEC, HYGIENE_SKILL], input=json.dumps({"action": "full_scan"}), text=True, capture_output=True)
 
     # 4. Ingesta y Contexto
-    subprocess.run([PYTHON_EXEC, INGEST_SCRIPT], check=True)
-    subprocess.run([PYTHON_EXEC, CONTEXT_SCRIPT], check=True)
+    logger.info("Syncing subconscience (Vector Ingest)...")
+    subprocess.run([PYTHON_EXEC, INGEST_SKILL], capture_output=True)
+    logger.info("Regenerating dynamic context...")
+    subprocess.run([PYTHON_EXEC, CONTEXT_SKILL], capture_output=True)
 
     # 5. Git Breath
     subprocess.run(["git", "add", "."], cwd=TERROIR_ROOT, check=True)
