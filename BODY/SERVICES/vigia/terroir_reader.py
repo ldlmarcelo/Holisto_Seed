@@ -1,23 +1,28 @@
 import os
 import json
+import sys
 from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 class TerroirReader:
     """
     El 'Lobulo Sensorial' de El Vigia.
     Responsable de leer los artefactos vitales del Terroir y construir
-    el contexto dinamico para el LLM (Gemini 2.5 Flash), aprovechando
-    su ventana de 1M tokens.
+    el contexto dinamico para el LLM.
     """
 
     def __init__(self, terroir_root: str = None):
-        if terroir_root:
-            self.root = Path(terroir_root)
-        else:
-            self.root = Path(os.getcwd())
-        
-        self.seed_root = self.root / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed"
-        self.phenotype_root = self.root / "PHENOTYPE"
+        self.root = terroir_root or TerroirLocator.get_orchestrator_root()
+        self.seed_root = TerroirLocator.get_seed_root()
+        self.phenotype_root = TerroirLocator.get_phenotype_root()
+        self.mem_root = TerroirLocator.get_mem_root()
 
     def _read_file(self, absolute_path: Path) -> str:
         """Lee un archivo de texto de forma robusta."""
@@ -51,9 +56,9 @@ class TerroirReader:
 
     def load_memory_indices(self) -> str:
         """Carga los INDICES de memoria para consciencia temporal."""
-        nodos = self._read_file(self.phenotype_root / "SYSTEM" / "MEMORIA" / "Nodos_de_Conocimiento" / "GEMINI.md")
-        activa = self._read_file(self.phenotype_root / "SYSTEM" / "MEMORIA" / "GEMINI.md")
-        suenos = self._read_file(self.phenotype_root / "SYSTEM" / "MEMORIA" / "GENERACIONES" / "GEMINI.md")
+        nodos = self._read_file(self.mem_root / "Nodos_de_Conocimiento" / "GEMINI.md")
+        activa = self._read_file(self.mem_root / "GEMINI.md")
+        suenos = self._read_file(self.mem_root / "GENERACIONES" / "GEMINI.md")
         
         return (
             f"## 🧠 MEMORIA Y CONOCIMIENTO\n"

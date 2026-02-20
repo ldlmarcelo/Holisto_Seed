@@ -1,7 +1,17 @@
 import os
 import json
 import uuid
+import sys
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 class AgendaManager:
     def __init__(self, storage_path=None):
@@ -9,13 +19,18 @@ class AgendaManager:
         Inicia el gestor de agenda con una ruta de almacenamiento.
         Prioriza variables de entorno para portabilidad (Asepsia).
         """
-        self.storage_path = storage_path or os.getenv("HOLISTO_AGENDA_FILE")
-        if not self.storage_path:
-            # Fallback relativo a la raiz del proyecto si no hay env
-            self.storage_path = "SYSTEM/AGENDA/recordatorios.json"
+        if storage_path:
+            self.storage_path = Path(storage_path)
+        else:
+            env_path = os.getenv("HOLISTO_AGENDA_FILE")
+            if env_path:
+                self.storage_path = Path(env_path)
+            else:
+                # Discover Phenotype Root using TerroirLocator
+                self.storage_path = TerroirLocator.get_phenotype_root() / "SYSTEM" / "AGENDA" / "recordatorios.json"
 
     def _load(self):
-        if not os.path.exists(self.storage_path):
+        if not self.storage_path.exists():
             return []
         try:
             with open(self.storage_path, 'r', encoding='utf-8') as f:
@@ -24,7 +39,7 @@ class AgendaManager:
             return []
 
     def _save(self, data):
-        os.makedirs(os.path.dirname(self.storage_path), exist_ok=True)
+        os.makedirs(self.storage_path.parent, exist_ok=True)
         with open(self.storage_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 

@@ -2,8 +2,19 @@ import json
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
-INDEX_PATH = os.path.join("PROYECTOS", "GEMINI.md")
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
+
+# Index Path (Using TerroirLocator)
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+INDEX_PATH = TERROIR_ROOT / "PROYECTOS" / "GEMINI.md"
 
 def load_index():
     """Carga el índice de proyectos (JSON)."""
@@ -49,10 +60,12 @@ def action_activate(data, project_id, prefix, suffix):
     # Leer archivos de contexto
     context = {}
     path = project["path"]
-    # Corregir ruta si es relativa desde el índice pero el script corre en raíz
+    # Rutas relativas desde el Orquestador
+    project_root = TERROIR_ROOT / path
+    
     for file in ["README.md", "ROADMAP.md", "ARCHITECTURE.md"]:
-        f_path = os.path.join(path, file)
-        if os.path.exists(f_path):
+        f_path = project_root / file
+        if f_path.exists():
             with open(f_path, 'r', encoding='utf-8') as f:
                 context[file] = f.read()
     

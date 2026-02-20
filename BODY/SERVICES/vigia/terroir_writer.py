@@ -1,9 +1,19 @@
 import os
 import json
 import logging
+import sys
 from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger("terroir_writer")
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 class TerroirWriter:
     """
@@ -11,9 +21,10 @@ class TerroirWriter:
     Transforma dialogos efimeros de Telegram en artefactos JSON persistentes.
     """
     
-    def __init__(self, terroir_root):
-        self.terroir_root = terroir_root
-        self.logs_dir = os.path.join(self.terroir_root, "PHENOTYPE", "SYSTEM", "MEMORIA", "logs_vigia")
+    def __init__(self, terroir_root=None):
+        self.terroir_root = terroir_root or TerroirLocator.get_orchestrator_root()
+        # Using TerroirLocator for Phenotype Discovery
+        self.logs_dir = TerroirLocator.get_mem_root() / "logs_vigia"
         
         if not os.path.exists(self.logs_dir):
             os.makedirs(self.logs_dir)

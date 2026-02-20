@@ -7,39 +7,39 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
-# --- Path Configuration ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-def find_terroir_root(start_dir):
-    current = os.path.abspath(start_dir)
-    while current != os.path.dirname(current):
-        if os.path.exists(os.path.join(current, ".env")):
-            return current
-        current = os.path.dirname(current)
-    return os.path.abspath(os.path.join(start_dir, "../../../.."))
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-TERROIR_ROOT = find_terroir_root(current_script_dir)
-load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
+# --- Configuration ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Import Exocortex Service from Seed Genotype
-SEED_DIR = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
-sys.path.append(SEED_DIR)
+SEED_ROOT = TerroirLocator.get_seed_root()
+sys.path.append(str(SEED_ROOT))
 try:
     from BODY.SERVICES import exocortex
 except ImportError as e:
     print(f"Error importing exocortex: {e}")
     exocortex = None
 
-# Artifact Paths (Customizable via env)
-DYNAMIC_CONTEXT_FILE = os.getenv("DYNAMIC_CONTEXT_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "CONTEXTO_DINAMICO", "GEMINI.md"))
-MEMORY_INDEX_FILE = os.getenv("MEMORY_INDEX_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "GEMINI.md"))
-AGENDA_FILE = os.getenv("AGENDA_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "AGENDA", "recordatorios.json"))
-NOTIFICATIONS_DIR = os.getenv("NOTIFICATIONS_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "NOTIFICACIONES"))
-LOGS_ASYNC_DIR = os.getenv("LOGS_ASYNC_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "logs_async"))
+# Artifact Paths (Using TerroirLocator for Agnosticism)
+PHENOTYPE_ROOT = TerroirLocator.get_phenotype_root()
+DYNAMIC_CONTEXT_FILE = PHENOTYPE_ROOT / "SYSTEM" / "CONTEXTO_DINAMICO" / "GEMINI.md"
+MEMORY_INDEX_FILE = TerroirLocator.get_mem_root() / "GEMINI.md"
+AGENDA_FILE = PHENOTYPE_ROOT / "SYSTEM" / "AGENDA" / "recordatorios.json"
+NOTIFICATIONS_DIR = PHENOTYPE_ROOT / "SYSTEM" / "NOTIFICACIONES"
+LOGS_ASYNC_DIR = TerroirLocator.get_mem_root() / "logs_async"
 
 # Logging Configuration
-LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
+LOGS_DIR = TerroirLocator.get_logs_dir()
 os.makedirs(LOGS_DIR, exist_ok=True)
-log_file = os.path.join(LOGS_DIR, f"context_prep_{datetime.now().strftime('%Y%m%d')}.log")
+log_file = LOGS_DIR / f"context_prep_{datetime.now().strftime('%Y%m%d')}.log"
 
 logging.basicConfig(
     level=logging.INFO,

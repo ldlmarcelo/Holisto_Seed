@@ -1,7 +1,18 @@
 import json
 import os
+import sys
+from pathlib import Path
 
-FILE_PATH = "SYSTEM/MEMORIA/Nodos_de_Conocimiento/GEMINI.md"
+# --- Universal Root Discovery ---
+try:
+    from terroir_locator import TerroirLocator
+except ImportError:
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from terroir_locator import TerroirLocator
+
+# Hipocampo (Using TerroirLocator)
+MEM_ROOT = TerroirLocator.get_mem_root()
+FILE_PATH = MEM_ROOT / "Nodos_de_Conocimiento" / "GEMINI.md"
 
 def update_index():
     with open(FILE_PATH, "r", encoding="utf-8") as f:

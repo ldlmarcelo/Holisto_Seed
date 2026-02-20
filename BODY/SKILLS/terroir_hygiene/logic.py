@@ -3,16 +3,27 @@ import json
 import sys
 import shutil
 from datetime import datetime
+from pathlib import Path
 
-TEMP_FILES = ["knowledge_input.json", "commit_message.txt", "temp_01.png", "knowledge_input.json"]
-LOGS_DIR = os.path.join("SYSTEM", "LOGS_MANTENIMIENTO")
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
+
+TEMP_FILES = ["knowledge_input.json", "commit_message.txt", "temp_01.png"]
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+LOGS_DIR = TerroirLocator.get_logs_dir()
 
 def purge_temp():
     """Elimina archivos temporales conocidos en la raíz."""
     purged = []
     for f in TEMP_FILES:
-        if os.path.exists(f):
-            os.remove(f)
+        f_path = TERROIR_ROOT / f
+        if f_path.exists():
+            os.remove(f_path)
             purged.append(f)
     return purged
 

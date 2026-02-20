@@ -10,18 +10,17 @@ import google.generativeai as genai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
-# --- Configuracion de Rutas ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-def find_terroir_root(start_dir):
-    current = os.path.abspath(start_dir)
-    while current != os.path.dirname(current):
-        if os.path.exists(os.path.join(current, ".env")):
-            return current
-        current = os.path.dirname(current)
-    return os.path.abspath(os.path.join(start_dir, "../../../../../.."))
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-BASE_DIR = find_terroir_root(current_script_dir)
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+# --- Configuracion de Rutas ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Importar componentes locales
 from git_autonomy import GitAutonomy
@@ -29,14 +28,12 @@ from terroir_reader import TerroirReader
 from terroir_writer import TerroirWriter
 from tools import AgendaManager, NoteManager
 
-# Vinculacion con el Genotipo (Exocortex y Scripts)
-seed_root = os.path.join(BASE_DIR, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
-exocortex_src = os.path.join(seed_root, "BODY", "SERVICES")
-scripts_src = os.path.join(BASE_DIR, "SYSTEM", "Scripts")
+# Vinculacion con el Genotipo (Exocortex y Servicios)
+SEED_ROOT = TerroirLocator.get_seed_root()
+exocortex_src = str(SEED_ROOT / "BODY" / "SERVICES")
 
-for path in [exocortex_src, scripts_src]:
-    if path not in sys.path:
-        sys.path.append(path)
+if exocortex_src not in sys.path:
+    sys.path.append(exocortex_src)
 
 try:
     import exocortex
@@ -54,7 +51,7 @@ logging.basicConfig(
 logger = logging.getLogger("vigia")
 logger.info(logger_msg)
 
-VIGIA_VERSION = "1.4.0-SEED (Unified Genotype Architecture)"
+VIGIA_VERSION = "1.4.1-SEED (Agnostic Paths)"
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -68,12 +65,12 @@ if not TELEGRAM_TOKEN:
     logger.error("Falta TELEGRAM_TOKEN en el .env")
     exit(1)
 
-# Inicializar Componentes
-git = GitAutonomy(repo_path=BASE_DIR)
-reader = TerroirReader(terroir_root=BASE_DIR)
-writer = TerroirWriter(terroir_root=BASE_DIR)
-agenda_manager = AgendaManager(base_dir=BASE_DIR)
-note_manager = NoteManager(base_dir=BASE_DIR)
+# Inicializar Componentes (Using TerroirLocator)
+git = GitAutonomy(repo_path=TERROIR_ROOT)
+reader = TerroirReader(terroir_root=TERROIR_ROOT)
+writer = TerroirWriter(terroir_root=TERROIR_ROOT)
+agenda_manager = AgendaManager(base_dir=TERROIR_ROOT)
+note_manager = NoteManager(base_dir=TERROIR_ROOT)
 
 def get_fresh_model():
     try:

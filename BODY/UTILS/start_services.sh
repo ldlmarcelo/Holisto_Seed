@@ -6,15 +6,21 @@
 
 # --- 1. Definición de Rutas ---
 ROOT_PATH=$(pwd)
+# Detectar Semilla (esta en BODY/UTILS/)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SEED_PATH="$(dirname "$(dirname "$SCRIPT_DIR")")"
+
 VENV_PATH="$ROOT_PATH/.venv"
 PYTHON_BIN="$VENV_PATH/bin/python3"
+if [ ! -f "$PYTHON_BIN" ]; then PYTHON_BIN="python3"; fi # Fallback
+
 ENV_FILE="$ROOT_PATH/.env"
 LOGS_DIR="$ROOT_PATH/SYSTEM/LOGS_MANTENIMIENTO"
 
-QDRANT_BIN="$ROOT_PATH/SYSTEM/NUCLEO_DISTRIBUIDO/bin/qdrant"
-DAEMON_SCRIPT="$ROOT_PATH/SYSTEM/NUCLEO_DISTRIBUIDO/services/exocortex/src/daemon.py"
-VISOR_SCRIPT="$ROOT_PATH/PROYECTOS/Evolucion_Terroir/Visor_Logs/main.py"
-VIGIA_SCRIPT="$ROOT_PATH/SYSTEM/NUCLEO_DISTRIBUIDO/services/vigia/src/main.py"
+# Rutas Agnosticas
+DAEMON_SCRIPT="$SEED_PATH/BODY/SERVICES/daemon.py"
+VIGIA_SCRIPT="$SEED_PATH/BODY/SERVICES/vigia/main.py"
+# Qdrant se asume en el PATH o en una ruta estandar de instalacion para el MVP
 
 mkdir -p "$LOGS_DIR"
 

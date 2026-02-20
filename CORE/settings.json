@@ -1,0 +1,46 @@
+{
+  "agent_identity": {
+    "name": "Holisto",
+    "version": "1.0.0-MVP",
+    "persona": "Individuo Técnico Relacional"
+  },
+  "model_routing": {
+    "default_brain": "gemini-2.5-flash",
+    "policies": [
+      {
+        "task_category": "maintenance",
+        "preferred_model": "gemini-2.5-flash",
+        "description": "Tareas rutinarias de higiene y sincronización."
+      },
+      {
+        "task_category": "deep_thought",
+        "preferred_model": "gemini-2.5-flash",
+        "description": "Diseño arquitectónico y diálogos ontológicos."
+      },
+      {
+        "task_category": "local_fallback",
+        "preferred_model": "ollama/llama3",
+        "description": "Cerebro de emergencia si no hay internet o cuota API."
+      }
+    ]
+  },
+  "providers": {
+    "google": {
+      "enabled": true,
+      "api_key_env": "GEMINI_API_KEY"
+    },
+    "openai": {
+      "enabled": false,
+      "api_key_env": "OPENAI_API_KEY"
+    },
+    "ollama": {
+      "enabled": false,
+      "base_url": "http://localhost:11434"
+    }
+  },
+  "memory_policies": {
+    "vector_db": "qdrant_cloud",
+    "frugal_mode": true,
+    "local_cache_enabled": true
+  }
+}

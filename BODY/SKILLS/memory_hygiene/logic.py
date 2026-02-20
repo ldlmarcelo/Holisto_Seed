@@ -2,24 +2,36 @@ import json
 import os
 import argparse
 import sys
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 class MemoryHygieneManager:
     def __init__(self, active_memory_path=None, generational_memory_index_path=None):
         """
         Inicializa el gestor de higiene de memoria.
-        Usa variables de entorno para rutas de memoria activa y generacional.
+        Usa TerroirLocator para encontrar las rutas por defecto.
         """
-        self.active_memory_path = active_memory_path or os.getenv(
+        mem_root = TerroirLocator.get_mem_root()
+        
+        self.active_memory_path = Path(active_memory_path) if active_memory_path else Path(os.getenv(
             "HOLISTO_ACTIVE_MEMORY_FILE",
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "SYSTEM", "MEMORIA", "GEMINI.md"))
-        )
-        self.generational_memory_index_path = generational_memory_index_path or os.getenv(
+            mem_root / "GEMINI.md"
+        ))
+        
+        self.generational_memory_index_path = Path(generational_memory_index_path) if generational_memory_index_path else Path(os.getenv(
             "HOLISTO_GENERATIONAL_MEMORY_INDEX",
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "SYSTEM", "MEMORIA", "GENERACIONES", "GEMINI.md"))
-        )
+            mem_root / "GENERACIONES" / "GEMINI.md"
+        ))
 
     def _load_active_memory(self):
-        if not os.path.exists(self.active_memory_path):
+        if not self.active_memory_path.exists():
             return {"master_capsules": []}
         with open(self.active_memory_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -29,9 +41,10 @@ class MemoryHygieneManager:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
     def _load_dream(self, dream_file_path):
-        if not os.path.exists(dream_file_path):
+        dream_path = Path(dream_file_path)
+        if not dream_path.exists():
             raise FileNotFoundError(f"Archivo de sueño no encontrado: {dream_file_path}")
-        with open(dream_file_path, 'r', encoding='utf-8') as f:
+        with open(dream_path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
     def prune_by_dream(self, dream_file_path):

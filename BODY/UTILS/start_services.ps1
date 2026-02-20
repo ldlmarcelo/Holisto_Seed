@@ -4,10 +4,15 @@
 $ErrorActionPreference = "Stop"
 
 # --- 1. Definicion de Rutas ---
+# El Orquestador es la raiz (donde se ejecuta el script usualmente)
 $rootPath = Resolve-Path "."
+# La Semilla es el padre de este script (esta en BODY/UTILS/)
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$seedPath = Split-Path -Parent (Split-Path -Parent $scriptDir) # Retrocedemos de UTILS a BODY y luego a Semilla
+
 $venvPath = "$rootPath\.venv"
 $pythonPath = "$venvPath\Scripts\python.exe"
-$seedPath = "$rootPath\PROYECTOS\Evolucion_Terroir\Holisto_Seed"
+if (-not (Test-Path $pythonPath)) { $pythonPath = "python" } # Fallback al sistema
 
 $daemonScript = "$seedPath\BODY\SERVICES\daemon.py"
 $vigiaScript = "$seedPath\BODY\SERVICES\vigia\main.py"

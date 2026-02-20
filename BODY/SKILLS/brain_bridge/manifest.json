@@ -1,0 +1,7 @@
+{
+    "name": "brain-bridge",
+    "version": "1.0.0",
+    "description": "Abstraction layer for multi-model LLM connectivity.",
+    "entrypoint": "scripts/logic.py",
+    "dependencies": ["google-generativeai", "python-dotenv"]
+}

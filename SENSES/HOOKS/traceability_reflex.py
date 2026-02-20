@@ -2,12 +2,21 @@ import json
 import sys
 import os
 from datetime import datetime
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 def log_event(event_type, data):
-    log_path = os.path.join("SYSTEM", "LOGS_MANTENIMIENTO", "herramientas.jsonl")
+    log_path = TerroirLocator.get_logs_dir() / "herramientas.jsonl"
     
     # Asegurar que el directorio existe
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    os.makedirs(log_path.parent, exist_ok=True)
     
     entry = {
         "timestamp": datetime.now().isoformat(),

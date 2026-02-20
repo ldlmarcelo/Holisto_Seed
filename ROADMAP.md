@@ -1,23 +1,25 @@
 # Holisto Seed Roadmap
 
 **Focus:** Transforming Holisto from a local instance to a Universal Product (Enlatado).
-**Current Phase:** Phase 1 - Kernel Minimal Viable Product (MVP)
+**Current Phase:** Phase 2 - Bicameral Extensions
 
 ---
 
-## 🟢 Phase 1: Relational Kernel (MVP) - [IN PROGRESS]
+## 🟢 Phase 1: Relational Kernel (MVP) - [COMPLETED]
 *Goal: Achieve a functional, relational agent that operates only with local files and zero initial configuration.*
 
 - [x] **Separation of Concerns:** Segregate Genotype from Phenotype.
 - [x] **Micro-Kernel Definition:** Establish the HOL-ARC-012 architecture.
-- [ ] **Path Agnosticism:** Refactor all scripts to use relative paths or environment-injected roots.
-- [ ] **Local Memory Fallback:** Ensure `prepare_context.py` and `ingest.py` can work with local JSON/Markdown if no Vector DB is present.
-- [ ] **Setup Wizard:** Create a simple script to "initialize" a new Terroir from the Seed.
+- [x] **Path Agnosticism:** Refactor all scripts to use `TerroirLocator` (30+ organs sanated).
+- [x] **Brain Abstraction:** Implementation of `BrainBridge` and `settings.json` for multi-model routing.
+- [x] **Python Package Formalization:** Unified structure with `__init__.py` and `snake_case` naming.
+- [x] **Robust Narrative Filtering:** Extraction of core dialogue for token efficiency.
 
-## 🟡 Phase 2: Bicameral Extensions (Subconscious)
+## 🟡 Phase 2: Bicameral Extensions (Subconscious) - [IN PROGRESS]
 *Goal: Add the Exocortex and long-term semantic memory capabilities.*
 
 - [x] **REST Bypass for Qdrant:** Ensure connectivity in restricted environments.
+- [ ] **Setup Wizard:** Create a simple script to "initialize" a new Terroir from the Seed. (Moved from Phase 1).
 - [ ] **Modular Services:** Move `exocortex.py` and `daemon.py` to a proper `SERVICES` package.
 - [ ] **Service Configuration:** Standardize `.env` requirements for cloud features.
 

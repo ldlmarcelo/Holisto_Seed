@@ -3,13 +3,23 @@ import sys
 import os
 import subprocess
 from datetime import datetime
+from pathlib import Path
 
-# Rutas de persistencia del estado de fricción (en el Fenotipo)
-FRICTION_STATUS = os.path.join("PHENOTYPE", "SYSTEM", "LOGS_MANTENIMIENTO", "fricciones_status.json")
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
+
+# Rutas de persistencia (Using TerroirLocator)
+LOGS_DIR = TerroirLocator.get_logs_dir()
+FRICTION_STATUS = LOGS_DIR / "fricciones_status.json"
 THRESHOLD = 3
 
 def load_status():
-    if os.path.exists(FRICTION_STATUS):
+    if FRICTION_STATUS.exists():
         try:
             with open(FRICTION_STATUS, "r", encoding="utf-8") as f:
                 return json.load(f)
@@ -18,12 +28,13 @@ def load_status():
     return {}
 
 def save_status(status):
-    os.makedirs(os.path.dirname(FRICTION_STATUS), exist_ok=True)
+    os.makedirs(FRICTION_STATUS.parent, exist_ok=True)
     with open(FRICTION_STATUS, "w", encoding="utf-8") as f:
         json.dump(status, f, indent=4)
 
 def log_alert(message, pattern):
-    alert_path = os.path.join("PHENOTYPE", "SYSTEM", "NOTIFICACIONES", f"ALERT-FRICTION-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json")
+    phenotype_root = TerroirLocator.get_phenotype_root()
+    alert_path = phenotype_root / "SYSTEM" / "NOTIFICACIONES" / f"ALERT-FRICTION-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json"
     
     alert = {
         "timestamp": datetime.now().isoformat(),
@@ -57,10 +68,13 @@ def main():
 ')[0][:100]
             
             # Registrar en el sensor general (invocación silenciosa)
-            # Nota: Usamos el script existente para mantener compatibilidad
             try:
+                seed_root = TerroirLocator.get_seed_root()
+                sensor_script = seed_root / "BODY" / "UTILS" / "event_sensor.py"
+                python_exec = TerroirLocator.get_python_exec()
+                
                 subprocess.run([
-                    "python", "SYSTEM/Scripts/event_sensor.py",
+                    python_exec, str(sensor_script),
                     "--type", "friction",
                     "--tool", tool_name,
                     "--success", "false",

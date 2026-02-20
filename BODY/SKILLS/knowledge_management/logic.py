@@ -2,15 +2,27 @@ import json
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 def get_paths():
-    """Detecta las rutas de las capas de la Triple Alianza."""
-    base_dir = os.getcwd()
+    """Detecta las rutas de las capas de la Triple Alianza usando TerroirLocator."""
+    phenotype_root = TerroirLocator.get_phenotype_root()
+    seed_root = TerroirLocator.get_seed_root()
+    mem_root = TerroirLocator.get_mem_root()
+    
     paths = {
-        "terroir": os.path.join(base_dir, "PHENOTYPE", "SYSTEM", "MEMORIA", "Nodos_de_Conocimiento"),
-        "terroir_index": os.path.join(base_dir, "PHENOTYPE", "SYSTEM", "MEMORIA", "Nodos_de_Conocimiento", "GEMINI.md"),
-        "seed": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "MIND", "KNOWLEDGE"),
-        "seed_index": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "MIND", "KNOWLEDGE", "GEMINI.md")
+        "terroir": mem_root / "Nodos_de_Conocimiento",
+        "terroir_index": mem_root / "Nodos_de_Conocimiento" / "GEMINI.md",
+        "seed": seed_root / "MIND" / "KNOWLEDGE",
+        "seed_index": seed_root / "MIND" / "KNOWLEDGE" / "GEMINI.md"
     }
     return paths
 

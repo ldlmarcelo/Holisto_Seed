@@ -1,11 +1,22 @@
 import json
 import os
 import argparse
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
-# Rutas de logs
-USAGE_LOG = "SYSTEM/LOGS_MANTENIMIENTO/herramientas.jsonl"
-FRICTION_LOG = "SYSTEM/LOGS_MANTENIMIENTO/fricciones_ejecucion.jsonl"
+# --- Universal Root Discovery ---
+try:
+    from terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback si se ejecuta desde fuera del directorio UTILS
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from terroir_locator import TerroirLocator
+
+# Rutas de logs (Using TerroirLocator)
+LOGS_DIR = TerroirLocator.get_logs_dir()
+USAGE_LOG = LOGS_DIR / "herramientas.jsonl"
+FRICTION_LOG = LOGS_DIR / "fricciones_ejecucion.jsonl"
 
 def log_event(event_type, tool, success, session_id=None, error_pattern=None, details=None, execution_time=None):
     entry = {

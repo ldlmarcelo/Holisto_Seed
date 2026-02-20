@@ -1,10 +1,20 @@
 import os
 import argparse
 import json
+import sys
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 def create_skill(name, description, seed_path, orchestrator_path):
-    # 1. Definir rutas
-    skill_seed_dir = os.path.join(seed_path, "BODY", "SKILLS", name)
+    # 1. Definir rutas (Using Path objects for robustness)
+    skill_seed_dir = Path(seed_path) / "BODY" / "SKILLS" / name
     skill_scripts_dir = os.path.join(skill_seed_dir, "scripts")
     
     if os.path.exists(skill_seed_dir):
@@ -69,8 +79,8 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    # Rutas base (asumiendo ejecución desde la raíz del orquestador)
-    seed_root = os.path.join("PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
-    orchestrator_root = "."
+    # Rutas base (Using TerroirLocator for Agnosticism)
+    seed_root = TerroirLocator.get_seed_root()
+    orchestrator_root = TerroirLocator.get_orchestrator_root()
     
     create_skill(args.name, args.desc, seed_root, orchestrator_root)

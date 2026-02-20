@@ -1,12 +1,22 @@
 import os
 import json
 import glob
+import sys
 from datetime import datetime
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 def generate_handover():
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-    logs_dir = os.path.join(base_dir, "SYSTEM", "MEMORIA", "logs_vigia")
-    output_file = os.path.join(base_dir, "SYSTEM", "MEMORIA", "handover_vigia.json")
+    mem_root = TerroirLocator.get_mem_root()
+    logs_dir = mem_root / "logs_vigia"
+    output_file = mem_root / "handover_vigia.json"
     
     echoes = []
     try:

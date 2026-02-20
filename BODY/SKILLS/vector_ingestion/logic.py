@@ -14,12 +14,17 @@ from qdrant_client.http import models
 from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
-# --- Configuration ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_ROOT = os.path.abspath(os.path.join(current_script_dir, "..", "..", "..", ".."))
-TERROIR_ROOT = os.getenv("TERROIR_ROOT", DEFAULT_ROOT)
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
+# --- Configuration ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Optional Imports
 try: import docx
@@ -28,7 +33,7 @@ try: import fitz
 except ImportError: fitz = None
 
 # Maintenance Dirs
-MAINTENANCE_DIR = os.getenv("MAINTENANCE_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
+MAINTENANCE_DIR = TerroirLocator.get_logs_dir()
 if not os.path.exists(MAINTENANCE_DIR): os.makedirs(MAINTENANCE_DIR)
 
 # Qdrant Config
@@ -38,7 +43,7 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME", "terroir_memory_frugal")
 VECTOR_SIZE = int(os.getenv("VECTOR_SIZE", "384"))
 
 # Cache File
-CACHE_FILE = os.path.join(MAINTENANCE_DIR, "ingest_state_cache.json")
+CACHE_FILE = MAINTENANCE_DIR / "ingest_state_cache.json"
 
 # --- Ingestion Filters ---
 IGNORED_DIRS = set(os.getenv("IGNORED_DIRS", ".git,.venv,.gemini,__pycache__,node_modules,dist,build,bin,obj,lib,include,share,storage,tmp,temp,logs,LOGS_MANTENIMIENTO,.idea,.vscode").split(","))

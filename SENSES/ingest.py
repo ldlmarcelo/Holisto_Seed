@@ -14,18 +14,17 @@ from qdrant_client.http import models
 from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
-# --- Configuration ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-def find_terroir_root(start_dir):
-    current = os.path.abspath(start_dir)
-    while current != os.path.dirname(current):
-        if os.path.exists(os.path.join(current, ".env")):
-            return current
-        current = os.path.dirname(current)
-    return os.path.abspath(os.path.join(start_dir, "../../../.."))
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-TERROIR_ROOT = find_terroir_root(current_script_dir)
-load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
+# --- Configuration ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Optional Imports for document processing
 try: import docx
@@ -34,7 +33,7 @@ try: import fitz
 except ImportError: fitz = None
 
 # Logs Directory
-MAINTENANCE_LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
+MAINTENANCE_LOGS_DIR = TerroirLocator.get_logs_dir()
 if not os.path.exists(MAINTENANCE_LOGS_DIR): os.makedirs(MAINTENANCE_LOGS_DIR)
 
 # Qdrant Config

@@ -9,12 +9,18 @@ from qdrant_client.http import models
 from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
-# --- Configuracion ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/SERVICES/ -> IA-HOLISTICA-1.0/ (4 niveles)
-BASE_DIR = os.path.abspath(os.path.join(current_script_dir, "..", "..", "..", "..", ".."))
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    import sys
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+# --- Configuracion ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")

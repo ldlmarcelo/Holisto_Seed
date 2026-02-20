@@ -8,58 +8,60 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict
-import google.generativeai as genai
 from dotenv import load_dotenv
 
+# --- Universal Root Discovery ---
+def setup_agnostic_imports():
+    # 1. Localizar TerroirLocator de forma relativa absoluta
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Estamos en: .../Holisto_Seed/BODY/SKILLS/session-harvesting/
+    seed_root = os.path.abspath(os.path.join(current_dir, "../../.."))
+    if seed_root not in sys.path:
+        sys.path.append(seed_root)
+    
+    try:
+        from BODY.UTILS.terroir_locator import TerroirLocator
+        return TerroirLocator
+    except ImportError:
+        # Fallback manual si falla el ruteo interno
+        sys.path.append(os.path.join(seed_root, "BODY", "UTILS"))
+        import terroir_locator
+        return terroir_locator.TerroirLocator
+
+TerroirLocator = setup_agnostic_imports()
+from BODY.SKILLS.brain_bridge.scripts.logic import BrainBridge
+
 # --- Configuration ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-
-def find_terroir_root(start_path: str) -> str:
-    """Busca la raiz del Terroir detectando el archivo .env."""
-    current = os.path.abspath(start_path)
-    while current != os.path.dirname(current):
-        if os.path.exists(os.path.join(current, ".env")):
-            return current
-        current = os.path.dirname(current)
-    # Fallback si no hay .env (no deberia ocurrir en un Terroir sano)
-    return os.path.abspath(os.path.join(start_path, "../../../../.."))
-
-TERROIR_ROOT = os.getenv("TERROIR_ROOT") or find_terroir_root(current_script_dir)
-load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Internal Paths
-SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
-PROMPT_FILE = os.path.join(SKILL_DIR, "final_distill_prompt.txt")
-APPEND_SCRIPT = os.path.join(SKILL_DIR, "append_master_capsule.py")
+SKILL_DIR = Path(__file__).resolve().parent
+PROMPT_FILE = SKILL_DIR / "final_distill_prompt.txt"
+APPEND_SCRIPT = SKILL_DIR / "append_master_capsule.py"
 
-# Detect Phenotype/Terroir Locus
-PHENOTYPE_DIR = os.path.join(TERROIR_ROOT, "PHENOTYPE")
-if os.path.exists(PHENOTYPE_DIR):
-    MEM_ROOT = os.path.join(PHENOTYPE_DIR, "SYSTEM", "MEMORIA")
-else:
-    MEM_ROOT = os.path.join(TERROIR_ROOT, "SYSTEM", "MEMORIA")
+# Hipocampo
+MEM_ROOT = TerroirLocator.get_mem_root()
 
 # --- OTHER SKILLS PATHS (Genotype BODY) ---
-BODY_DIR = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY")
-HYGIENE_SKILL = os.path.join(BODY_DIR, "SKILLS", "terroir-hygiene", "logic.py")
-INGEST_SKILL = os.path.join(BODY_DIR, "SKILLS", "vector-ingestion", "logic.py")
-CONTEXT_SKILL = os.path.join(BODY_DIR, "SKILLS", "context-synchronization", "logic.py")
+SEED_ROOT = TerroirLocator.get_seed_root()
+BODY_DIR = SEED_ROOT / "BODY"
+HYGIENE_SKILL = BODY_DIR / "SKILLS" / "terroir-hygiene" / "logic.py"
+INGEST_SKILL = BODY_DIR / "SKILLS" / "vector-ingestion" / "logic.py"
+CONTEXT_SKILL = BODY_DIR / "SKILLS" / "context-synchronization" / "logic.py"
 
-MASTER_CAPSULES_DIR = os.path.join(MEM_ROOT, "capsulas_maestras")
-RAW_LOGS_DIR = os.path.join(MEM_ROOT, "logs_de_sesion")
-PYTHON_EXEC = os.path.join(TERROIR_ROOT, ".venv", "Scripts", "python.exe")
+MASTER_CAPSULES_DIR = MEM_ROOT / "capsulas_maestras"
+RAW_LOGS_DIR = MEM_ROOT / "logs_de_sesion"
+PYTHON_EXEC = TerroirLocator.get_python_exec()
 
 # API Key
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    # Reintento manual de carga si el entorno no la tiene
-    load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Logging
-LOGS_DIR = os.getenv("MAINTENANCE_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
+LOGS_DIR = TerroirLocator.get_logs_dir()
 os.makedirs(LOGS_DIR, exist_ok=True)
-log_file = os.path.join(LOGS_DIR, f"self_harvest_{datetime.now().strftime('%Y%m%d')}.log")
+log_file = LOGS_DIR / f"self_harvest_{datetime.now().strftime('%Y%m%d')}.log"
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [HARVEST] - %(levelname)s - %(message)s', handlers=[logging.FileHandler(log_file, encoding='utf-8'), logging.StreamHandler(sys.stdout)])
 logger = logging.getLogger("harvester")
 
@@ -84,15 +86,55 @@ def repair_json(content: str) -> dict:
             return json.loads(content)
         except: return {"messages": [], "error": "JSON malformed"}
 
+def extract_text(content) -> str:
+    """Extrae texto puro de un objeto content (que puede ser string o lista)."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for part in content:
+            if isinstance(part, str):
+                parts.append(part)
+            elif isinstance(part, dict) and "text" in part:
+                parts.append(part["text"])
+        return "\n".join(parts)
+    return ""
+
 def compress_log(log_data: dict) -> str:
+    """
+    Extrae la medula narrativa del log, eliminando ruido tecnico y
+    optimizando el consumo de tokens para la destilacion.
+    """
     compact = []
     messages = log_data.get("messages", [])
-    for msg in messages[-40:]:
+    
+    # Tomamos una muestra representativa: inicio (contexto) y final (resolucion)
+    if len(messages) > 60:
+        sample = messages[:15] + messages[-45:]
+    else:
+        sample = messages
+
+    for msg in sample:
         m_type = msg.get("type")
         if m_type in ["user", "gemini"]:
-            text = msg.get("content", "")
-            if len(text) > 5000: text = text[:1000] + "... [TRUNCATED] ..." + text[-1000:]
-            compact.append({"role": "user" if m_type == "user" else "model", "text": text})
+            # Usamos la funcion extractora robusta
+            text = extract_text(msg.get("content", ""))
+            
+            if not text.strip(): continue
+
+            # Limpieza Quirurgica: Eliminar bloques de herramientas si estan inyectados
+            text = re.sub(r"\[TOOL_CALL:.*?\]", "", text, flags=re.DOTALL)
+            text = re.sub(r"\[TOOL_OUTPUT:.*?\]", "", text, flags=re.DOTALL)
+            
+            # Truncamiento agresivo por mensaje (preservar esencia)
+            if len(text) > 3000:
+                text = text[:1000] + "\n... [RECORTADO POR EXCESO DE RUIDO TECNICO] ...\n" + text[-1000:]
+            
+            compact.append({
+                "role": "user" if m_type == "user" else "model",
+                "text": text.strip()
+            })
+            
     return json.dumps(compact, ensure_ascii=False)
 
 def clean_ai_json(text: str) -> str:
@@ -127,17 +169,14 @@ def distill_only(log_path: str):
         with open(os.path.join(RAW_LOGS_DIR, f"{session_id}.json"), 'w', encoding='utf-8') as f:
             json.dump(log_data, f, ensure_ascii=False, indent=2)
 
-        if not GEMINI_API_KEY: raise ValueError("GEMINI_API_KEY missing")
-        genai.configure(api_key=GEMINI_API_KEY)
+        bridge = BrainBridge()
         
         with open(PROMPT_FILE, 'r', encoding='utf-8') as f: template = f.read()
 
         compact_log = compress_log(log_data)
         final_prompt = template.replace("{session_log}", compact_log)
 
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(final_prompt)
-        raw_response = response.text
+        raw_response = bridge.generate(final_prompt)
 
         cleaned = clean_ai_json(raw_response)
         try:

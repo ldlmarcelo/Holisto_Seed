@@ -10,32 +10,30 @@ import asyncio
 from telegram import Bot
 from dotenv import load_dotenv
 
-# --- Configuracion de Rutas ---
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-# PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/SERVICES/ -> IA-HOLISTICA-1.0/ (5 niveles)
-def find_terroir_root(start_dir):
-    current = os.path.abspath(start_dir)
-    while current != os.path.dirname(current):
-        if os.path.exists(os.path.join(current, ".env")):
-            return current
-        current = os.path.dirname(current)
-    return os.path.abspath(os.path.join(start_dir, "../../../../../"))
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
-TERROIR_ROOT = find_terroir_root(current_script_dir)
-load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
+# --- Configuracion de Rutas ---
+TERROIR_ROOT = TerroirLocator.get_orchestrator_root()
+load_dotenv(TERROIR_ROOT / ".env")
 
 # Rutas del Fenotipo (Memoria Viva)
-PHENOTYPE_DIR = os.path.join(TERROIR_ROOT, "PHENOTYPE")
-AGENDA_FILE = os.path.join(PHENOTYPE_DIR, "SYSTEM", "AGENDA", "recordatorios.json")
-CHAOS_HISTORY_FILE = os.path.join(PHENOTYPE_DIR, "SYSTEM", "MEMORIA", "historial_de_caos.txt")
-NOTIFICATIONS_DIR = os.path.join(PHENOTYPE_DIR, "SYSTEM", "NOTIFICACIONES")
+PHENOTYPE_ROOT = TerroirLocator.get_phenotype_root()
+AGENDA_FILE = PHENOTYPE_ROOT / "SYSTEM" / "AGENDA" / "recordatorios.json"
+CHAOS_HISTORY_FILE = TerroirLocator.get_mem_root() / "historial_de_caos.txt"
+NOTIFICATIONS_DIR = PHENOTYPE_ROOT / "SYSTEM" / "NOTIFICACIONES"
 
 # Rutas del Orquestador (Logs y Mantenimiento)
-MAINTENANCE_LOGS_DIR = os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO")
+MAINTENANCE_LOGS_DIR = TerroirLocator.get_logs_dir()
 os.makedirs(MAINTENANCE_LOGS_DIR, exist_ok=True)
-DAEMON_LOG_FILE = os.path.join(MAINTENANCE_LOGS_DIR, "daemon.log")
-FRICTION_LOG_FILE = os.path.join(MAINTENANCE_LOGS_DIR, "fricciones_ejecucion.jsonl")
-FRICTION_STATUS_FILE = os.path.join(MAINTENANCE_LOGS_DIR, "fricciones_status.json")
+DAEMON_LOG_FILE = MAINTENANCE_LOGS_DIR / "daemon.log"
+FRICTION_LOG_FILE = MAINTENANCE_LOGS_DIR / "fricciones_ejecucion.jsonl"
+FRICTION_STATUS_FILE = MAINTENANCE_LOGS_DIR / "fricciones_status.json"
 
 # --- Configuracion de APIs ---
 TELEGRAM_ENABLED = False
@@ -65,9 +63,9 @@ except ImportError:
     exocortex_service = exocortex.exocortex
 
 # Integracion de Skills del Seed
-SEED_ROOT = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
-SKILLS_DIR = os.path.join(SEED_ROOT, "BODY", "SKILLS")
-AGENDA_SKILL_PATH = os.path.join(SKILLS_DIR, "agenda-management")
+SEED_ROOT = TerroirLocator.get_seed_root()
+SKILLS_DIR = SEED_ROOT / "BODY" / "SKILLS"
+AGENDA_SKILL_PATH = SKILLS_DIR / "agenda-management"
 if AGENDA_SKILL_PATH not in sys.path: sys.path.append(AGENDA_SKILL_PATH)
 
 try:

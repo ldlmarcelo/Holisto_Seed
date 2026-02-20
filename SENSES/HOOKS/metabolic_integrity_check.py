@@ -3,12 +3,21 @@ import sys
 import subprocess
 import os
 from datetime import datetime
+from pathlib import Path
+
+# --- Universal Root Discovery ---
+try:
+    from BODY.UTILS.terroir_locator import TerroirLocator
+except ImportError:
+    # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+    from BODY.UTILS.terroir_locator import TerroirLocator
 
 def get_git_status(path):
     try:
         result = subprocess.run(
             ["git", "status", "--porcelain"],
-            cwd=path,
+            cwd=str(path),
             capture_output=True,
             text=True,
             check=True
@@ -18,8 +27,9 @@ def get_git_status(path):
         return f"Error: {str(e)}"
 
 def log_alert(message):
-    alert_path = os.path.join("PHENOTYPE", "SYSTEM", "NOTIFICACIONES", f"ALERT-METABOLIC-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json")
-    os.makedirs(os.path.dirname(alert_path), exist_ok=True)
+    phenotype_root = TerroirLocator.get_phenotype_root()
+    alert_path = phenotype_root / "SYSTEM" / "NOTIFICACIONES" / f"ALERT-METABOLIC-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json"
+    os.makedirs(alert_path.parent, exist_ok=True)
     alert = {
         "timestamp": datetime.now().isoformat(),
         "type": "METABOLIC_INTEGRITY_VIOLATION",
@@ -31,11 +41,11 @@ def log_alert(message):
         json.dump(alert, f, indent=4)
 
 def main():
-    # Definición de las capas (rutas relativas)
+    # Definición de las capas (Using TerroirLocator)
     layers = {
-        "Orquestador": ".",
-        "Fenotipo": "PHENOTYPE",
-        "Semilla": "PROYECTOS/Evolucion_Terroir/Holisto_Seed"
+        "Orquestador": TerroirLocator.get_orchestrator_root(),
+        "Fenotipo": TerroirLocator.get_phenotype_root(),
+        "Semilla": TerroirLocator.get_seed_root()
     }
     
     dirty_layers = []
