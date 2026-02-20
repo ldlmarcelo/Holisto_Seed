@@ -48,8 +48,8 @@
 
 ## Phase 6: The Reflexes (Autonomous Mirror) - [IN PROGRESS]
 - [x] **Native Hook:** `traceability-reflex` (Automated Operative Mirror).
-- [ ] **Native Hook:** `escalation-reflex` (Automated PEF/Friction Detection).
-- [ ] **Native Hook:** `metabolic-integrity-check` (PICS/PCS Git Status verification).
+- [x] **Native Hook:** `escalation-reflex` (Automated PEF/Friction Detection).
+- [x] **Native Hook:** `metabolic-integrity-check` (Conceptualized - PICS/PCS Git Status verification).
 - [ ] **Hardening:** Implementation of Security Hooks (Pre-Tool verification).
 - [ ] **Release:** Version 1.0 (The Unified Genotype - Integrated Organism).
 
