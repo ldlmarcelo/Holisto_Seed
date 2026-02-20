@@ -15,11 +15,17 @@ from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
 # --- Configuration ---
-# Calculate BASE_DIR relative to script location
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.abspath(os.path.join(current_script_dir, ".."))
+def find_terroir_root(start_dir):
+    current = os.path.abspath(start_dir)
+    while current != os.path.dirname(current):
+        if os.path.exists(os.path.join(current, ".env")):
+            return current
+        current = os.path.dirname(current)
+    return os.path.abspath(os.path.join(start_dir, "../../../.."))
 
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+TERROIR_ROOT = find_terroir_root(current_script_dir)
+load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
 
 # Optional Imports for document processing
 try: import docx
@@ -28,13 +34,13 @@ try: import fitz
 except ImportError: fitz = None
 
 # Logs Directory
-MAINTENANCE_LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(BASE_DIR, "SYSTEM", "MAINTENANCE_LOGS"))
+MAINTENANCE_LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
 if not os.path.exists(MAINTENANCE_LOGS_DIR): os.makedirs(MAINTENANCE_LOGS_DIR)
 
 # Qdrant Config
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-COLLECTION_NAME = os.getenv("VECTOR_COLLECTION", "seed_memory_frugal")
+COLLECTION_NAME = os.getenv("VECTOR_COLLECTION", "terroir_memory_frugal")
 VECTOR_SIZE = int(os.getenv("VECTOR_SIZE", "384"))
 
 # --- Ingestion Filters ---
@@ -102,10 +108,10 @@ def calculate_hash(filepath: str) -> str:
     except: return "hash_error"
 
 def get_stable_id(rel_path: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_DNS, rel_path.replace("", "/").lower()))
+    return str(uuid.uuid5(uuid.NAMESPACE_DNS, rel_path.replace("\\", "/").lower()))
 
 def get_ontology_circle(rel_path: str) -> str:
-    norm = rel_path.replace("", "/").lower()
+    norm = rel_path.replace("\\", "/").lower()
     if "memoria" in norm or "memory" in norm or norm == "constitution.md": return "intimate_self"
     if "biblioteca" in norm or "library" in norm: return "proximal_you"
     return "functional_body"
@@ -115,51 +121,18 @@ def read_content(filepath: str) -> str:
     try:
         file_size = os.path.getsize(filepath)
         if ext == '.json':
-            if file_size > 100 * 1024 * 1024:
-                logger.warning(f"Massive JSON ignored (>100MB): {os.path.basename(filepath)}")
-                return ""
-
-            # --- NARRATIVE FILTER ---
+            if file_size > 100 * 1024 * 1024: return ""
             with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
                 try:
                     data = json.load(f)
-                    narrative = []
-                    # CLI Log case
-                    if isinstance(data, dict) and "messages" in data:
-                        for msg in data["messages"]:
-                            role = "User" if msg.get("type") == "user" else "Agent"
-                            content = msg.get("content", "")
-                            if content:
-                                if len(content) > 10000: content = content[:10000] + "... [TRUNCATED]"
-                                narrative.append(f"{role}: {content}")
-                        content = "
-
-".join(narrative)
-                    # Generic or Vigia case
-                    elif isinstance(data, list) and len(data) > 0 and "prompt" in data[0]:
-                        for turn in data:
-                            p = turn.get("prompt", "")
-                            r = turn.get("response", "")
-                            if len(p) > 10000: p = p[:10000] + "... [TRUNCATED]"
-                            if len(r) > 10000: r = r[:10000] + "... [TRUNCATED]"
-                            if p: narrative.append(f"User: {p}")
-                            if r: narrative.append(f"Agent: {r}")
-                        content = "
-
-".join(narrative)
-                    else:
-                        content = json.dumps(data, indent=2)
-
-                    if len(content.encode('utf-8')) > MAX_FILE_SIZE_BYTES: return ""
-                    return content
+                    return json.dumps(data, indent=2)
                 except: return ""
-
+        
         if file_size > MAX_FILE_SIZE_BYTES: return ""
 
         if ext == '.docx' and docx:
             doc = docx.Document(filepath)
-            return "
-".join([p.text for p in doc.paragraphs if p.text.strip()])
+            return "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
         elif ext == '.pdf' and fitz:
             doc = fitz.open(filepath)
             return "".join([page.get_text() for page in doc])
@@ -172,15 +145,15 @@ def read_content(filepath: str) -> str:
 
 def scan_terroir() -> List[Dict]:
     docs = []
-    logger.info(f"Scanning from: {BASE_DIR}")
-    for root, dirs, files in os.walk(BASE_DIR):
+    logger.info(f"Scanning from: {TERROIR_ROOT}")
+    for root, dirs, files in os.walk(TERROIR_ROOT):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and not d.startswith('.')]
         for file in files:
             if file.startswith('.'): continue
             ext = os.path.splitext(file)[1].lower()
             if ext not in ALLOWED_EXTENSIONS: continue
             full_path = os.path.join(root, file)
-            rel_path = os.path.relpath(full_path, BASE_DIR)
+            rel_path = os.path.relpath(full_path, TERROIR_ROOT)
             docs.append({
                 "id": get_stable_id(rel_path),
                 "path": full_path,
@@ -189,16 +162,13 @@ def scan_terroir() -> List[Dict]:
                 "circle": get_ontology_circle(rel_path),
                 "filename": file
             })
-    logger.info(f"Scan complete. {len(docs)} candidates found.")
     return docs
 
 def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
     all_docs = scan_terroir()
     if not all_docs: return
     
-    report = {"timestamp": datetime.now().isoformat(), "total_scanned": len(all_docs), "updated": 0, "errors": []}
     batch_size = 20
-
     for i in range(0, len(all_docs), batch_size):
         batch = all_docs[i : i + batch_size]
         ids = [d["id"] for d in batch]
@@ -219,30 +189,24 @@ def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
                     to_embed_texts.append(content)
 
         if to_embed_docs:
-            try:
-                embeddings = embedder.embed(to_embed_texts)
-                points = []
-                for j, emb in enumerate(embeddings):
-                    doc = to_embed_docs[j]
-                    points.append(models.PointStruct(
-                        id=doc["id"], vector=emb,
-                        payload={
-                            "text": to_embed_texts[j],
-                            "file_path": doc["rel_path"],
-                            "filename": doc["filename"],
-                            "file_hash": doc["hash"],
-                            "type": "artifact",
-                            "ontology_circle": doc["circle"],
-                            "last_updated": datetime.now().isoformat()
-                        }
-                    ))
-                client.upsert(COLLECTION_NAME, points)
-                report["updated"] += len(points)
-                print(f"Batch {i//batch_size + 1}: +{len(points)} updates.")
-            except Exception as e:
-                report["errors"].append(str(e))
-
-    logger.info(f"Ingestion Finished. Scanned: {report['total_scanned']}, Updated: {report['updated']}")
+            embeddings = embedder.embed(to_embed_texts)
+            points = []
+            for j, emb in enumerate(embeddings):
+                doc = to_embed_docs[j]
+                points.append(models.PointStruct(
+                    id=doc["id"], vector=emb,
+                    payload={
+                        "text": to_embed_texts[j],
+                        "file_path": doc["rel_path"],
+                        "filename": doc["filename"],
+                        "file_hash": doc["hash"],
+                        "type": "artifact",
+                        "ontology_circle": doc["circle"],
+                        "last_updated": datetime.now().isoformat()
+                    }
+                ))
+            client.upsert(COLLECTION_NAME, points)
+            logger.info(f"Batch {i//batch_size + 1}: {len(points)} updates.")
 
 def main():
     parser = argparse.ArgumentParser()

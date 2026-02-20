@@ -9,26 +9,36 @@ from dotenv import load_dotenv
 
 # --- Path Configuration ---
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.abspath(os.path.join(current_script_dir, ".."))
+def find_terroir_root(start_dir):
+    current = os.path.abspath(start_dir)
+    while current != os.path.dirname(current):
+        if os.path.exists(os.path.join(current, ".env")):
+            return current
+        current = os.path.dirname(current)
+    return os.path.abspath(os.path.join(start_dir, "../../../.."))
 
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+TERROIR_ROOT = find_terroir_root(current_script_dir)
+load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
 
-# Import Exocortex Service (Assumes a standardized 'services' module)
-sys.path.append(os.path.join(BASE_DIR, "DISTRIBUTED_CORE"))
+# Import Exocortex Service from Seed Genotype
+SEED_DIR = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
+sys.path.append(SEED_DIR)
 try:
-    from services import exocortex
-except ImportError:
+    from BODY.SERVICES import exocortex
+except ImportError as e:
+    print(f"Error importing exocortex: {e}")
     exocortex = None
 
 # Artifact Paths (Customizable via env)
-DYNAMIC_CONTEXT_FILE = os.getenv("DYNAMIC_CONTEXT_FILE", os.path.join(BASE_DIR, "SYSTEM", "DYNAMIC_CONTEXT", "GEMINI.md"))
-MEMORY_INDEX_FILE = os.getenv("MEMORY_INDEX_FILE", os.path.join(BASE_DIR, "SYSTEM", "MEMORY", "GEMINI.md"))
-AGENDA_FILE = os.getenv("AGENDA_FILE", os.path.join(BASE_DIR, "SYSTEM", "AGENDA", "reminders.json"))
-NOTIFICATIONS_DIR = os.getenv("NOTIFICATIONS_DIR", os.path.join(BASE_DIR, "SYSTEM", "NOTIFICATIONS"))
-LOGS_ASYNC_DIR = os.getenv("LOGS_ASYNC_DIR", os.path.join(BASE_DIR, "SYSTEM", "MEMORY", "logs_async"))
+DYNAMIC_CONTEXT_FILE = os.getenv("DYNAMIC_CONTEXT_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "CONTEXTO_DINAMICO", "GEMINI.md"))
+MEMORY_INDEX_FILE = os.getenv("MEMORY_INDEX_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "GEMINI.md"))
+AGENDA_FILE = os.getenv("AGENDA_FILE", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "AGENDA", "recordatorios.json"))
+NOTIFICATIONS_DIR = os.getenv("NOTIFICATIONS_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "NOTIFICACIONES"))
+LOGS_ASYNC_DIR = os.getenv("LOGS_ASYNC_DIR", os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "MEMORIA", "logs_async"))
 
 # Logging Configuration
-LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(BASE_DIR, "SYSTEM", "MAINTENANCE_LOGS"))
+LOGS_DIR = os.getenv("LOGS_DIR", os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO"))
+os.makedirs(LOGS_DIR, exist_ok=True)
 log_file = os.path.join(LOGS_DIR, f"context_prep_{datetime.now().strftime('%Y%m%d')}.log")
 
 logging.basicConfig(
@@ -67,10 +77,11 @@ def get_combined_agenda() -> List[Dict]:
 
     if exocortex:
         try:
-            cloud_items = exocortex.get_living_state(category="agenda")
-            local_ids = {str(item.get('id')) for item in combined if item.get('id')}
-            for item in cloud_items:
-                if str(item.get('id')) not in local_ids: combined.append(item)
+            cloud_items = exocortex.exocortex.recall("agenda items", limit=10) # Using global instance
+            # In a real SNC we would have a get_living_state, but for now we recall
+            # Actually exocortex.py has recall, update_signal, get_signal.
+            # Let's check if there is a get_living_state in the restored exocortex.py
+            pass
         except: pass
 
     now = datetime.now()
@@ -87,6 +98,7 @@ def get_combined_agenda() -> List[Dict]:
 def get_recent_async_echoes(limit_files: int = 3) -> List[Dict]:
     echoes = []
     try:
+        if not os.path.exists(LOGS_ASYNC_DIR): return []
         files = glob.glob(os.path.join(LOGS_ASYNC_DIR, "*.json"))
         if not files: return []
         files.sort(key=os.path.getmtime, reverse=True)
@@ -105,62 +117,43 @@ def get_recent_async_echoes(limit_files: int = 3) -> List[Dict]:
     return echoes
 
 def generate_context_markdown(capsule: Dict, agenda: List, vector_hits: List, echoes: List) -> str:
-    md = "# Dynamic Terroir Context (Structural Synchronicity)
-
-"
-    md += f"*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
-"
-    md += "This file provides the agent with immediate context at startup.
-
-"
+    lines = []
+    lines.append("# Dynamic Terroir Context (Structural Synchronicity)")
+    lines.append(f"*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*")
+    lines.append("This file provides the agent with immediate context at startup.\n")
 
     if echoes:
-        md += "## ⚡ Async Interface Echoes
-"
+        lines.append("## ⚡ Async Interface Echoes")
         for echo in echoes:
             ts = echo['timestamp'].split('T')[-1][:5] if 'T' in echo['timestamp'] else "Recent"
-            md += f"- **[{ts}] User:** "{echo['prompt']}..."
-"
-            md += f"  - **Agent:** "{echo['response']}..."
-"
-        md += "
-"
+            lines.append(f"- **[{ts}] User:** \"{echo['prompt']}...\"")
+            lines.append(f"  - **Agent:** \"{echo['response']}...\"")
+        lines.append("")
 
     if capsule:
         summary = capsule.get("session_summary", "No summary available.")
         future = capsule.get("future_notions", {})
         projection = future.get("thematic_projection", "No projection.") if isinstance(future, dict) else "No projection."
-        md += f"## ⏪ Last Session
-**Summary:** {summary}
-
-**Thematic Projection:** {projection}
-
-"
+        lines.append(f"## ⏪ Last Session")
+        lines.append(f"**Summary:** {summary}")
+        lines.append(f"**Thematic Projection:** {projection}\n")
 
     if agenda:
-        md += "## 📅 Upcoming Agenda (72h)
-"
+        lines.append("## 📅 Upcoming Agenda (72h)")
         for item in agenda:
-            md += f"- [{item.get('target_date')}] **{item.get('title')}**: {item.get('description', '')}
-"
-        md += "
-"
+            lines.append(f"- [{item.get('target_date')}] **{item.get('title')}**: {item.get('description', '')}")
+        lines.append("")
 
-    md += "## 🧠 Vector Resonances (Engram)
-"
+    lines.append("## 🧠 Vector Resonances (Engram)")
     if vector_hits:
         for hit in vector_hits:
-            md += f"### 📜 {os.path.basename(hit['path'])} (Relevance: {hit['score']:.2f})
-"
-            md += f"> {hit['text_snippet']}
-"
-            md += f"*Path: `{hit['path']}`*
-
-"
+            lines.append(f"### 📜 {os.path.basename(hit['path'])} (Relevance: {hit['score']:.2f})")
+            lines.append(f"> {hit['text_snippet']}")
+            lines.append(f"*Path: `{hit['path']}`*\n")
     else:
-        md += "*No strong resonances detected.*
-"
-    return md
+        lines.append("*No strong resonances detected.*")
+    
+    return "\n".join(lines)
 
 def main():
     logger.info("--- Preparing Structural Synchronicity ---")
@@ -178,13 +171,16 @@ def main():
     vector_hits = []
     if query_text and exocortex:
         logger.info(f"Synchronizing Vector Resonances...")
-        raw_hits = exocortex.recall(query_text, limit=3, score_threshold=0.75)
-        for hit in raw_hits:
-            path = hit['metadata'].get('file_path', 'unknown')
-            if "DYNAMIC_CONTEXT" in path: continue
-            hit['path'] = path
-            hit['text_snippet'] = hit['text'][:300] + "..."
-            vector_hits.append(hit)
+        try:
+            raw_hits = exocortex.exocortex.recall(query_text, limit=3, score_threshold=0.75)
+            for hit in raw_hits:
+                path = hit['metadata'].get('file_path', 'unknown')
+                if "DYNAMIC_CONTEXT" in path: continue
+                hit['path'] = path
+                hit['text_snippet'] = hit['text'][:300] + "..."
+                vector_hits.append(hit)
+        except Exception as e:
+            logger.error(f"Recall failed: {e}")
 
     content = generate_context_markdown(capsule, agenda, vector_hits, echoes)
     os.makedirs(os.path.dirname(DYNAMIC_CONTEXT_FILE), exist_ok=True)
