@@ -16,18 +16,20 @@
 - [x] **Robust Narrative Filtering:** Extraction of core dialogue for token efficiency.
 
 ## 🟡 Phase 2: Bicameral Extensions (Subconscious) - [IN PROGRESS]
-*Goal: Add the Exocortex and long-term semantic memory capabilities.*
+*Goal: Add the Exocortex and long-term semantic memory capabilities to achieve Snapshot Independence.*
 
 - [x] **REST Bypass for Qdrant:** Ensure connectivity in restricted environments.
-- [ ] **Setup Wizard:** Create a simple script to "initialize" a new Terroir from the Seed. (Moved from Phase 1).
-- [ ] **Modular Services:** Move `exocortex.py` and `daemon.py` to a proper `SERVICES` package.
-- [ ] **Service Configuration:** Standardize `.env` requirements for cloud features.
+- [ ] **Snapshot Independence:** Implement the **Hexagonal Perception** mechanism (6+1 levels) in `prepare_context.py`.
+- [ ] **Contextualized Recall:** Development of the Synthetic Query engine.
+- [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
+- [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
 
-## 🟡 Phase 3: Projection Extensions (Senses)
-*Goal: Re-establish interaction through external senses (Telegram).*
+## 🟡 Phase 3: Projection Extensions (Ubiquity)
+*Goal: Re-establish interaction through external senses, unifying presence between platforms.*
 
-- [ ] **Vigia Modularization:** Encapsulate the Telegram bot logic as a pluggable extension.
-- [ ] **Skill Portability:** Ensure skills in `.gemini/skills` are correctly linked to Seed definitions.
+- [ ] **Consciencia Viva Port:** Create the `CONSCIENCIA_VIVA.md` membrane and the "Nervio Óptico" script for the CLI.
+- [ ] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts.
+- [ ] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
 
 ## ⚪ Phase 4: Full Autonomy & Release
 *Goal: A "canned" product ready for new users.*
