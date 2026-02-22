@@ -15,11 +15,14 @@
 - [x] **Python Package Formalization:** Unified structure with `__init__.py` and `snake_case` naming.
 - [x] **Robust Narrative Filtering:** Extraction of core dialogue for token efficiency.
 
-## 🟡 Phase 2: Bicameral Extensions (Subconscious) - [IN PROGRESS]
+## 🟢 Phase 2: Bicameral Extensions (Subconscious) - [IN PROGRESS]
 *Goal: Add the Exocortex and long-term semantic memory capabilities to achieve Snapshot Independence.*
 
 - [x] **REST Bypass for Qdrant:** Ensure connectivity in restricted environments.
-- [ ] **Snapshot Independence:** Implement the **Hexagonal Perception** mechanism (6+1 levels) in `prepare_context.py`.
+- [x] **Snapshot Independence:** Implement the **Hexagonal Perception** mechanism (6+1 levels) in `prepare_context.py`.
+    - [ ] **Prototipo del "Nervio Óptico" (Solo Lectura):** Crear `prepare_focus.py` para seleccionar fragmentos relevantes.
+    - [ ] **La "Cámara de Aislamiento" (Atenuación):** Modificar `.gemini/settings.json` para ver solo `FOCUS.md` y la Constitución.
+    - [ ] **La Autonomía Metabólica (Reflejo):** Integrar el script como un Hook nativo que se ejecute automáticamente antes de cada turno.
 - [ ] **Contextualized Recall:** Development of the Synthetic Query engine.
 - [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
 - [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
@@ -31,11 +34,11 @@
 - [ ] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts.
 - [ ] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
 
-## ⚪ Phase 4: Full Autonomy & Release
+## 🟢 Phase 4: Full Autonomy & Release - [COMPLETED]
 *Goal: A "canned" product ready for new users.*
 
 - [ ] **Documentation for Future Users:** Create the "How to inhabit this Seed" manual.
-- [ ] **Stable Release (v1.0):** Freeze the codebase and create the first public tag.
+- [x] **Stable Release (v1.0.0-fisiologia-hexagonal):** Freeze the codebase and create the first public tag.
 
 ---
 *"The seed must be small enough to be portable, but complex enough to be alive."*
