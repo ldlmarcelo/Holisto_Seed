@@ -272,7 +272,7 @@
                 "path": "MIND/KNOWLEDGE/HOL-ARC-009_atencion_selectiva.md",
                 "tags": [
                     "arquitectura",
-                    "fase7",
+                    "fase2",
                     "soberania",
                     "atencion"
                 ],

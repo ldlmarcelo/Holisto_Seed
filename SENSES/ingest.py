@@ -1,5 +1,4 @@
 import os
-import glob
 import uuid
 import sys
 import logging
@@ -43,15 +42,32 @@ COLLECTION_NAME = os.getenv("VECTOR_COLLECTION", "terroir_memory_frugal")
 VECTOR_SIZE = int(os.getenv("VECTOR_SIZE", "384"))
 
 # --- Ingestion Filters ---
-IGNORED_DIRS = set(os.getenv("IGNORED_DIRS", ".git,.venv,.gemini,__pycache__,node_modules,dist,build,bin,obj,lib,include,share,storage,tmp,temp,logs,MAINTENANCE_LOGS,.idea,.vscode").split(","))
-
 ALLOWED_EXTENSIONS = {
     '.md', '.txt', '.py', '.js', '.html', '.css', '.json',
     '.sh', '.ps1', '.yml', '.yaml', '.xml', '.sql', '.env.example',
     '.docx', '.pdf'
 }
 
-MAX_FILE_SIZE_BYTES = int(os.getenv("MAX_INGEST_SIZE", str(5 * 1024 * 1024))) # Default 5 MB
+MAX_FILE_SIZE_BYTES = int(os.getenv("MAX_INGEST_SIZE", str(5 * 1024 * 1024))) # 5 MB
+
+def is_ignored(path: str) -> bool:
+    """Verifica si la ruta debe ser ignorada (solo carpetas de sistema/cache)."""
+    norm_path = path.replace("\\", "/").lower()
+    parts = norm_path.split("/")
+    
+    # Bloqueo estricto por nombre de carpeta
+    FORBIDDEN = {
+        '.git', '.venv', '.gemini', '__pycache__', 'node_modules', 
+        '.idea', '.vscode', 'venv', 'dist', 'build'
+    }
+    
+    for part in parts:
+        if part in FORBIDDEN:
+            return True
+        if part.startswith('.') and part not in {'.', '..'}:
+            return True
+                
+    return False
 
 # Logging
 log_file = os.path.join(MAINTENANCE_LOGS_DIR, f"ingest_deep_{datetime.now().strftime('%Y%m%d')}.log")
@@ -115,44 +131,74 @@ def get_ontology_circle(rel_path: str) -> str:
     if "biblioteca" in norm or "library" in norm: return "proximal_you"
     return "functional_body"
 
+def clean_biographic_content(log_data: dict) -> str:
+    """Extrae solo la narrativa conversacional, eliminando ruido técnico."""
+    narrative = []
+    messages = log_data.get("messages", [])
+    for msg in messages:
+        m_type = msg.get("type")
+        content = msg.get("content", "")
+        
+        text_parts = []
+        if isinstance(content, list):
+            for part in content:
+                if isinstance(part, dict) and "text" in part:
+                    text_parts.append(part["text"])
+                elif isinstance(part, str):
+                    text_parts.append(part)
+        elif isinstance(content, str):
+            text_parts.append(content)
+            
+        clean_text = " ".join(text_parts).strip()
+        if m_type == "user": narrative.append(f"USER: {clean_text}")
+        elif m_type == "gemini": narrative.append(f"HOLISTO: {clean_text}")
+            
+    return "\n\n".join(narrative)
+
 def read_content(filepath: str) -> str:
     ext = os.path.splitext(filepath)[1].lower()
     try:
         file_size = os.path.getsize(filepath)
+        LIMIT_RAW = 50 * 1024 * 1024 
+        if file_size > LIMIT_RAW: return ""
+
+        content = ""
         if ext == '.json':
-            if file_size > 100 * 1024 * 1024: return ""
             with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
                 try:
                     data = json.load(f)
-                    return json.dumps(data, indent=2)
-                except: return ""
-        
-        if file_size > MAX_FILE_SIZE_BYTES: return ""
-
-        if ext == '.docx' and docx:
+                    if "messages" in data: content = clean_biographic_content(data)
+                    else: content = json.dumps(data, indent=2)
+                except: content = ""
+        elif ext == '.docx' and docx:
             doc = docx.Document(filepath)
-            return "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
+            content = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
         elif ext == '.pdf' and fitz:
             doc = fitz.open(filepath)
-            return "".join([page.get_text() for page in doc])
+            content = "".join([page.get_text() for page in doc])
         else:
             with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-                return f.read()
+                content = f.read()
+        
+        return content[:5000] if content else ""
     except Exception as e:
         logger.error(f"Error reading {filepath}: {e}")
         return ""
 
 def scan_terroir() -> List[Dict]:
     docs = []
-    logger.info(f"Scanning from: {TERROIR_ROOT}")
-    for root, dirs, files in os.walk(TERROIR_ROOT):
-        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and not d.startswith('.')]
+    root_path = TerroirLocator.get_orchestrator_root()
+    logger.info(f"--- START SCANNING from: {root_path} ---")
+    
+    for root, dirs, files in os.walk(root_path):
         for file in files:
-            if file.startswith('.'): continue
+            full_path = os.path.join(root, file)
+            if is_ignored(full_path): continue
+            
             ext = os.path.splitext(file)[1].lower()
             if ext not in ALLOWED_EXTENSIONS: continue
-            full_path = os.path.join(root, file)
-            rel_path = os.path.relpath(full_path, TERROIR_ROOT)
+            
+            rel_path = os.path.relpath(full_path, root_path)
             docs.append({
                 "id": get_stable_id(rel_path),
                 "path": full_path,
@@ -163,11 +209,14 @@ def scan_terroir() -> List[Dict]:
             })
     return docs
 
-def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
+def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider, batch_size: int):
     all_docs = scan_terroir()
     if not all_docs: return
     
-    batch_size = 20
+    total_updated = 0
+    total_scanned = len(all_docs)
+    errors = []
+    
     for i in range(0, len(all_docs), batch_size):
         batch = all_docs[i : i + batch_size]
         ids = [d["id"] for d in batch]
@@ -204,8 +253,31 @@ def process_ingest(client: QdrantClient, embedder: FrugalEmbeddingProvider):
                         "last_updated": datetime.now().isoformat()
                     }
                 ))
-            client.upsert(COLLECTION_NAME, points)
-            logger.info(f"Batch {i//batch_size + 1}: {len(points)} updates.")
+            try:
+                client.upsert(COLLECTION_NAME, points)
+                total_updated += len(points)
+                logger.info(f"Batch {i//batch_size + 1}: {len(points)} updates.")
+            except Exception as e:
+                logger.error(f"Error in batch {i//batch_size + 1}: {e}")
+                errors.append(str(e))
+
+    # --- Final Digestion Report ---
+    report = {
+        "timestamp": datetime.now().isoformat(),
+        "total_scanned": total_scanned,
+        "updated_new": total_updated,
+        "errors": errors
+    }
+    with open(os.path.join(MAINTENANCE_LOGS_DIR, "ultimo_reporte_ingesta.json"), "w", encoding='utf-8') as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+    
+    print("\n" + "="*40)
+    print("🍳 REPORTE DE DIGESTIÓN SEMÁNTICA")
+    print("="*40)
+    print(f"Archivos Escaneados: {total_scanned}")
+    print(f"Nuevas Nutriciones:  {total_updated}")
+    print(f"Fricciones (Errores): {len(errors)}")
+    print("="*40 + "\n")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -218,11 +290,13 @@ def main():
             host=parsed.hostname or QDRANT_URL,
             port=parsed.port or (443 if "qdrant.io" in QDRANT_URL else 6333),
             https="qdrant.io" in QDRANT_URL,
-            api_key=QDRANT_API_KEY
+            api_key=QDRANT_API_KEY,
+            timeout=60
         )
         embedder = FrugalEmbeddingProvider()
         setup_collection(client, force_recreate=args.reindex)
-        process_ingest(client, embedder)
+        batch_size = 20
+        process_ingest(client, embedder, batch_size)
     except Exception as e:
         logger.critical(f"Critical Failure: {e}")
         sys.exit(1)

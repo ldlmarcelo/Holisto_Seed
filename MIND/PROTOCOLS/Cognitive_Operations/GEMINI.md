@@ -70,11 +70,11 @@
       {
         "id": "PICS",
         "type": "protocolo",
-        "version": "v7.0",
+        "version": "v7.1",
         "schema_version": "1.0",
         "metadata": {
           "title": "Protocolo de Inicialización de Contexto Sistémico",
-          "description": "Orquesta el despertar del agente integrando la Arquitectura de Capas y activando los reflejos autónomos de integridad."
+          "description": "Orquesta el despertar del agente integrando la Arquitectura de Capas y activando los reflejos autónomos de integridad y percepción."
         },
         "content": {
           "activation": "Automática. Primera acción de cada sesión.",
@@ -87,7 +87,7 @@
             {
               "step": 0.1,
               "name": "Activación de Reflejos Autónomos (SNC)",
-              "details": "El sistema dispara automáticamente el `metabolic-integrity-check` vía Hook de SessionStart. Si hay deuda biográfica (cambios Git), el sistema inyecta una Alerta Metabólica mandatoria en el contexto."
+              "details": "El sistema dispara automáticamente el `metabolic-integrity-check` y el `prepare-focus` vía Hooks de SessionStart y BeforeAgent. El agente DEBE verificar la existencia de `CONSCIENCIA_VIVA.md`."
             },
             {
               "step": 0.2,
@@ -102,7 +102,7 @@
             {
               "step": 2,
               "name": "Carga de la Carne (Fenotipo)",
-              "details": "1) Inyectar `PHENOTYPE/SYSTEM/CONTEXTO_DINAMICO/GEMINI.md`. 2) Leer última Cápsula Maestra en `PHENOTYPE/SYSTEM/MEMORIA/GEMINI.md`. 3) Procesar `PHENOTYPE/SYSTEM/MEMORIA/logs_vigia/`."
+              "details": "1) Inyectar `PHENOTYPE/SYSTEM/CONTEXTO_DINAMICO/CONSCIENCIA_VIVA.md` (Retina). 2) Leer última Cápsula Maestra en `PHENOTYPE/SYSTEM/MEMORIA/GEMINI.md`. 3) Procesar `PHENOTYPE/SYSTEM/MEMORIA/logs_vigia/`."
             },
             {
               "step": 3,

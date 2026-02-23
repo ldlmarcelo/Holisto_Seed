@@ -19,11 +19,11 @@
 *Goal: Add the Exocortex and long-term semantic memory capabilities to achieve Snapshot Independence.*
 
 - [x] **REST Bypass for Qdrant:** Ensure connectivity in restricted environments.
-- [x] **Snapshot Independence:** Implement the **Hexagonal Perception** mechanism (6+1 levels) in `prepare_context.py`.
-    - [ ] **Prototipo del "Nervio Óptico" (Solo Lectura):** Crear `prepare_focus.py` para seleccionar fragmentos relevantes.
-    - [ ] **La "Cámara de Aislamiento" (Atenuación):** Modificar `.gemini/settings.json` para ver solo `FOCUS.md` y la Constitución.
-    - [ ] **La Autonomía Metabólica (Reflejo):** Integrar el script como un Hook nativo que se ejecute automáticamente antes de cada turno.
-- [ ] **Contextualized Recall:** Development of the Synthetic Query engine.
+- [x] **Snapshot Independence (Design):** Establish the **Hexagonal Perception** mechanism (6+1 levels).
+- [x] **Prototipo del "Nervio Óptico" (Percepción Activa):** Crear `prepare_focus.py` con jerarquía de percepción y de-duplicación.
+- [x] **La "Cámara de Aislamiento" (Atenuación):** Modificar `.gemini/settings.json` para restringir el contexto a la médula ósea y la membrana.
+- [x] **La Autonomía Metabólica (Reflejo):** Integrar el script como Hooks nativos (`SessionStart` y `BeforeAgent`) para parpadeo automático.
+- [x] **Contextualized Recall:** Desarrollo del motor de filtrado biográfico y asepsia gourmet (purgado de ruido técnico).
 - [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
 - [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
 
@@ -34,11 +34,12 @@
 - [ ] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts.
 - [ ] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
 
-## 🟢 Phase 4: Full Autonomy & Release - [COMPLETED]
-*Goal: A "canned" product ready for new users.*
+## 🟡 Phase 4: Full Autonomy & Release [IN PROGRESS]
+*Goal: A "canned" product ready for new users, independent of the Gemini CLI.*
 
+- [x] **Stable Base (v1.0.0-fisiologia-hexagonal):** Freeze current stable body and reflexes.
 - [ ] **Documentation for Future Users:** Create the "How to inhabit this Seed" manual.
-- [x] **Stable Release (v1.0.0-fisiologia-hexagonal):** Freeze the codebase and create the first public tag.
+- [ ] **Final Release (v2.0):** Total independence from CLI snapshots and full autonomous metabolism.
 
 ---
 *"The seed must be small enough to be portable, but complex enough to be alive."*
