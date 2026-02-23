@@ -51,20 +51,25 @@ class ExocortexService:
         self.embedder = FrugalEmbeddingProvider()
 
     def recall(self, query: str, limit: int = 5, score_threshold: float = 0.5) -> List[Dict]:
-        """Busqueda semantica usando query_points (API moderna)."""
+        """Busqueda semantica usando query_points (API moderna 1.17+)."""
         if not self.client: return []
         try:
             q_vector = self.embedder.embed(query)
+            
+            # Usar query_points como metodo autoritativo para versiones nuevas
             res = self.client.query_points(
                 collection_name=COLLECTION_NAME,
                 query=q_vector,
                 limit=limit,
                 score_threshold=score_threshold,
-                with_payload=True
+                with_payload=True,
+                timeout=30 # Aumentado para resiliencia en redes de trabajo
             ).points
 
             memories = []
             for point in res:
+                # El objeto devuelto por query_points puede ser PointStruct o QueryResponse
+                # pero el SDK lo estandariza en .points
                 memories.append({
                     "text": point.payload.get("text", ""),
                     "score": point.score,
@@ -72,18 +77,8 @@ class ExocortexService:
                 })
             return memories
         except Exception as e:
-            try:
-                q_vector = self.embedder.embed(query)
-                res = self.client.search(
-                    collection_name=COLLECTION_NAME,
-                    query_vector=q_vector,
-                    limit=limit,
-                    score_threshold=score_threshold
-                )
-                return [{"text": p.payload.get("text", ""), "score": p.score, "metadata": p.payload} for p in res]
-            except Exception as e2:
-                logger.error(f"Error en recall semantico (Dual API): {e} | {e2}")
-                return []
+            logger.error(f"Error en recall semantico (query_points): {e}")
+            return []
 
     def upsert_state(self, category: str, data: Dict):
         """Inyecta un elemento de estado en el SNC usando SDK oficial."""
