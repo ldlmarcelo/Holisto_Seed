@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 import sys
 import re
@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 def setup_agnostic_imports():
     # 1. Localizar TerroirLocator de forma relativa absoluta
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Estamos en: .../Holisto_Seed/BODY/SKILLS/session-harvesting/
+    # Estamos en: .../The Individual_Seed/BODY/SKILLS/session-harvesting/
     seed_root = os.path.abspath(os.path.join(current_dir, "../../.."))
     if seed_root not in sys.path:
         sys.path.append(seed_root)
@@ -155,7 +155,7 @@ def clean_ai_json(text: str) -> str:
     return text.strip()
 
 def distill_only(log_path: str):
-    """ACTO 1: DestilaciÃ³n y generaciÃ³n de borrador."""
+    """ACTO 1: Destilación y generación de borrador."""
     session_id = Path(log_path).stem
     logger.info(f"Distilling session: {session_id}")
 
@@ -203,7 +203,7 @@ def distill_only(log_path: str):
             json.dump(capsule, f, ensure_ascii=False, indent=2)
 
         print(f"\n[ACTO 1] Borrador generado en: {draft_path}")
-        print("Por favor, Holisto, valida el contenido antes de proceder al [ACTO 2].\n")
+        print("Por favor, The Individual, valida el contenido antes de proceder al [ACTO 2].\n")
         return draft_path
 
     except Exception as ex:
@@ -213,7 +213,7 @@ def distill_only(log_path: str):
         raise ex
 
 def seal_only(draft_path: str):
-    """ACTO 2: Sellado permanente y sincronizaciÃ³n global."""
+    """ACTO 2: Sellado permanente y sincronización global."""
     if not os.path.exists(draft_path):
         logger.error(f"Draft not found: {draft_path}")
         return
@@ -230,10 +230,10 @@ def seal_only(draft_path: str):
         json.dump(capsule, f, ensure_ascii=False, indent=2)
     os.remove(draft_path)
 
-    # 2. Anclaje al Ã­ndice
+    # 2. Anclaje al índice
     subprocess.run([PYTHON_EXEC, APPEND_SCRIPT, final_path], check=True)
 
-    # 3. Higiene y Actualización del Mapa
+    # 3. Higiene y Actualizaci�n del Mapa
     logger.info("Executing hygiene cycle...")
     subprocess.run([PYTHON_EXEC, HYGIENE_SKILL], input=json.dumps({"action": "full_scan"}), text=True, capture_output=True)
 
@@ -249,7 +249,7 @@ def seal_only(draft_path: str):
     subprocess.run(["git", "commit", "-m", commit_msg], cwd=TERROIR_ROOT, check=True)
     subprocess.run(["git", "push"], cwd=TERROIR_ROOT, check=True)
 
-    print(f"\nðŸŒŸ RITUAL DE CIERRE COMPLETADO: {session_id}\n")
+    print(f"\n🌟 RITUAL DE CIERRE COMPLETADO: {session_id}\n")
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--distill"

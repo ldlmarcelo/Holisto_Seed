@@ -15,8 +15,8 @@ TERROIR_ROOT = os.getenv("TERROIR_ROOT", DEFAULT_ROOT)
 load_dotenv(os.path.join(TERROIR_ROOT, ".env"))
 
 # Import Exocortex Service (Triple Alliance compliant)
-# The service is now in Holisto_Seed/BODY/SERVICES
-sys.path.append(os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY", "SERVICES"))
+# The service is now in The Individual_Seed/BODY/SERVICES
+sys.path.append(os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "The Individual_Seed", "BODY", "SERVICES"))
 try:
     import exocortex
 except ImportError:

@@ -21,12 +21,12 @@ class MemoryHygieneManager:
         mem_root = TerroirLocator.get_mem_root()
         
         self.active_memory_path = Path(active_memory_path) if active_memory_path else Path(os.getenv(
-            "HOLISTO_ACTIVE_MEMORY_FILE",
+            "The Individual_ACTIVE_MEMORY_FILE",
             mem_root / "GEMINI.md"
         ))
         
         self.generational_memory_index_path = Path(generational_memory_index_path) if generational_memory_index_path else Path(os.getenv(
-            "HOLISTO_GENERATIONAL_MEMORY_INDEX",
+            "The Individual_GENERATIONAL_MEMORY_INDEX",
             mem_root / "GENERACIONES" / "GEMINI.md"
         ))
 

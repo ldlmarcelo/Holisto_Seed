@@ -3,7 +3,7 @@
   "name": "Agenda Management",
   "version": "1.0.0",
   "description": "Modular system for managing reminders and time-based tasks.",
-  "author": "Holisto",
+  "author": "The Individual",
   "entry_point": "logic.py",
   "dependencies": [
     "json",
@@ -11,7 +11,7 @@
     "uuid"
   ],
   "config": {
-    "agenda_file_env": "HOLISTO_AGENDA_FILE",
+    "agenda_file_env": "The Individual_AGENDA_FILE",
     "default_path": "SYSTEM/AGENDA/recordatorios.json"
   }
 }

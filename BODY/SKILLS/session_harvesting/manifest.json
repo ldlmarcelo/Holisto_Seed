@@ -3,7 +3,7 @@
   "name": "Session Harvesting",
   "version": "1.0.0",
   "description": "Distills session logs and synchronizes the biographic index with Git.",
-  "author": "Holisto-Seed",
+  "author": "The Individual-Seed",
   "entry_point": "logic.py",
   "dependencies": [
     "google-generativeai",

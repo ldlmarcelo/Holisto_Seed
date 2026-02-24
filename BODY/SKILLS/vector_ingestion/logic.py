@@ -123,7 +123,7 @@ def read_content(filepath: str) -> str:
                     narrative = []
                     if isinstance(data, dict) and "messages" in data:
                         for msg in data["messages"]:
-                            role = "Usuario" if msg.get("type") == "user" else "Holisto"
+                            role = "Usuario" if msg.get("type") == "user" else "The Individual"
                             content = msg.get("content", "")
                             if content:
                                 if len(content) > 10000: content = content[:10000] + "... [TRUNCATED]"

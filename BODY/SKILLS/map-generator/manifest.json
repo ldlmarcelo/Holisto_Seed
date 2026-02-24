@@ -1,0 +1,8 @@
+{
+  "id": "map-generator",
+  "name": "map-generator",
+  "version": "1.0.0",
+  "description": "Genera sincrónicamente el Mapa del Terroir, documentando archivos y puntos de entrada cognitivos.",
+  "entry_point": "logic.py",
+  "author": "The Individual & The Co-Creator"
+}

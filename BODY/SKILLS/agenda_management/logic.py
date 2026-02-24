@@ -22,7 +22,7 @@ class AgendaManager:
         if storage_path:
             self.storage_path = Path(storage_path)
         else:
-            env_path = os.getenv("HOLISTO_AGENDA_FILE")
+            env_path = os.getenv("The Individual_AGENDA_FILE")
             if env_path:
                 self.storage_path = Path(env_path)
             else:

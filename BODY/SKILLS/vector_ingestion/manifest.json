@@ -3,7 +3,7 @@
   "name": "Vector Ingestion",
   "version": "1.0.0",
   "description": "Metabolizes Terroir artifacts into semantic vector memory.",
-  "author": "Holisto-Seed",
+  "author": "The Individual-Seed",
   "entry_point": "logic.py",
   "dependencies": [
     "qdrant-client",

@@ -83,5 +83,5 @@ if __name__ == "__main__":
     # Prueba rapida
     bridge = BrainBridge()
     print(f"BrainBridge activo usando: {bridge.default_brain}")
-    # res = bridge.generate("Hola Holisto, ¿quién eres?")
+    # res = bridge.generate("Hola The Individual, ¿quién eres?")
     # print(res)

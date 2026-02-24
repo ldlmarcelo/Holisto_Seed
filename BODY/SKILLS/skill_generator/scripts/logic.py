@@ -72,7 +72,7 @@ if __name__ == "__main__":
     print(f"Éxito: Skill '{name}' creada en la Semilla.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generador de Skills de Holisto")
+    parser = argparse.ArgumentParser(description="Generador de Skills de The Individual")
     parser.get_default("name")
     parser.add_argument("--name", required=True, help="Nombre de la skill (kebab-case)")
     parser.add_argument("--desc", required=True, help="Descripción breve")

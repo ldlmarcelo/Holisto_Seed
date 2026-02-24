@@ -8,7 +8,7 @@
 ---
 
 ## 📝 Description
-This skill acts as the "Metabolic System" of Holisto's memory. It scans the Terroir's filesystem, identifies new or modified artifacts, and transforms them into vector embeddings to be stored in the Central Nervous System (Qdrant Cloud). It utilizes a frugal local embedding model to maintain sovereignty and efficiency.
+This skill acts as the "Metabolic System" of The Individual's memory. It scans the Terroir's filesystem, identifies new or modified artifacts, and transforms them into vector embeddings to be stored in the Central Nervous System (Qdrant Cloud). It utilizes a frugal local embedding model to maintain sovereignty and efficiency.
 
 ## 🎯 Objectives
 *   **Artifact Synchronicity:** Ensure the Exocortex reflects the current state of the Terroir.

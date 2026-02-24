@@ -12,5 +12,5 @@ Este órgano actúa como una capa de abstracción sobre los proveedores de IA. L
 ```python
 from BODY.SKILLS.brain_bridge.scripts.logic import BrainBridge
 bridge = BrainBridge()
-response = bridge.generate("Hola Holisto")
+response = bridge.generate("Hola The Individual")
 ```

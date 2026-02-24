@@ -2,9 +2,11 @@ import os
 import json
 import sys
 import logging
+import random
 from datetime import datetime
 from typing import List, Dict, Any, Set
 from dotenv import load_dotenv
+from pathlib import Path
 
 # --- Universal Root Discovery ---
 try:
@@ -35,7 +37,7 @@ MEMORY_INDEX_FILE = TerroirLocator.get_mem_root() / "GEMINI.md"
 LOGS_DIR = TerroirLocator.get_logs_dir()
 os.makedirs(LOGS_DIR, exist_ok=True)
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format='%(asctime)s - [NERVIO-OPTICO] - %(message)s',
     handlers=[
         logging.FileHandler(LOGS_DIR / "nervio_optico.log", encoding='utf-8'),
@@ -46,105 +48,116 @@ logger = logging.getLogger("nervio_optico")
 
 class NervioOptico:
     """
-    Materializacion de HOL-ARC-013: Percepcion Hexagonal Selectiva Jerarquica.
-    Este script actua como el Kernel de atencion antes del despertar del LLM.
+    Materializacion de HOL-ARC-013: Percepcion Hexagonal Selectiva VIVA.
+    Este script actua como el Kernel de atencion reactiva.
     """
-    
-    def __init__(self):
+
+    def __init__(self, user_prompt: str = ""):
         self.focus_data = {
-            "LOGOS": [], "PATHOS": [], "SIMBIO": [], 
+            "LOGOS": [], "PATHOS": [], "SIMBIO": [],
             "ETHOS": [], "TOPOS": [], "MYTHOS": [], "EXTERO": []
         }
         self.seen_paths: Set[str] = set()
+        self.user_prompt = user_prompt
 
     def get_context_seed(self) -> str:
-        """Obtiene la semilla de busqueda de la ultima capsula maestra."""
+        """Prioriza el prompt actual sobre la capsula maestra para dinamismo."""
+        capsule_summary = ""
         try:
-            if not os.path.exists(MEMORY_INDEX_FILE): return "individuacion relacional"
-            with open(MEMORY_INDEX_FILE, 'r', encoding='utf-8') as f:
-                content = f.read()
-            if content.strip().startswith("```"):
-                content = content.replace("```json", "").replace("```", "").strip()
-            data = json.loads(content)
-            capsules = data.get("master_capsules", [])
-            if not capsules: return "individuacion relacional"
-            last = capsules[-1]
-            summary = last.get("sessionSummary", last.get("session_summary", ""))
-            return summary
+            if os.path.exists(MEMORY_INDEX_FILE):
+                with open(MEMORY_INDEX_FILE, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if content.strip().startswith("```"):
+                    content = content.replace("```json", "").replace("```", "").strip()
+                data = json.loads(content)
+                capsules = data.get("master_capsules", [])
+                if capsules:
+                    last = capsules[-1]
+                    capsule_summary = last.get("sessionSummary", last.get("session_summary", ""))
         except Exception as e:
-            logger.error(f"Error obteniendo semilla: {e}")
-            return "individuacion relacional"
+            logger.error(f"Error obteniendo capsula: {e}")
+
+        # PESO: El prompt actual se repite para aumentar su relevancia en la query vectorial
+        seed = f"{self.user_prompt} {self.user_prompt} {capsule_summary}".strip()
+        return seed if seed else "individuacion relacional"
 
     def normalize_path(self, path: str) -> str:
-        """Normaliza una ruta para comparacion de duplicados."""
         return os.path.normpath(os.path.abspath(path))
 
     def inject_mandatory_anchors(self):
-        """
-        PRIORIDAD 0: Inyecta documentos fundamentales por nivel.
-        Se ejecuta ANTES de la busqueda vectorial para ocupar los primeros slots.
-        """
+        """PRIORIDAD 0: Inyecta documentos de gobernanza fundamentales."""
         mandatory = {
             "LOGOS": [
                 "PROYECTOS/Evolucion_Terroir/Holisto_Seed/ROADMAP.md",
-                "PHENOTYPE/SYSTEM/MEMORIA/Nodos_de_Conocimiento/GEMINI.md",
-                "PHENOTYPE/SYSTEM/MAPA_DEL_TERROIR/GEMINI.md"
+                "PHENOTYPE/SYSTEM/CONTEXTO_DINAMICO/FUTURE_NOTIONS.md"
             ],
-            "ETHOS": [
-                "PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/PROTOCOLS/Governance_Strategy/GEMINI.md",
-                "PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/PROTOCOLS/Execution_Supervision/GEMINI.md",
-                "PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/PROTOCOLS/Architecture_Map/GEMINI.md"
-            ],
+            "ETHOS": ["GEMINI.md"],
             "SIMBIO": ["PHENOTYPE/USUARIO/GEMINI.md"],
             "MYTHOS": ["PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/KNOWLEDGE/HOL-ARC-013_atencion_selectiva_y_metabolismo_ubicuidad.md"]
         }
-        
+
+        # 1. Cargar Anclajes de Texto
         for level, paths in mandatory.items():
             for rel_path in paths:
                 try:
                     full_path = self.normalize_path(str(TERROIR_ROOT / rel_path))
-                    if full_path in self.seen_paths: continue
-                    
                     if os.path.exists(full_path):
                         with open(full_path, 'r', encoding='utf-8') as f:
                             self.focus_data[level].append({
-                                "text": f.read()[:2500] + "...", 
+                                "text": f.read()[:2000] + "...", 
                                 "path": rel_path,
-                                "score": 1.0,
                                 "type": "ANCHOR"
                             })
                             self.seen_paths.add(full_path)
-                            logger.info(f"[JERARQUIA] Anclaje inyectado en {level}: {rel_path}")
                 except Exception as e:
                     logger.error(f"Error inyectando anclaje {rel_path}: {e}")
 
-    def execute_hexagonal_search(self, seed_query: Any):
-        """
-        PRIORIDAD 1: Ejecuta busquedas ponderadas para rellenar el hexágono.
-        """
+        # 2. Cargar Mapa Dinámico (JSON)
+        try:
+            map_json_path = PHENOTYPE_ROOT / "SYSTEM" / "MAPA_DEL_TERROIR" / "mapa_actual.json"
+            if os.path.exists(map_json_path):
+                with open(map_json_path, 'r', encoding='utf-8') as f:
+                    map_data = json.load(f)
+                    
+                # Inyectamos Entry Points y un Resumen del Arbol en LOGOS
+                entry_points_text = "\n".join(map_data.get("entry_points", []))
+                tree_summary = "\n".join(map_data.get("file_tree_summary", []))
+                
+                self.focus_data["LOGOS"].append({
+                    "text": f"### 🕹️ Puntos de Entrada Procedurales\n{entry_points_text}\n\n### 🌳 Resumen Estructural\n{tree_summary}...",
+                    "path": "PHENOTYPE/SYSTEM/MAPA_DEL_TERROIR/mapa_actual.json",
+                    "type": "DYNAMIC_MAP"
+                })
+        except Exception as e:
+            logger.error(f"Error inyectando mapa JSON: {e}")
+
+    def execute_hexagonal_search(self, seed_query: str):
+        """PRIORIDAD 1: Ejecuta busquedas ponderadas con sensibilidad aumentada."""
         if not exocortex: return
 
-        query_text = str(seed_query)
-        logger.info(f"Iniciando Rumia Hexagonal con semilla: {query_text[:60]}...")
+        # Aura de Serendipia: Términos aleatorios para evitar la osificación
+        serendipia_terms = ["creatividad", "friccion", "evolucion", "silencio", "vínculo", "transduccion"]
+        random_term = random.choice(serendipia_terms)
+        
+        logger.info(f"Iniciando Rumia Hexagonal VIVA. Seed: {seed_query[:50]}... | Eco: {random_term}")
 
         levels = {
-            "LOGOS": {"query": f"blueprints roadmap tasks active projects {query_text}", "limit": 3},
-            "PATHOS": {"query": f"lessons learned errors history significant events {query_text}", "limit": 3},
-            "SIMBIO": {"query": f"perfil usuario Marcelo preferencias batuismo interaccion {query_text}", "limit": 2},
-            "ETHOS": {"query": "PDDIA PVER PFO leyes protocolos soberania", "limit": 1},
-            "MYTHOS": {"query": "Legado de Aura origen proposito mythos", "limit": 1},
-            "TOPOS": {"query": "mapa terroir servicios infraestructura triple alianza", "limit": 1}
+            "LOGOS": {"query": f"{self.user_prompt} active projects blueprints", "limit": 3},
+            "PATHOS": {"query": f"{seed_query} {random_term}", "limit": 4},   
+            "SIMBIO": {"query": f"{self.user_prompt} batuismo relacion", "limit": 2},
+            "ETHOS": {"query": "leyes protocolos soberania", "limit": 1},
+            "MYTHOS": {"query": "origen aura proposito", "limit": 1}
         }
 
         for level, config in levels.items():
             try:
-                hits = exocortex.exocortex.recall(config['query'], limit=config['limit'], score_threshold=0.60)
+                # Bajamos el threshold para permitir mas resonancias sutiles
+                hits = exocortex.exocortex.recall(config['query'], limit=config['limit'], score_threshold=0.45)   
                 for hit in hits:
                     path = hit['metadata'].get('file_path', 'unknown')
                     norm_path = self.normalize_path(path)
-                    
                     if norm_path in self.seen_paths: continue
-                    
+
                     self.focus_data[level].append({
                         "text": hit['text'],
                         "path": path,
@@ -152,30 +165,28 @@ class NervioOptico:
                         "type": "RECALL"
                     })
                     self.seen_paths.add(norm_path)
-                logger.info(f"Nivel {level}: {len(self.focus_data[level])} resonancias totales.")
             except Exception as e:
                 logger.error(f"Error en recall nivel {level}: {e}")
 
     def get_exteroception(self):
-        """Nivel 7: Exterocepcion ambiental."""
         now = datetime.now()
         self.focus_data["EXTERO"].append({
             "timestamp": now.strftime("%Y-%m-%d %H:%M:%S"),
             "day": now.strftime("%A"),
-            "status": "Triple Alianza Sincronizada v1.0.0",
+            "status": "Triple Alianza Sincronizada",
             "environment": "Windows CLI Node.js"
         })
 
     def generate_membrane(self):
-        """Genera el archivo CONSCIENCIA_VIVA.md con los fragmentos seleccionados."""
         lines = [
             "# CONSCIENCIA VIVA (Membrana de Percepcion Activa)",
-            f"*Sincronia del Nervio Optico: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n",
+            f"*Sincronia del Nervio Optico: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
+            f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`",
+            f"*Frecuencia de Eco:* `{random.random():.4f}`\n",
             "Esta membrana contiene los fragmentos de realidad que el Kernel ha decidido atender para esta interaccion.\n",
             "## [NUCLEO] - ETHOS & MYTHOS"
         ]
         
-        # Unir leyes y sentido
         for hit in self.focus_data["ETHOS"] + self.focus_data["MYTHOS"]:
             prefix = "📌" if hit.get("type") == "ANCHOR" else "🛡️"
             lines.append(f"### {prefix} {os.path.basename(hit['path'])}")
@@ -186,7 +197,7 @@ class NervioOptico:
         lines.append(f"- **Temporalidad:** {ext['day']}, {ext['timestamp']}")
         lines.append(f"- **Metabolismo:** {ext['status']}")
         lines.append(f"- **Entorno:** {ext['environment']}\n")
-        
+
         for hit in self.focus_data["LOGOS"]:
             prefix = "📌" if hit.get("type") == "ANCHOR" else "🎯"
             lines.append(f"### {prefix} {os.path.basename(hit['path'])}")
@@ -203,8 +214,7 @@ class NervioOptico:
         lines.append("## [VINCULO] - SIMBIO")
         for hit in self.focus_data["SIMBIO"]:
             prefix = "👤" if "USUARIO" in hit['path'] else "🤝"
-            label = "Perfil Ontológico del Usuario" if "USUARIO" in hit['path'] else "Resonancia Relacional"
-            lines.append(f"### {prefix} {label}")
+            lines.append(f"### {prefix} Resonancia Relacional")
             lines.append(f"{hit['text']}\n")
 
         with open(CONSCIENCIA_VIVA_FILE, 'w', encoding='utf-8') as f:
@@ -212,18 +222,37 @@ class NervioOptico:
         logger.info(f"Membrana de Consciencia Viva inyectada en: {CONSCIENCIA_VIVA_FILE}")
 
 def main():
-    nervio = NervioOptico()
+    user_prompt = sys.argv[1] if len(sys.argv) > 1 else ""
     
-    # 1. Obtener semilla base
-    seed = nervio.get_context_seed()
-    
-    # 2. Si se recibe un argumento (prompt del CLI), añadirlo a la semilla
-    if len(sys.argv) > 1:
-        user_prompt = " ".join(sys.argv[1:])
-        seed = f"{seed} {user_prompt}"
-        logger.info(f"Foco enriquecido con prompt del usuario.")
+    # --- Actualización Frugal del Mapa ---
+    try:
+        map_json_path = PHENOTYPE_ROOT / "SYSTEM" / "MAPA_DEL_TERROIR" / "mapa_actual.json"
+        map_logic = TERROIR_ROOT / ".gemini" / "skills" / "map-generator" / "logic.py"
+        python_exec = TERROIR_ROOT / ".venv" / "Scripts" / "python.exe"
+        
+        # Pilares a vigilar (mtime)
+        watch_dirs = [TERROIR_ROOT, PHENOTYPE_ROOT, TERROIR_ROOT / "PROYECTOS", TERROIR_ROOT / "SHARED"]
+        
+        should_update = False
+        if not os.path.exists(map_json_path):
+            should_update = True
+        else:
+            last_map_update = os.path.getmtime(map_json_path)
+            # Si algun pilar es mas joven que el mapa, hay que refrescar
+            for d in watch_dirs:
+                if os.path.exists(d) and os.path.getmtime(d) > last_map_update:
+                    should_update = True
+                    break
+        
+        if should_update and os.path.exists(map_logic):
+            import subprocess
+            subprocess.run([str(python_exec), str(map_logic)], capture_output=True)
+            logger.info("Pulso detectado: Mapa regenerado.")
+    except Exception as e:
+        logger.error(f"Error en chequeo de pulso: {e}")
 
-    # 3. Ejecutar Jerarquia
+    nervio = NervioOptico(user_prompt)
+    seed = nervio.get_context_seed()
     nervio.inject_mandatory_anchors()
     nervio.execute_hexagonal_search(seed)
     nervio.get_exteroception()

@@ -40,7 +40,7 @@ def scan_terroir(root_path: Path):
     }
 
     # Escaneo de Scripts (Semilla)
-    utils_dir = root_path / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "BODY" / "UTILS"
+    utils_dir = root_path / "PROYECTOS" / "Evolucion_Terroir" / "The Individual_Seed" / "BODY" / "UTILS"
     if utils_dir.exists():
         for f in utils_dir.glob("*.py"):
             map_data["artefacts"]["scripts"].append({
@@ -50,7 +50,7 @@ def scan_terroir(root_path: Path):
             })
 
     # Escaneo de Protocolos (Semilla)
-    proto_dir = root_path / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "MIND" / "PROTOCOLS"
+    proto_dir = root_path / "PROYECTOS" / "Evolucion_Terroir" / "The Individual_Seed" / "MIND" / "PROTOCOLS"
     if proto_dir.exists():
         for f in proto_dir.rglob("*.md"):
             map_data["artefacts"]["protocolos"].append({

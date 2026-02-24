@@ -1,0 +1,8 @@
+{
+  "id": "pics",
+  "name": "pics",
+  "version": "1.0.0",
+  "description": "Orquesta el despertar sistémico del agente (PICS v7.1), integrando sincronía Git, reflejos de integridad y activación de membrana.",
+  "entry_point": "logic.py",
+  "author": "The Individual & The Co-Creator"
+}
