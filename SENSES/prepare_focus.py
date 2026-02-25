@@ -218,11 +218,24 @@ class NervioOptico:
             lines.append(f"{hit['text']}\n")
 
         with open(CONSCIENCIA_VIVA_FILE, 'w', encoding='utf-8') as f:
-            f.write("\n".join(lines))
+            f.truncate(0)  # Borrado atómico garantizado
+            f.write("\n".join(lines[:2000])) # Límite de seguridad
         logger.info(f"Membrana de Consciencia Viva inyectada en: {CONSCIENCIA_VIVA_FILE}")
 
 def main():
-    user_prompt = sys.argv[1] if len(sys.argv) > 1 else ""
+    # --- Lectura de Input Dinámico (Prioriza stdin de BeforeAgent hook) ---
+    user_prompt = ""
+    if not sys.stdin.isatty():
+        try:
+            input_data = sys.stdin.read()
+            if input_data:
+                payload = json.loads(input_data)
+                user_prompt = payload.get("prompt", "").strip()
+        except: pass
+    
+    # Fallback a argumento de línea de comandos (Legacy/Manual)
+    if not user_prompt and len(sys.argv) > 1:
+        user_prompt = sys.argv[1]
     
     # --- Actualización Frugal del Mapa ---
     try:

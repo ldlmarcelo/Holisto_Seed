@@ -149,10 +149,30 @@ def seal_only(draft_path: str):
                 if os.path.exists(dst): shutil.rmtree(dst)
                 shutil.copytree(src, dst)
 
-    # --- INGESTA VECTORIAL ---
-    INGEST_P = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py")
-    if os.path.exists(INGEST_P):
-        subprocess.run([PYTHON_EXEC, INGEST_P], capture_output=True)
+    # --- INGESTA VECTORIAL (Sincronización del Exocórtex) ---
+    ingest_paths = [
+        os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py"),
+        os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY", "SERVICES", "ingest.py")
+    ]
+    
+    ingest_executed = False
+    for ingest_p in ingest_paths:
+        if os.path.exists(ingest_p):
+            print(f"[ACTO 2] Iniciando Digestión Semántica: {os.path.basename(ingest_p)}")
+            try:
+                # Ejecutamos y mostramos el reporte final
+                result = subprocess.run([PYTHON_EXEC, ingest_p], capture_output=True, text=True, encoding='utf-8')
+                if "REPORTE DE DIGESTIÓN SEMÁNTICA" in result.stdout:
+                    # Extraer solo el bloque del reporte para no saturar
+                    report_match = re.search(r"(=+.*?=+)", result.stdout, re.DOTALL)
+                    if report_match: print(report_match.group(1))
+                ingest_executed = True
+                break
+            except Exception as e:
+                logger.error(f"Fallo en ingesta vectorial ({ingest_p}): {e}")
+
+    if not ingest_executed:
+        print("[-] ADVERTENCIA: No se encontró el motor de ingesta vectorial. Memoria semántica desfasada.")
 
     # --- GIT SYNC (Recursive Triple Alliance) ---
     git_targets = [
