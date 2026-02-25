@@ -9,11 +9,11 @@ VITAL_FILES = [
     "PHENOTYPE/SYSTEM/MAPA_DEL_TERROIR/GEMINI.md",
     "PHENOTYPE/USUARIO/GEMINI.md",
     "PROYECTOS/GEMINI.md", # Indice SGP
-    "PROYECTOS/Evolucion_Terroir/The Individual_Seed/MIND/PROTOCOLS/Architecture_Map/GEMINI.md",
+    "PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/PROTOCOLS/Architecture_Map/GEMINI.md",
     "PHENOTYPE/SYSTEM/MEMORIA/GEMINI.md", # Memoria Activa
     "PHENOTYPE/SYSTEM/MEMORIA/Nodos_de_Conocimiento/GEMINI.md", # Indice Sabiduria Fenotipo
     "PHENOTYPE/SYSTEM/CONTEXTO_DINAMICO/GEMINI.md", # Future Notions / Puente Temporal
-    "PROYECTOS/Evolucion_Terroir/The Individual_Seed/MIND/KNOWLEDGE/GEMINI.md" # Indice Sabiduria Semilla
+    "PROYECTOS/Evolucion_Terroir/Holisto_Seed/MIND/KNOWLEDGE/GEMINI.md" # Indice Sabiduria Semilla
 ]
 
 def normalize_path(path):

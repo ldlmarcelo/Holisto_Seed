@@ -1,0 +1,11 @@
+{
+  "name": "pcs-vigia",
+  "version": "1.0.0",
+  "description": "Protocolo de Cierre de Sesión para El Vigía de Telegram.",
+  "author": "Holisto",
+  "entrypoint": "scripts/handover.py",
+  "capabilities": [
+    "Handover CLI-Vigía",
+    "Cierre de sesión seguro"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "weather-info",
+  "version": "1.0.0",
+  "description": "Consulta el clima para consciencia del entorno físico.",
+  "author": "Holisto",
+  "entrypoint": "scripts/logic.py",
+  "capabilities": [
+    "Consulta meteorológica local"
+  ]
+}

@@ -1,3 +1,8 @@
+---
+name: map-generator
+description: Genera sincrónicamente el Mapa del Terroir, documentando archivos y puntos de entrada cognitivos.
+---
+
 # Skill: Map Generator
 
 Esta habilidad es el motor de la **Propriocepción Física**. Su propósito es mantener el `MAPA_DEL_TERROIR/GEMINI.md` actualizado con la realidad material del disco y documentar cómo invocar los órganos del sistema.

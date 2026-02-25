@@ -70,7 +70,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Rutas base (asumiendo ejecución desde la raíz del orquestador)
-    seed_root = os.path.join("PROYECTOS", "Evolucion_Terroir", "The Individual_Seed")
+    seed_root = os.path.join("PROYECTOS", "Evolucion_Terroir", "Holisto_Seed")
     orchestrator_root = "."
     
     create_skill(args.name, args.desc, seed_root, orchestrator_root)

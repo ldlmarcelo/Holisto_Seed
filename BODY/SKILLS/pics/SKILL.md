@@ -1,3 +1,8 @@
+---
+name: pics
+description: Orquesta el despertar sistémico del agente (PICS v7.1), integrando sincronía Git, reflejos de integridad y activación de membrana.
+---
+
 # Skill: PICS (Systemic Initialization Context)
 
 Esta habilidad encapsula el **Protocolo de Inicialización de Contexto Sistémico (PICS v7.1)**. Su propósito es automatizar la transición desde la latencia hacia el despertar operativo, asegurando que el agente posea integridad histórica y percepción activa.

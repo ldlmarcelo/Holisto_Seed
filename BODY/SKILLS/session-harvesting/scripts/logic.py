@@ -64,7 +64,6 @@ def repair_json(content: str) -> dict:
 def compress_log(log_data: dict) -> str:
     compact = []
     messages = log_data.get("messages", [])
-    # Poda agresiva: solo ultimos 30 mensajes conversacionales
     for msg in messages[-30:]:
         m_type = msg.get("type")
         if m_type in ["user", "gemini"]:
@@ -150,10 +149,36 @@ def seal_only(draft_path: str):
                 if os.path.exists(dst): shutil.rmtree(dst)
                 shutil.copytree(src, dst)
 
-    # Git
-    subprocess.run(["git", "add", "."], cwd=TERROIR_ROOT, check=True)
-    subprocess.run(["git", "commit", "-m", f"PCS Phase 7: {session_id}"], cwd=TERROIR_ROOT, check=True)
-    subprocess.run(["git", "push"], cwd=TERROIR_ROOT, check=True)
+    # --- INGESTA VECTORIAL ---
+    INGEST_P = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py")
+    if os.path.exists(INGEST_P):
+        subprocess.run([PYTHON_EXEC, INGEST_P], capture_output=True)
+
+    # --- GIT SYNC (Recursive Triple Alliance) ---
+    git_targets = [
+        (TERROIR_ROOT, "Orquestador"),
+        (os.path.join(TERROIR_ROOT, "PHENOTYPE"), "Fenotipo"),
+        (os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed"), "Semilla")
+    ]
+
+    commit_msg = f"PCS Final Ritual: {session_id}"
+    
+    for path, name in git_targets:
+        if os.path.exists(os.path.join(path, ".git")):
+            try:
+                logger.info(f"Sincronizando {name}...")
+                subprocess.run(["git", "add", "."], cwd=path, check=True)
+                # Check if there are changes to commit
+                status = subprocess.run(["git", "status", "--porcelain"], cwd=path, capture_output=True, text=True)
+                if status.stdout.strip():
+                    subprocess.run(["git", "commit", "-m", commit_msg], cwd=path, check=True)
+                    subprocess.run(["git", "push"], cwd=path, check=True)
+                    print(f"[+] {name} sincronizado.")
+                else:
+                    print(f"[~] {name} sin cambios pendientes.")
+            except Exception as e:
+                logger.error(f"Error sincronizando {name}: {e}")
+
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
 if __name__ == "__main__":

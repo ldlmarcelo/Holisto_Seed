@@ -1,0 +1,11 @@
+{
+  "name": "skill-generator",
+  "version": "1.0.0",
+  "description": "Automatiza la creación de nuevas Agent Skills.",
+  "author": "Holisto",
+  "entrypoint": "scripts/logic.py",
+  "capabilities": [
+    "Andamiaje de skills",
+    "Validación de estándares"
+  ]
+}

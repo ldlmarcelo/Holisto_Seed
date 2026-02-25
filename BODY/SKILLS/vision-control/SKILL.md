@@ -1,3 +1,8 @@
+---
+name: vision-control
+description: Control dinámico de la atención y el contexto (Botón de Pánico).
+---
+
 # Skill: vision-control
 
 Esta habilidad permite gestionar la ventana de contexto del agente, silenciando archivos `GEMINI.md` no vitales para reducir el ruido y el consumo de tokens, manteniendo una red de seguridad (Botón de Pánico).

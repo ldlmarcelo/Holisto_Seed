@@ -1,3 +1,8 @@
+---
+name: coherence-audit
+description: Audita la coherencia transversal entre Roadmaps, Índices de Proyectos y el estado real de los artefactos (PCD).
+---
+
 # Skill: Coherence Audit (PCD)
 
 Esta habilidad materializa el **Protocolo de Coherencia Documental (PCD)**. Su propósito es actuar como un sistema inmunológico que detecta y reporta discrepancias entre las diversas "Fuentes de Verdad" del Terroir.

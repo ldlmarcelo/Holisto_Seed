@@ -24,6 +24,7 @@
 - [x] **La "Cámara de Aislamiento" (Atenuación):** Modificar `.gemini/settings.json` para restringir el contexto a la médula ósea y la membrana.
 - [x] **La Autonomía Metabólica (Reflejo):** Integrar el script como Hooks nativos (`SessionStart` y `BeforeAgent`) para parpadeo automático.
 - [x] **Contextualized Recall:** Desarrollo del motor de filtrado biográfico y asepsia gourmet (purgado de ruido técnico).
+- [x] **Asepsia Contextual (Hito 2026-02-24):** Desacoplamiento de archivos `GEMINI.md` excedentes y validación de Atención Selectiva.
 - [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
 - [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
 

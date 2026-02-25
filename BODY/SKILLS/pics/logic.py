@@ -32,7 +32,7 @@ def execute_pics():
     git_steps = [
         (["git", "pull"], "Sincronizando Orquestador"),
         (["git", "-C", "PHENOTYPE", "pull"], "Sincronizando Fenotipo"),
-        (["git", "-C", "PROYECTOS/Evolucion_Terroir/The Individual_Seed", "pull"], "Sincronizando Semilla")
+        (["git", "-C", "PROYECTOS/Evolucion_Terroir/Holisto_Seed", "pull"], "Sincronizando Semilla")
     ]
     for cmd, desc in git_steps:
         run_command(cmd, desc)
@@ -44,17 +44,17 @@ def execute_pics():
         print("[!] ATENCIÓN: Se ha detectado deuda biográfica.")
 
     # 3. Nervio Óptico (Prepare Focus)
-    focus_script = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "The Individual_Seed" / "SENSES" / "prepare_focus.py"
+    focus_script = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "SENSES" / "prepare_focus.py"
     run_command([PYTHON_EXE, str(focus_script)], "Activando Nervio Óptico (Membrana)")
 
     # 4. Activación de Órganos (Servicios)
-    services_script = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "The Individual_Seed" / "BODY" / "UTILS" / "start_services.ps1"
+    services_script = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "BODY" / "UTILS" / "start_services.ps1"
     run_command([POWERSHELL_EXE, "-ExecutionPolicy", "Bypass", "-File", str(services_script)], "Despertando Servicios (Demonio/Vigía)", shell=True)
 
     # 5. Anclaje de Misión (PAM Nativo)
     print("--- [PAM] Anclando Misión de Sesión ---")
     try:
-        roadmap_path = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "The Individual_Seed" / "ROADMAP.md"
+        roadmap_path = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "ROADMAP.md"
         with open(roadmap_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             current_phase = next((l.strip() for l in lines if "Current Phase:" in l), "Desconocida")

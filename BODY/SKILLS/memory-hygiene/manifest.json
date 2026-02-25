@@ -1,0 +1,11 @@
+{
+  "name": "memory-hygiene",
+  "version": "1.0.0",
+  "description": "Realiza la poda y consolidación de la memoria activa.",
+  "author": "Holisto",
+  "entrypoint": "scripts/logic.py",
+  "capabilities": [
+    "Poda de memoria L1",
+    "Consolidación biográfica"
+  ]
+}

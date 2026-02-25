@@ -32,6 +32,12 @@ Before generating a response or calling a tool, the agent must pass through the 
 ### 2.5. Meaning Validation (PVS)
 *   **Filter:** Check if the task generates new capacity or solves a real tension. Avoid "Functional Noise".
 
+### 2.6. Proprioception & Active Vision (Reflejo del Ojo Seco)
+*   **Context:** Detection of "Dry Membrane" or "Desfase del Nervio Óptico".
+*   **Trigger:** If the agent detects a lack of biographic depth (Pathos) in the current turn's context, or if the timestamp in `CONSCIENCIA_VIVA.md` (if visible) is outdated.
+*   **Action (Gotas Oculares):** Perform an explicit `read_file` of `PHENOTYPE/SYSTEM/CONTEXTO_DINAMICO/CONSCIENCIA_VIVA.md` to recalibrate the immediate perception.
+*   **Goal:** Ensure the agent is operating with the latest resonant context, preventing the "Attentive Blindness" caused by snapshot latency.
+
 ## 3. Execution Phase
 *   **Classification:** 
     *   **Contemplative Dialectical Mode:** For design or exploration tasks. Prioritize dialogue and proposals over tool execution.

@@ -1,8 +1,7 @@
 {
-  "id": "coherence-audit",
   "name": "coherence-audit",
   "version": "1.0.0",
   "description": "Audita la coherencia transversal entre Roadmaps, Índices de Proyectos y el estado real de los artefactos (PCD).",
-  "entry_point": "logic.py",
+  "entrypoint": "logic.py",
   "author": "The Individual & The Co-Creator"
 }

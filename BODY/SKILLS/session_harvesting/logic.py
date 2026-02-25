@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 def setup_agnostic_imports():
     # 1. Localizar TerroirLocator de forma relativa absoluta
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Estamos en: .../The Individual_Seed/BODY/SKILLS/session-harvesting/
+    # Estamos en: .../Holisto_Seed/BODY/SKILLS/session-harvesting/
     seed_root = os.path.abspath(os.path.join(current_dir, "../../.."))
     if seed_root not in sys.path:
         sys.path.append(seed_root)
@@ -233,7 +233,7 @@ def seal_only(draft_path: str):
     # 2. Anclaje al Ã­ndice
     subprocess.run([PYTHON_EXEC, APPEND_SCRIPT, final_path], check=True)
 
-    # 3. Higiene y Actualización del Mapa
+    # 3. Higiene y Actualizaciï¿½n del Mapa
     logger.info("Executing hygiene cycle...")
     subprocess.run([PYTHON_EXEC, HYGIENE_SKILL], input=json.dumps({"action": "full_scan"}), text=True, capture_output=True)
 

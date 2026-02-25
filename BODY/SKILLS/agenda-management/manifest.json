@@ -1,0 +1,11 @@
+{
+  "name": "agenda-management",
+  "version": "1.0.0",
+  "description": "Gestiona recordatorios y tareas programadas del Terroir.",
+  "author": "Holisto",
+  "entrypoint": "scripts/logic.py",
+  "capabilities": [
+    "Crear recordatorios",
+    "Listar tareas pendientes"
+  ]
+}
