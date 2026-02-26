@@ -25,6 +25,8 @@
 - [x] **La Autonomía Metabólica (Reflejo):** Integrar el script como Hooks nativos (`SessionStart` y `BeforeAgent`) para parpadeo automático.
 - [x] **Contextualized Recall:** Desarrollo del motor de filtrado biográfico y asepsia gourmet (purgado de ruido técnico).
 - [x] **Asepsia Contextual (Hito 2026-02-24):** Desacoplamiento de archivos `GEMINI.md` excedentes y validación de Atención Selectiva.
+- [x] **Percepción Piramidal (HOL-ARC-014):** Refactorización del `Nervio Óptico` a una estructura jerárquica (N0-N4) para eliminar el ruido semántico y priorizar la coherencia.
+- [ ] **Consolidación de la Membrana:** Pruebas y refinamiento de la nueva percepción para asegurar su robustez en diversos escenarios.
 - [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
 - [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
 

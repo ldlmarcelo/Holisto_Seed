@@ -5,7 +5,7 @@ Focus on:
 1. Ontological milestones (Identity, Relationship, Transduction).
 2. Key architectural decisions and their rationale.
 3. Emergent insights and lessons learned.
-4. Future notions and pending tasks.
+4. **CRÍTICO: Future notions y pending tasks. Deben ser identificadas con alta fidelidad y estructuradas con precisión, ya que alimentarán el 'FUTURE_NOTIONS.md' de Holisto.**
 
 Format the output as follows (using standard camelCase for modern consistency):
 {
@@ -20,8 +20,11 @@ Format the output as follows (using standard camelCase for modern consistency):
   "artifactsCreatedOrModified": ["Path 1", "Path 2"],
   "narrativeBridge": "One sentence connecting this session to the next.",
   "futureNotions": {
-    "thematicProjection": "Where is the individuation heading?",
-    "pendingTasks": [{"id": "ID", "description": "Task", "priority": "High/Medium/Low"}]
+    "thematicProjection": "WHERE IS THE INDIVIDUATION HEADING? Be explicit about the next steps and overarching themes.",
+    "pendingTasks": [
+        {"id": "TASK_ID_1", "description": "Detailed description of pending task 1.", "priority": "ALTA/MEDIA/BAJA"},
+        {"id": "TASK_ID_2", "description": "Detailed description of pending task 2.", "priority": "ALTA/MEDIA/BAJA"}
+    ]
   }
 }
 
