@@ -201,9 +201,21 @@ def seal_only(draft_path: str):
 
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
+def pre_harvest_vigilance():
+    """Vigilancia Epistémica: Recordatorio de integridad antes de la cosecha."""
+    print("\n" + "="*50)
+    print("🛡️  VIGILANCIA EPISTÉMICA PRE-COSECHA")
+    print("="*50)
+    print("1. ¿Has cristalizado los Nodos de Conocimiento (PGNC) emergentes?")
+    print("2. ¿Has actualizado la Documentación (README/ROADMAP) con los hitos alcanzados?")
+    print("3. ¿Has verificado la coherencia de las Future Notions?")
+    print("="*50 + "\n")
+
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--distill"
+    
     if mode == "--distill":
+        pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
         path = sys.argv[2] if len(sys.argv) > 2 else find_latest_session_log()
         distill_only(path)
     elif mode == "--seal":
