@@ -88,77 +88,76 @@ class NervioOptico:
         return os.path.normpath(os.path.abspath(path))
 
     def populate_pyramid(self, seed_query: str):
-        """Populates the pyramid levels with strict de-duplication."""
-        logger.info("Iniciando populacion de la Piramide de Atencion.")
+        """Populates the pyramid levels via a single, unified recall and classification."""
+        logger.info("Iniciando populacion unificada de la Piramide de Atencion.")
         is_generic = self.user_prompt.lower().strip() in ["holisto", "hola", "hi", "despierta", ""]
+        
+        # 1. Unified Recall: Una sola llamada para obtener un pool rico de hits
+        try:
+            unified_query = f"{self.user_prompt} {seed_query}" if not is_generic else "estado actual del terroir y conversacion reciente"
+            all_hits = exocortex.exocortex.recall(unified_query, limit=20, score_threshold=0.32)
+            logger.info(f"Recall unificado obtuvo {len(all_hits)} hits.")
+        except Exception as e:
+            logger.error(f"Error en Recall Unificado: {e}")
+            all_hits = []
 
-        # Helper function to add hits without duplicates
-        def add_unique_hits(target_level, hits):
-            for hit in hits:
-                path = hit.get('metadata', {}).get('file_path')
-                if not path: continue
-                
-                norm_path = self.normalize_path(path)
-                if norm_path in self.seen_paths: continue
-                
-                self.focus_data[target_level].append(hit)
+        # 2. Classification and Population
+        for hit in sorted(all_hits, key=lambda x: x['score'], reverse=True):
+            path_str = hit.get('metadata', {}).get('file_path', '')
+            if not path_str: continue
+
+            norm_path = self.normalize_path(path_str)
+            if norm_path in self.seen_paths: continue
+
+            # Clasificar y asignar a la capa correspondiente
+            assigned = False
+            # N0: Principios (Nodos de Conocimiento, Protocolos en la raiz de SYSTEM, etc.)
+            if ("Nodos_de_Conocimiento" in path_str or "AGENTES_COGNITIVOS" in path_str) and len(self.focus_data["N0_PRINCIPIOS"]) < 3:
+                self.focus_data["N0_PRINCIPIOS"].append(hit)
+                assigned = True
+            # N1: Síntesis (Cápsulas Maestras)
+            elif ("capsulas_maestras" in path_str or "session-202" in path_str) and len(self.focus_data["N1_SINTESIS"]) < 2:
+                 # Priorizar capsulas sobre logs para N1
+                if "capsulas_maestras" in path_str:
+                    self.focus_data["N1_SINTESIS"].insert(0, hit) # Poner al principio
+                else:
+                    self.focus_data["N1_SINTESIS"].append(hit)
+                assigned = True
+            # N3: Pathos Crudo (Logs de Vigia y Sesion)
+            elif ("logs_de_sesion" in path_str or "logs_vigia" in path_str) and len(self.focus_data["N3_RECIENTE"]) < 3:
+                self.focus_data["N3_RECIENTE"].append(hit)
+                assigned = True
+            
+            if assigned:
                 self.seen_paths.add(norm_path)
 
-        # N0: Principios (Nodos de Conocimiento y Protocolos)
-        try:
-            nodos_query = f"{self.user_prompt} ontologia arquitectura principios" if not is_generic else "principios fundamentales"
-            hits = exocortex.exocortex.recall(nodos_query, limit=3, score_threshold=0.5)
-            add_unique_hits("N0_PRINCIPIOS", sorted(hits, key=lambda x: x['score'], reverse=True))
-        except Exception as e:
-            logger.error(f"Error en N0 (Principios): {e}")
-
-        # N1: Sintesis Biografica (Capsulas Maestras)
-        try:
-            capsulas_query = f"{self.user_prompt} resumen sesion" if not is_generic else "ultima capsula maestra"
-            hits = exocortex.exocortex.recall(capsulas_query, limit=2, score_threshold=0.45)
-            add_unique_hits("N1_SINTESIS", sorted(hits, key=lambda x: x['metadata'].get('file_path',''), reverse=True))
-        except Exception as e:
-            logger.error(f"Error en N1 (Sintesis): {e}")
-
-        # N2: Directrices (Roadmap y Future Notions)
+        # N2 & N4 (Lectura directa, no semántica)
         try:
             roadmap_path = SEED_ROOT / "ROADMAP.md"
             future_path = PHENOTYPE_ROOT / "SYSTEM" / "CONTEXTO_DINAMICO" / "FUTURE_NOTIONS.md"
-            
-            if roadmap_path.exists():
-                norm_path = self.normalize_path(str(roadmap_path))
-                if norm_path not in self.seen_paths:
-                    with open(roadmap_path, 'r', encoding='utf-8') as f:
-                        self.focus_data["N2_DIRECTRICES"].append({"text": f.read(), "path": str(roadmap_path)})
-                    self.seen_paths.add(norm_path)
-
-            if future_path.exists():
-                norm_path = self.normalize_path(str(future_path))
-                if norm_path not in self.seen_paths:
-                    with open(future_path, 'r', encoding='utf-8') as f:
-                        self.focus_data["N2_DIRECTRICES"].append({"text": f.read(), "path": str(future_path)})
-                    self.seen_paths.add(norm_path)
-        except Exception as e:
-            logger.error(f"Error en N2 (Directrices): {e}")
-
-        # N3: Memoria Reciente (Logs Crudos)
-        try:
-            logs_query = "conversacion reciente"
-            hits = exocortex.exocortex.recall(logs_query, limit=1, score_threshold=0.3)
-            add_unique_hits("N3_RECIENTE", hits)
-        except Exception as e:
-            logger.error(f"Error en N3 (Reciente): {e}")
-
-        # N4: Suelo (Mapa del Terroir)
-        try:
             map_json_path = PHENOTYPE_ROOT / "SYSTEM" / "MAPA_DEL_TERROIR" / "mapa_actual.json"
-            norm_path = self.normalize_path(str(map_json_path))
-            if map_json_path.exists() and norm_path not in self.seen_paths:
-                with open(map_json_path, 'r', encoding='utf-8') as f:
-                    self.focus_data["N4_SUELO"].append({"text": json.dumps(json.load(f), indent=2), "path": str(map_json_path)})
-                self.seen_paths.add(norm_path)
+
+            direct_reads = {
+                "N2_DIRECTRICES": [roadmap_path, future_path],
+                "N4_SUELO": [map_json_path]
+            }
+
+            for level, paths in direct_reads.items():
+                for p in paths:
+                    if p.exists():
+                        norm_p = self.normalize_path(str(p))
+                        if norm_p not in self.seen_paths:
+                            try:
+                                with open(p, 'r', encoding='utf-8') as f:
+                                    content = f.read()
+                                    if p.suffix == '.json':
+                                        content = json.dumps(json.loads(content), indent=2)
+                                    self.focus_data[level].append({"text": content, "path": str(p)})
+                                self.seen_paths.add(norm_p)
+                            except Exception as e:
+                                logger.error(f"Error leyendo archivo directo {p}: {e}")
         except Exception as e:
-            logger.error(f"Error en N4 (Suelo): {e}")
+            logger.error(f"Error procesando lecturas directas (N2/N4): {e}")
 
     def get_exteroception(self):
         now = datetime.now()
