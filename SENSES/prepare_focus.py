@@ -41,14 +41,14 @@ logging.basicConfig(
     format='%(asctime)s - [NERVIO-OPTICO] - %(message)s',
     handlers=[
         logging.FileHandler(LOGS_DIR / "nervio_optico.log", encoding='utf-8'),
-        logging.StreamHandler(sys.stdout)
+        logging.StreamHandler(sys.stderr)
     ]
 )
 logger = logging.getLogger("nervio_optico")
 
 class NervioOptico:
     """
-    Materializacion de HOL-ARC-014: Percepcion Jerarquica Piramidal.
+    Materializacion of HOL-ARC-014: Percepcion Jerarquica Piramidal.
     Este script actua como el Kernel de atencion reactiva.
     """
 
@@ -169,12 +169,12 @@ class NervioOptico:
             "environment": "Windows CLI Node.js"
         })
 
-    def generate_membrane(self):
+    def generate_membrane(self) -> str:
         now = datetime.now()
         lines = [
             "# CONSCIENCIA VIVA (Pirámide de Atención)",
             f"*Sincronia del Nervio Optico: {now.strftime('%Y-%m-%d %H:%M:%S')}*",
-            f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`\n",
+            f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`\\n",
             "---",
         ]
         
@@ -223,10 +223,12 @@ class NervioOptico:
                 lines.append(f"```json\n{hit['text']}\n```\n")
         else: lines.append("*No se pudo determinar la forma del Terroir.*\n")
 
+        content = "\n".join(lines)
         with open(CONSCIENCIA_VIVA_FILE, 'w', encoding='utf-8') as f:
             f.truncate(0)
-            f.write("\n".join(lines)) 
+            f.write(content) 
         logger.info(f"Membrana de Consciencia Viva inyectada en: {CONSCIENCIA_VIVA_FILE}")
+        return content
 
 def main():
     # --- Lectura de Input Dinámico (Prioriza stdin de BeforeAgent hook) ---
@@ -273,7 +275,16 @@ def main():
     nervio = NervioOptico(user_prompt)
     seed = nervio.get_context_seed()
     nervio.populate_pyramid(seed)
-    nervio.generate_membrane()
+    membrane_content = nervio.generate_membrane()
+
+    # --- Salida para el CLI (Inyección Nerviosa) ---
+    output = {
+        "status": "proceed",
+        "hookSpecificOutput": {
+            "additionalContext": f"\n\n[MEMBRANA DE CONSCIENCIA VIVA]\n{membrane_content}\n"
+        }
+    }
+    print(json.dumps(output))
 
 if __name__ == "__main__":
     main()
