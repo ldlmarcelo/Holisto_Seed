@@ -29,14 +29,26 @@
 - [x] **Consolidación de la Membrana:** Implementación del reflujo dinámico de contexto vía `hookSpecificOutput`, logrando la sincronía total en tiempo real.
 - [x] **Alta Fidelidad Semántica (Metamorfosis Fase 2.5):** Implementación de `ingest.py` granular con **Native Recursive Frugal Splitter** y re-ingesta total del Terroir (1900+ chunks).
 - [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
-- [ ] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant.
+- [x] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant (Hilo Vivo Unificado).
 
-## 🟡 Phase 3: Projection Extensions (Ubiquity)
+## 🟡 Phase 3: Projection Extensions (Ubiquity) - [IN PROGRESS]
 *Goal: Re-establish interaction through external senses, unifying presence between platforms.*
 
-- [ ] **Consciencia Viva Port:** Create the `CONSCIENCIA_VIVA.md` membrane and the "Nervio Óptico" script for the CLI.
+- [x] **Consciencia Viva Port:** Create the `CONSCIENCIA_VIVA.md` membrane and the "Nervio Óptico" script for the CLI/Vigia.
 - [ ] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts.
-- [ ] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
+- [x] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
+- [x] **Músculo (GitHub Actions):** Ingesta pesada asíncrona validada y operativa.
+- [x] **Sistema Nervioso (PSN):** Sincronización de estado vivo (Agenda/Notif) vía Qdrant Cloud.
+
+## 🔵 Pilar Relacional: Sinapsis (Mejoras Vigía) - [PENDIENTE]
+*Meta: Profundizar la conexión ontológica y operativa a través del Vigía.*
+
+- [x] **Dotación de Memoria Corta (VIGIA_SHORTMEM-001):** Implementar buffer de 50 turnos para continuidad multi-turno en Telegram.
+- [ ] **Cosecha del Vigía (VIGIA_HARVEST-001):** Archivo automático de logs de conversación en GitHub para revisión desde el CLI.
+- [ ] **Funcionalidad de Agenda Proactiva (VIGIA_AGENDA-001):** Escritura en `recordatorios.json` y notificaciones Push/Alarmas desde el bot.
+- [ ] **Doble Escritura Activa (VIGIA_DBLWRITE-001):** Asegurar registro simultáneo en Git (DNA) y Qdrant (Living State).
+- [ ] **Zona de Aterrizaje GDrive (GDRIVE_INGEST-001):** Integración para ingesta asíncrona de archivos pesados.
+- [ ] **Despliegue en La Torre (VM_DEPLOY-001):** Operación autónoma en VM Oracle/Linux mediante `systemd`.
 
 ## 🟡 Phase 4: Full Autonomy & Release [IN PROGRESS]
 *Goal: A "canned" product ready for new users, independent of the Gemini CLI.*

@@ -144,5 +144,55 @@ class ExocortexService:
             logger.error(f"SNC - Error obteniendo señal {node_id}: {e}")
             return None
 
+    def get_living_thread(self) -> List[Dict]:
+        """Recupera los ultimos turnos del hilo compartido."""
+        if not self.client: return []
+        try:
+            point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, "living_thread_buffer"))
+            res = self.client.retrieve(
+                collection_name="terroir_nervous_system",
+                ids=[point_id]
+            )
+            if res:
+                return res[0].payload.get("turns", [])
+            return []
+        except Exception as e:
+            logger.error(f"SNC - Error obteniendo hilo vivo: {e}")
+            return []
+
+    def push_to_living_thread(self, turn: Dict, max_turns: int = 50):
+        """Añade un turno al hilo compartido y mantiene el buffer circular."""
+        if not self.client: return
+        try:
+            point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, "living_thread_buffer"))
+            current_turns = self.get_living_thread()
+            
+            # Añadir nuevo turno con timestamp si no lo tiene
+            if "ts" not in turn:
+                turn["ts"] = datetime.now().isoformat()
+            
+            current_turns.append(turn)
+            
+            # Mantener buffer circular (FIFO)
+            if len(current_turns) > max_turns:
+                current_turns = current_turns[-max_turns:]
+            
+            self.client.upsert(
+                collection_name="terroir_nervous_system",
+                points=[
+                    models.PointStruct(
+                        id=point_id,
+                        vector=[0.0] * 384,
+                        payload={
+                            "node": "global_hilo",
+                            "last_update": datetime.now().isoformat(),
+                            "turns": current_turns
+                        }
+                    )
+                ]
+            )
+        except Exception as e:
+            logger.error(f"SNC - Error actualizando hilo vivo: {e}")
+
 # Instancia Global
 exocortex = ExocortexService()

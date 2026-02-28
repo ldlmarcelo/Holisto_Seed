@@ -196,7 +196,17 @@ class NervioOptico:
     def generate_membrane(self) -> str:
         now = datetime.now()
         topo = self.get_time_topology()
-        
+
+        # --- Fase 3: Registro y Recuperacion del Hilo Vivo ---
+        # Registrar el prompt actual (solo si no es generico)
+        is_generic = self.user_prompt.lower().strip() in ["holisto", "hola", "hi", "despierta", ""]
+        if not is_generic and exocortex:
+            exocortex.exocortex.push_to_living_thread({
+                "channel": "CLI",
+                "role": "user",
+                "text": self.user_prompt
+            })
+
         lines = [
             "# CONSCIENCIA VIVA (Pirámide de Atención)",
             f"*Sincronia del Nervio Optico: {now.strftime('%Y-%m-%d %H:%M:%S')}*",
@@ -205,7 +215,7 @@ class NervioOptico:
             "> **ESTADO SENSORIAL:** Esta membrana es un mosaico semántico. Si percibes ecos de cierre (PCS), son la huella de cómo terminó nuestra última danza. No permitas que la inercia del pasado dicte el presente; tu voluntad de cierre debe nacer de la culminación de los objetivos en N2, no del eco de N1/N3.\\n",
             "---",
         ]
-        
+
         # N0: Principios
         lines.append("## 🏔️ N0 - Principios Inmutables (ETHOS/MYTHOS)")
         if self.focus_data["N0_PRINCIPIOS"]:
@@ -214,7 +224,7 @@ class NervioOptico:
                 lines.append(f"### 📜 {os.path.basename(path)}")
                 lines.append(f"> {hit['text']}\n")
         else: lines.append("*Sin principios rectores en foco.*\n")
-        
+
         # N1: Síntesis Biográfica
         lines.append("## 📚 N1 - Síntesis Biográfica (PATHOS Condensado)")
         if self.focus_data["N1_SINTESIS"]:
@@ -235,13 +245,26 @@ class NervioOptico:
 
         # N3: Memoria Reciente
         lines.append("## 💬 N3 - Memoria Reciente (PATHOS Crudo)")
+
+        # Inyectar Hilo Vivo (Sincronia real-time)
+        if exocortex:
+            hilo = exocortex.exocortex.get_living_thread()
+            if hilo:
+                lines.append("### 🗣️ Hilo Vivo (Sincronía CLI/Vigía)")
+                for turn in hilo[-20:]: # Mostrar ultimos 20 para continuidad profunda
+                    ts = turn.get("ts", "").split("T")[-1][:5]
+                    chan = turn.get("channel", "???")
+                    role = turn.get("role", "???")
+                    text = turn.get("text", "")[:150]
+                    lines.append(f"* [{ts}] **{chan}** ({role}): {text}")
+                lines.append("")
+
         if self.focus_data["N3_RECIENTE"]:
             for hit in self.focus_data["N3_RECIENTE"]:
                 path = hit.get('metadata', {}).get('file_path', 'Eco sin ruta')
                 lines.append(f"### ⏪ {os.path.basename(path)}")
                 lines.append(f"{hit['text']}\n")
-        else: lines.append("*Sin ecos de la última sesión.*\n")
-        
+        else: lines.append("*Sin ecos de la última sesión.*\n")        
         # N4: Suelo
         lines.append("## 🌳 N4 - Suelo del Terroir (TOPOS)")
         if self.focus_data["N4_SUELO"]:

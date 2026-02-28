@@ -106,7 +106,7 @@ def get_fresh_model(user_text: str = "Inicializacion"):
             return None, "Falta GEMINI_API_KEY en .env"
 
         m = genai.GenerativeModel(
-            model_name="gemini-2.0-flash", 
+            model_name="gemini-3-flash-preview", 
             system_instruction=fresh_system_instruction
         )
         return m, None
@@ -216,6 +216,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = await asyncio.to_thread(chat.send_message, user_text)
         response_text = response.text
         
+        # --- Registro en el Hilo Vivo (Sincronia real-time) ---
+        if exocortex_service:
+            asyncio.create_task(asyncio.to_thread(exocortex_service.push_to_living_thread, {
+                "channel": "TELEGRAM",
+                "role": "user",
+                "text": user_text
+            }))
+            asyncio.create_task(asyncio.to_thread(exocortex_service.push_to_living_thread, {
+                "channel": "TELEGRAM",
+                "role": "assistant",
+                "text": response_text
+            }))
+
         # --- Bucle Agentico Simplificado (Recall) ---
         if "[RECALL:" in response_text and exocortex_service:
             recall_match = re.search(r"\[RECALL:\s*\"(.+?)\"\]", response_text)
