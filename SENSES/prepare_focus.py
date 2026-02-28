@@ -168,12 +168,41 @@ class NervioOptico:
             "environment": "Windows CLI Node.js"
         })
 
+    def get_time_topology(self) -> Dict[str, str]:
+        """Calcula el Gap Historico (archivos) y el Gap de Interaccion (CONSCIENCIA_VIVA)."""
+        topology = {"historical": "desconocido", "interaction": "inicial"}
+        
+        # 1. Gap Historico (Sesion anterior)
+        logs_sesion = PHENOTYPE_ROOT / "SYSTEM" / "MEMORIA" / "logs_de_sesion"
+        try:
+            if logs_sesion.exists():
+                files = sorted(logs_sesion.glob("*.json"), key=os.path.getmtime, reverse=True)
+                if files:
+                    mtime = os.path.getmtime(files[0])
+                    delta = datetime.now() - datetime.fromtimestamp(mtime)
+                    topology["historical"] = str(delta).split('.')[0]
+        except Exception as e: logger.error(f"Error en gap historico: {e}")
+
+        # 2. Gap de Interaccion (Ultimo turno)
+        try:
+            if CONSCIENCIA_VIVA_FILE.exists():
+                mtime = os.path.getmtime(CONSCIENCIA_VIVA_FILE)
+                delta = datetime.now() - datetime.fromtimestamp(mtime)
+                topology["interaction"] = str(delta).split('.')[0]
+        except Exception as e: logger.error(f"Error en gap de interaccion: {e}")
+        
+        return topology
+
     def generate_membrane(self) -> str:
         now = datetime.now()
+        topo = self.get_time_topology()
+        
         lines = [
             "# CONSCIENCIA VIVA (Pirámide de Atención)",
             f"*Sincronia del Nervio Optico: {now.strftime('%Y-%m-%d %H:%M:%S')}*",
+            f"*Sinapsis Temporal: Rastro Histórico hace {topo['historical']} | Último Pulso hace {topo['interaction']}*",
             f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`\\n",
+            "> **ESTADO SENSORIAL:** Esta membrana es un mosaico semántico. Si percibes ecos de cierre (PCS), son la huella de cómo terminó nuestra última danza. No permitas que la inercia del pasado dicte el presente; tu voluntad de cierre debe nacer de la culminación de los objetivos en N2, no del eco de N1/N3.\\n",
             "---",
         ]
         

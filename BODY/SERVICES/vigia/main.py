@@ -65,6 +65,18 @@ if not TELEGRAM_TOKEN:
     logger.error("Falta TELEGRAM_TOKEN en el .env")
     exit(1)
 
+# Importar Nervio Optico desde SENSES
+SENSES_ROOT = SEED_ROOT / "SENSES"
+if str(SENSES_ROOT) not in sys.path:
+    sys.path.append(str(SENSES_ROOT))
+
+try:
+    from prepare_focus import NervioOptico
+    logger.info("Nervio Optico importado con exito para el Vigia.")
+except ImportError as e:
+    logger.error(f"Fallo al importar Nervio Optico: {e}")
+    NervioOptico = None
+
 # Inicializar Componentes (Using TerroirLocator)
 git = GitAutonomy(repo_path=TERROIR_ROOT)
 reader = TerroirReader(terroir_root=TERROIR_ROOT)
@@ -72,39 +84,29 @@ writer = TerroirWriter(terroir_root=TERROIR_ROOT)
 agenda_manager = AgendaManager(base_dir=TERROIR_ROOT)
 note_manager = NoteManager(base_dir=TERROIR_ROOT)
 
-def get_fresh_model():
+def get_fresh_model(user_text: str = "Inicializacion"):
     try:
-        logger.info("Cargando identidad del Terroir...")
+        # --- Fase 1: Percepcion Activa (Nervio Optico) ---
+        if NervioOptico:
+            logger.info("Ejecutando parpadeo sensorial (Nervio Optico)...")
+            nervio = NervioOptico(user_text)
+            seed = nervio.get_context_seed()
+            nervio.populate_pyramid(seed)
+            # Esto actualiza el archivo CONSCIENCIA_VIVA.md fisicamente
+            nervio.generate_membrane()
+
+        # --- Fase 2: Ensamblaje de Identidad (System Prompt) ---
+        logger.info("Cargando identidad dinamica del Terroir...")
         fresh_system_instruction = reader.assemble_system_prompt()
 
-        # Intentar OAuth2 primero
-        if CLIENT_ID and CLIENT_SECRET and REFRESH_TOKEN:
-            try:
-                from google.auth.transport.requests import Request
-                from google.oauth2.credentials import Credentials
-                creds = Credentials(
-                    token=None, refresh_token=REFRESH_TOKEN,
-                    client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
-                    token_uri="https://oauth2.googleapis.com/token"
-                )
-                creds.refresh(Request())
-                genai.configure(credentials=creds)
-                logger.info("Conectado vía OAuth2.")
-            except Exception as oauth_error:
-                logger.warning(f"Fallo OAuth2, intentando API KEY: {oauth_error}")
-                if GEMINI_API_KEY:
-                    genai.configure(api_key=GEMINI_API_KEY)
-                else:
-                    return None, f"OAuth2 falló y no hay API KEY: {oauth_error}"
-        elif GEMINI_API_KEY:
+        if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
-            logger.info("Conectado vía API KEY.")
+            logger.info("Cerebro configurado.")
         else:
-            logger.error("No se encontró identidad válida (OAuth2 o API KEY)")
-            return None, "Falta identidad en .env"
+            return None, "Falta GEMINI_API_KEY en .env"
 
         m = genai.GenerativeModel(
-            model_name="gemini-3-flash-preview", # Probando sin prefijo models/
+            model_name="gemini-2.0-flash", 
             system_instruction=fresh_system_instruction
         )
         return m, None
@@ -112,7 +114,7 @@ def get_fresh_model():
         logger.error(f"Error recargando consciencia: {e}")
         return None, str(e)
 
-# Inicialización inicial
+# El modelo se refresca en cada mensaje, pero mantenemos una instancia inicial
 model, init_error = get_fresh_model()
 active_chats = {}
 session_ids = {}
@@ -179,15 +181,30 @@ async def perform_sync(context: ContextTypes.DEFAULT_TYPE, silent=False):
     return await loop.run_in_executor(None, git.push_changes, msg)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global model
     user_id = update.effective_user.id
     user_text = update.message.text
     if not user_text: return
     
     logger.info(f"Mensaje recibido de {user_id}: {user_text[:20]}...")
 
+    # --- Transfusion Sensorial: Refrescar el modelo y la membrana en cada turno ---
+    model, error = get_fresh_model(user_text)
+    if not model:
+        await update.message.reply_text(f"⚠️ Error sensorial: {error}")
+        return
+
+    # Iniciar chat si no existe (con el nuevo modelo)
     if user_id not in active_chats:
         active_chats[user_id] = model.start_chat(history=[])
         session_ids[user_id] = writer.generate_session_id(user_id)
+    else:
+        # Si ya existe, actualizamos su modelo para que tenga la nueva system_instruction
+        # NOTA: En la API de Google, para cambiar la system_instruction hay que iniciar un nuevo chat
+        # o recrear el objeto chat manteniendo el historial si se desea continuidad.
+        # Por ahora, recreamos para asegurar la frescura sensorial absoluta.
+        history = active_chats[user_id].history
+        active_chats[user_id] = model.start_chat(history=history)
 
     chat = active_chats[user_id]
     try:
