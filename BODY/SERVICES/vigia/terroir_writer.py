@@ -12,7 +12,7 @@ try:
     from BODY.UTILS.terroir_locator import TerroirLocator
 except ImportError:
     # Fallback para ejecucion directa
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../..")))
     from BODY.UTILS.terroir_locator import TerroirLocator
 
 class TerroirWriter:

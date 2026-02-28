@@ -1,0 +1,21 @@
+# Holisto Seed - Requisitos del Sistema
+# Genotipo Universal
+
+# --- Núcleo de Inteligencia ---
+google-generativeai>=0.8.0
+python-dotenv
+
+# --- Memoria y Exocórtex ---
+qdrant-client
+fastembed
+
+# --- Órganos de Acción (Vigía y Notificaciones) ---
+python-telegram-bot
+
+# --- Procesamiento de Documentos ---
+python-docx
+PyMuPDF
+
+# --- Utilidades ---
+pathlib
+requests

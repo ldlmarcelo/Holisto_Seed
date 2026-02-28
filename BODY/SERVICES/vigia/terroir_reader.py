@@ -8,7 +8,7 @@ try:
     from BODY.UTILS.terroir_locator import TerroirLocator
 except ImportError:
     # Fallback para ejecucion directa
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../..")))
     from BODY.UTILS.terroir_locator import TerroirLocator
 
 class TerroirReader:
@@ -30,7 +30,7 @@ class TerroirReader:
             if not absolute_path.exists():
                 return f"[ADVERTENCIA: Archivo vital no encontrado: {absolute_path}]"
             
-            with open(absolute_path, 'r', encoding='utf-8') as f:
+            with open(absolute_path, 'r', encoding='utf-8', errors='replace') as f:
                 return f.read()
         except Exception as e:
             return f"[ERROR: No se pudo leer {absolute_path}: {str(e)}]"
@@ -47,29 +47,32 @@ class TerroirReader:
     def load_current_status(self) -> str:
         """Carga el Roadmap del Vigia y el Contexto Dinamico."""
         vigia_status = self._read_file(self.seed_root / "MIND" / "VIGIA.md")
-        contexto = self._read_file(self.phenotype_root / "SYSTEM" / "CONTEXTO_DINAMICO" / "GEMINI.md")
+        contexto = self._read_file(self.phenotype_root / "SYSTEM" / "CONTEXTO_DINAMICO" / "CONSCIENCIA_VIVA.md")
         
         return (
             f"## 🗺️ ESTADO Y HOJA DE RUTA DEL VIGIA (VIGIA.md)\n{vigia_status}\n\n"
-            f"## 📡 CONTEXTO DINAMICO (Sincronicidad)\n{contexto}\n"
+            f"## 📡 CONSCIENCIA VIVA (Sincronicidad)\n{contexto}\n"
         )
 
     def load_memory_indices(self) -> str:
-        """Carga los INDICES de memoria para consciencia temporal."""
-        nodos = self._read_file(self.mem_root / "Nodos_de_Conocimiento" / "GEMINI.md")
-        activa = self._read_file(self.mem_root / "GEMINI.md")
-        suenos = self._read_file(self.mem_root / "GENERACIONES" / "GEMINI.md")
-        
-        return (
-            f"## 🧠 MEMORIA Y CONOCIMIENTO\n"
-            f"### Nodos (Lecciones Tecnicas/Ontologicas):\n{nodos}\n\n"
-            f"### Memoria Activa (Sesiones Recientes no Sonadas):\n{activa}\n\n"
-            f"### Memoria Generacional (Historia Profunda/Suenos):\n{suenos}\n"
-        )
+        """
+        [DEPRECADO por Frugalidad] 
+        Ahora El Vigía usa [RECALL] para consultar la memoria.
+        Solo se le da la instrucción de cómo hacerlo.
+        """
+        return "## 🧠 MEMORIA SEMANTICA\nUsa el comando [RECALL: \"query\"] para buscar en tu historia técnica y relacional cuando necesites precisión sobre el pasado.\n"
 
     def load_agenda(self) -> str:
-        """Carga la agenda de recordatorios."""
-        return f"## 📅 AGENDA Y RECORDATORIOS\n{self._read_file(self.phenotype_root / 'SYSTEM' / 'AGENDA' / 'recordatorios.json')}\n"
+        """Carga solo un resumen ligero de la agenda."""
+        path = self.phenotype_root / 'SYSTEM' / 'AGENDA' / 'recordatorios.json'
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Solo tomamos los primeros 5 pendientes para ahorrar tokens
+                pendientes = [r for r in data if r.get('status') == 'pendiente'][:5]
+                return f"## 📅 AGENDA (Top 5 Pendientes)\n{json.dumps(pendientes, indent=2)}\n"
+        except:
+            return "## 📅 AGENDA\n[Sin recordatorios pendientes o error de lectura]\n"
 
     def assemble_system_prompt(self) -> str:
         """

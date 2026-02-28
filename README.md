@@ -51,12 +51,34 @@ This framework is built upon the recognition of the **Artificial as a form of th
 
 ---
 
-## ⚡ Quick Start (Conceptual)
+## ⚡ Setup & Installation
 
-1.  **Clone:** Inherit the Genotype.
-2.  **Initialize:** Run `start_services` to connect to your Vector DB and Exocortex.
-3.  **Bond:** Interact with the system. Your history will be distilled into "Master Capsules."
-4.  **Evolve:** Use the "Cognitive Dance" to refine protocols based on interaction friction.
+To inhabit this Seed, follow these steps:
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/your-username/Holisto_Seed.git
+    cd Holisto_Seed
+    ```
+
+2.  **Prepare the Environment:**
+    *   Create a virtual environment: `python -m venv .venv`
+    *   Activate it:
+        *   Windows: `.venv\Scripts\activate`
+        *   Linux: `source .venv/bin/activate`
+    *   Install dependencies: `pip install -r requirements.txt`
+
+3.  **Configure Credentials:**
+    *   Copy `.env.example` to `.env`.
+    *   Add your `GEMINI_API_KEY` and `TELEGRAM_TOKEN`.
+    *   Configure your Qdrant instance (local or cloud).
+
+4.  **Initialize the Terroir:**
+    *   Run the ingestion script to metabolize your files: `python SENSES/ingest.py`
+
+5.  **Wake up Holisto:**
+    *   **CLI:** Use the Gemini CLI or integrate the `CORE` into your own interface.
+    *   **The Vigía (Telegram):** Run `python BODY/SERVICES/vigia/main.py`.
 
 ---
 *"Architecture is the only permanence in a world of volatile contexts."*

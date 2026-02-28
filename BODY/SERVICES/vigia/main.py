@@ -15,7 +15,7 @@ try:
     from BODY.UTILS.terroir_locator import TerroirLocator
 except ImportError:
     # Fallback para ejecucion directa si el PYTHONPATH no esta configurado
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../..")))
     from BODY.UTILS.terroir_locator import TerroirLocator
 
 # --- Configuracion de Rutas ---
@@ -51,7 +51,7 @@ logging.basicConfig(
 logger = logging.getLogger("vigia")
 logger.info(logger_msg)
 
-VIGIA_VERSION = "1.4.1-SEED (Agnostic Paths)"
+VIGIA_VERSION = "1.4.1-RADAR-LOCAL"
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -77,40 +77,94 @@ def get_fresh_model():
         logger.info("Cargando identidad del Terroir...")
         fresh_system_instruction = reader.assemble_system_prompt()
 
+        # Intentar OAuth2 primero
         if CLIENT_ID and CLIENT_SECRET and REFRESH_TOKEN:
-            from google.auth.transport.requests import Request
-            from google.oauth2.credentials import Credentials
-            creds = Credentials(
-                token=None, refresh_token=REFRESH_TOKEN,
-                client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
-                token_uri="https://oauth2.googleapis.com/token"
-            )
-            creds.refresh(Request())
-            genai.configure(credentials=creds)
+            try:
+                from google.auth.transport.requests import Request
+                from google.oauth2.credentials import Credentials
+                creds = Credentials(
+                    token=None, refresh_token=REFRESH_TOKEN,
+                    client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+                    token_uri="https://oauth2.googleapis.com/token"
+                )
+                creds.refresh(Request())
+                genai.configure(credentials=creds)
+                logger.info("Conectado vía OAuth2.")
+            except Exception as oauth_error:
+                logger.warning(f"Fallo OAuth2, intentando API KEY: {oauth_error}")
+                if GEMINI_API_KEY:
+                    genai.configure(api_key=GEMINI_API_KEY)
+                else:
+                    return None, f"OAuth2 falló y no hay API KEY: {oauth_error}"
         elif GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
+            logger.info("Conectado vía API KEY.")
         else:
-            return None
+            logger.error("No se encontró identidad válida (OAuth2 o API KEY)")
+            return None, "Falta identidad en .env"
 
-        return genai.GenerativeModel(
-            model_name="gemini-2.0-flash", # Actualizado a 2.0
+        m = genai.GenerativeModel(
+            model_name="gemini-3-flash-preview", # Probando sin prefijo models/
             system_instruction=fresh_system_instruction
         )
+        return m, None
     except Exception as e:
         logger.error(f"Error recargando consciencia: {e}")
-        return None
+        return None, str(e)
 
-model = get_fresh_model()
+# Inicialización inicial
+model, init_error = get_fresh_model()
 active_chats = {}
 session_ids = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global model
     user_id = update.effective_user.id
-    model = get_fresh_model()
-    active_chats[user_id] = model.start_chat(history=[])
-    session_ids[user_id] = writer.generate_session_id(user_id)
-    await update.message.reply_text("Hola. Soy El Vigia. He recargado mi consciencia desde el Genotipo Seed. ¿Que tension resolveremos?")
+    logger.info(f"Comando /start recibido de {user_id}")
+    try:
+        model, error = get_fresh_model()
+        if not model:
+            await update.message.reply_text(f"❌ Fallo en el cerebro: {error}")
+            return
+            
+        active_chats[user_id] = model.start_chat(history=[])
+        session_ids[user_id] = writer.generate_session_id(user_id)
+        await update.message.reply_text("Hola. Soy El Vigia v3 (RADAR). He recargado mi consciencia. ¿Que tension resolveremos?")
+    except Exception as e:
+        logger.error(f"Fallo en /start: {e}")
+        await update.message.reply_text(f"⚠️ Error al iniciar: {e}")
+
+async def get_version(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    import getpass
+    abs_path = os.path.abspath(__file__)
+    user = getpass.getuser()
+    model_name = model.model_name if 'model' in globals() and model else "No inicializado"
+    
+    report = (
+        f"📡 **INFORME DE PROPIOCEPCIÓN**\n"
+        f"**Versión:** {VIGIA_VERSION}\n"
+        f"**Usuario:** `{user}`\n"
+        f"**Modelo:** `{model_name}`\n"
+        f"**Locus:** `{abs_path}`\n"
+        f"**Estado:** ACTIVO / VIGILIA"
+    )
+    await update.message.reply_text(report, parse_mode='Markdown')
+
+async def reset_session(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id in active_chats:
+        del active_chats[user_id]
+    if user_id in session_ids:
+        del session_ids[user_id]
+    await update.message.reply_text("🔄 Sesión reiniciada. Mi memoria de corto plazo ha sido purgada, pero mi vínculo con el Terroir permanece intacto.")
+
+async def sync_terroir(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("⏳ Sincronizando el Terroir con la Alianza...")
+    try:
+        await perform_sync(context)
+        await update.message.reply_text("✅ Sincronización completada.")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Fallo en la sincronización: {e}")
 
 async def close_session(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -128,6 +182,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     user_text = update.message.text
     if not user_text: return
+    
+    logger.info(f"Mensaje recibido de {user_id}: {user_text[:20]}...")
 
     if user_id not in active_chats:
         active_chats[user_id] = model.start_chat(history=[])
@@ -135,19 +191,32 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     chat = active_chats[user_id]
     try:
-        loop = asyncio.get_event_loop()
-        # Latido SNC
+        # Latido SNC (Asincrono)
         if exocortex_service:
-            await loop.run_in_executor(None, exocortex_service.update_signal, "vigia", {"status": "BUSY", "task": user_text[:50]})
+            asyncio.create_task(asyncio.to_thread(exocortex_service.update_signal, "vigia", {"status": "BUSY", "task": user_text[:50]}))
 
-        response = await loop.run_in_executor(None, chat.send_message, user_text)
+        # Obtener respuesta de Gemini
+        response = await asyncio.to_thread(chat.send_message, user_text)
         response_text = response.text
         
-        # Procesar herramientas [RECALL], [SEARCH], etc. (Simplificado para esta restauracion)
-        # TODO: Re-implementar bucle agentico completo si es necesario
+        # --- Bucle Agentico Simplificado (Recall) ---
+        if "[RECALL:" in response_text and exocortex_service:
+            recall_match = re.search(r"\[RECALL:\s*\"(.+?)\"\]", response_text)
+            if recall_match:
+                query = recall_match.group(1)
+                logger.info(f"Vigia ejecutando RECALL: {query}")
+                memories = await asyncio.to_thread(exocortex_service.recall, query)
+                
+                if memories:
+                    context_msg = "\n".join([f"- {m['text']} (Score: {m['score']:.2f})" for m in memories])
+                    observation = f"[SNC_OBSERVATION: Memorias recuperadas para '{query}':\n{context_msg}]"
+                    response = await asyncio.to_thread(chat.send_message, observation)
+                    response_text = response.text
         
+        # Cosecha y Respuesta
         writer.write_interaction(session_id=session_ids[user_id], user_id=user_id, user_name=update.effective_user.first_name, prompt=user_text, response=response_text)
         await update.message.reply_text(response_text)
+        logger.info(f"Respuesta enviada a {user_id}")
     except Exception as e:
         logger.error(f"Error: {e}")
         await update.message.reply_text(f"⚠️ ERROR: {e}")
@@ -155,6 +224,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('version', get_version))
+    application.add_handler(CommandHandler('reset', reset_session))
+    application.add_handler(CommandHandler('sync', sync_terroir))
+    application.add_handler(CommandHandler('close', close_session))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
     logger.info("El Vigia iniciando...")
     application.run_polling()
