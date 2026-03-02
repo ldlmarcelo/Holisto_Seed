@@ -86,4 +86,12 @@ def generate_map():
     print("[+] Mapa MD y JSON generados exitosamente.")
 
 if __name__ == "__main__":
-    generate_map()
+    try:
+        generate_map()
+        # Forzar limpieza de buffers y salida explícita para evitar bloqueos en el CLI
+        sys.stdout.flush()
+        sys.stderr.flush()
+        sys.exit(0)
+    except Exception as e:
+        print(f"[!] Error crítico en MAP-GEN: {str(e)}")
+        sys.exit(1)

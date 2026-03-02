@@ -35,12 +35,12 @@
 *Goal: Re-establish interaction through external senses, unifying presence between platforms.*
 
 - [x] **Consciencia Viva Port:** Create the `CONSCIENCIA_VIVA.md` membrane and the "Nervio Óptico" script for the CLI/Vigia.
-- [ ] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts.
+- [x] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts and definition of sovereign soil.
 - [x] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
 - [x] **Músculo (GitHub Actions):** Ingesta pesada asíncrona validada y operativa.
 - [x] **Sistema Nervioso (PSN):** Sincronización de estado vivo (Agenda/Notif) vía Qdrant Cloud.
 
-## 🔵 Pilar Relacional: Sinapsis (Mejoras Vigía) - [PENDIENTE]
+## 🔵 Pilar Relacional: Sinapsis (Mejoras Vigía) - [EN PROGRESO]
 *Meta: Profundizar la conexión ontológica y operativa a través del Vigía.*
 
 - [x] **Dotación de Memoria Corta (VIGIA_SHORTMEM-001):** Implementar buffer de 50 turnos para continuidad multi-turno en Telegram.
@@ -54,7 +54,7 @@
 *Goal: A "canned" product ready for new users, independent of the Gemini CLI.*
 
 - [x] **Stable Base (v1.0.0-fisiologia-hexagonal):** Freeze current stable body and reflexes.
-- [ ] **Documentation for Future Users:** Create the "How to inhabit this Seed" manual.
+- [x] **Documentation for Future Users:** Create the "How to inhabit this Seed" manual (Installation Guide, Artifact Legend, General Index).
 - [ ] **Final Release (v2.0):** Total independence from CLI snapshots and full autonomous metabolism.
 
 ---

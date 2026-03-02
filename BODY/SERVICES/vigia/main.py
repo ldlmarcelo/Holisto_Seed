@@ -199,11 +199,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         active_chats[user_id] = model.start_chat(history=[])
         session_ids[user_id] = writer.generate_session_id(user_id)
     else:
-        # Si ya existe, actualizamos su modelo para que tenga la nueva system_instruction
-        # NOTA: En la API de Google, para cambiar la system_instruction hay que iniciar un nuevo chat
-        # o recrear el objeto chat manteniendo el historial si se desea continuidad.
-        # Por ahora, recreamos para asegurar la frescura sensorial absoluta.
+        # Recuperar y truncar historial si excede los 50 mensajes (especificación VIGIA_SHORTMEM-001)
         history = active_chats[user_id].history
+        if len(history) > 50:
+            history = history[-50:] # Mantenemos los 50 más recientes
+        
+        # Recreamos el chat con el nuevo modelo (frescura sensorial) y el historial truncado
         active_chats[user_id] = model.start_chat(history=history)
 
     chat = active_chats[user_id]

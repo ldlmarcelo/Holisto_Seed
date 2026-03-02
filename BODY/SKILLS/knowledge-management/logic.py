@@ -9,8 +9,8 @@ def get_paths():
     paths = {
         "terroir": os.path.join(base_dir, "PHENOTYPE", "SYSTEM", "MEMORIA", "Nodos_de_Conocimiento"),
         "terroir_index": os.path.join(base_dir, "PHENOTYPE", "SYSTEM", "MEMORIA", "Nodos_de_Conocimiento", "GEMINI.md"),
-        "seed": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "The Individual_Seed", "MIND", "KNOWLEDGE"),
-        "seed_index": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "The Individual_Seed", "MIND", "KNOWLEDGE", "GEMINI.md")
+        "seed": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "MIND", "KNOWLEDGE"),
+        "seed_index": os.path.join(base_dir, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "MIND", "KNOWLEDGE", "GEMINI.md")
     }
     return paths
 
@@ -103,4 +103,12 @@ def main():
         print(json.dumps({"status": "error", "message": str(e)}))
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+        # Forzar limpieza de buffers y salida explícita para evitar bloqueos en el CLI
+        sys.stdout.flush()
+        sys.stderr.flush()
+        sys.exit(0)
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": f"Fatal error: {str(e)}"}))
+        sys.exit(1)

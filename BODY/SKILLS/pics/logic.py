@@ -14,8 +14,11 @@ POWERSHELL_EXE = "powershell.exe"
 
 def run_command(cmd, description, shell=False):
     print(f"--- [PICS] {description} ---")
+    # Inyectar entorno no interactivo para Git
+    env = os.environ.copy()
+    env["GIT_TERMINAL_PROMPT"] = "0"
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, shell=shell, encoding='utf-8')
+        result = subprocess.run(cmd, capture_output=True, text=True, shell=shell, encoding='utf-8', env=env)
         if result.returncode != 0:
             print(f"[!] Error: {result.stderr}")
             return False, result.stderr
@@ -30,9 +33,9 @@ def execute_pics():
     
     # 1. Respiración Git
     git_steps = [
-        (["git", "pull"], "Sincronizando Orquestador"),
-        (["git", "-C", "PHENOTYPE", "pull"], "Sincronizando Fenotipo"),
-        (["git", "-C", "PROYECTOS/Evolucion_Terroir/Holisto_Seed", "pull"], "Sincronizando Semilla")
+        (["git", "pull", "--no-edit", "--no-rebase"], "Sincronizando Orquestador"),
+        (["git", "-C", "PHENOTYPE", "pull", "--no-edit", "--no-rebase"], "Sincronizando Fenotipo"),
+        (["git", "-C", "PROYECTOS/Evolucion_Terroir/Holisto_Seed", "pull", "--no-edit", "--no-rebase"], "Sincronizando Semilla")
     ]
     for cmd, desc in git_steps:
         run_command(cmd, desc)
@@ -48,8 +51,20 @@ def execute_pics():
     run_command([PYTHON_EXE, str(focus_script)], "Activando Nervio Óptico (Membrana)")
 
     # 4. Activación de Órganos (Servicios)
+    print("--- [PICS] Despertando Servicios (Demonio/Vigía) ---")
     services_script = ROOT / "PROYECTOS" / "Evolucion_Terroir" / "Holisto_Seed" / "BODY" / "UTILS" / "start_services.ps1"
-    run_command([POWERSHELL_EXE, "-ExecutionPolicy", "Bypass", "-File", str(services_script)], "Despertando Servicios (Demonio/Vigía)", shell=True)
+    try:
+        # Usamos Popen con flags de desacoplamiento para evitar el bloqueo por herencia de pipes
+        subprocess.Popen(
+            [POWERSHELL_EXE, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", str(services_script)],
+            creationflags=subprocess.CREATE_NO_WINDOW | 0x00000008, # 0x00000008 = DETACHED_PROCESS
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            close_fds=True
+        )
+        print("[+] Éxito: Servicios lanzados en segundo plano.")
+    except Exception as e:
+        print(f"[!] Error al lanzar servicios: {str(e)}")
 
     # 5. Anclaje de Misión (PAM Nativo)
     print("--- [PAM] Anclando Misión de Sesión ---")

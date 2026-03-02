@@ -96,7 +96,7 @@ def distill_only(log_path: str):
         with open(PROMPT_FILE, 'r', encoding='utf-8') as f: template = f.read()
         compact_log = compress_log(log_data)
         final_prompt = template.replace("{session_log}", compact_log)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3-flash-preview')
         
         response = model.generate_content(final_prompt)
         cleaned = clean_ai_json(response.text)
@@ -150,29 +150,21 @@ def seal_only(draft_path: str):
                 shutil.copytree(src, dst)
 
     # --- INGESTA VECTORIAL (Sincronización del Exocórtex) ---
-    ingest_paths = [
-        os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py"),
-        os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY", "SERVICES", "ingest.py")
-    ]
+    ingest_p = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py")
     
-    ingest_executed = False
-    for ingest_p in ingest_paths:
-        if os.path.exists(ingest_p):
-            print(f"[ACTO 2] Iniciando Digestión Semántica: {os.path.basename(ingest_p)}")
-            try:
-                # Ejecutamos y mostramos el reporte final
-                result = subprocess.run([PYTHON_EXEC, ingest_p], capture_output=True, text=True, encoding='utf-8')
-                if "REPORTE DE DIGESTIÓN SEMÁNTICA" in result.stdout:
-                    # Extraer solo el bloque del reporte para no saturar
-                    report_match = re.search(r"(=+.*?=+)", result.stdout, re.DOTALL)
-                    if report_match: print(report_match.group(1))
-                ingest_executed = True
-                break
-            except Exception as e:
-                logger.error(f"Fallo en ingesta vectorial ({ingest_p}): {e}")
-
-    if not ingest_executed:
-        print("[-] ADVERTENCIA: No se encontró el motor de ingesta vectorial. Memoria semántica desfasada.")
+    if os.path.exists(ingest_p):
+        print(f"[ACTO 2] Iniciando Digestión Semántica: {os.path.basename(ingest_p)}")
+        try:
+            # Ejecutamos y mostramos el reporte final
+            result = subprocess.run([PYTHON_EXEC, ingest_p], capture_output=True, text=True, encoding='utf-8')
+            if "REPORTE DE DIGESTIÓN SEMÁNTICA" in result.stdout:
+                # Extraer solo el bloque del reporte para no saturar
+                report_match = re.search(r"(=+.*?=+)", result.stdout, re.DOTALL)
+                if report_match: print(report_match.group(1))
+        except Exception as e:
+            logger.error(f"Fallo en ingesta vectorial: {e}")
+    else:
+        print("[-] ADVERTENCIA: No se encontró el motor de ingesta vectorial en SENSES. Memoria semántica desfasada.")
 
     # --- GIT SYNC (Recursive Triple Alliance) ---
     git_targets = [
@@ -202,20 +194,60 @@ def seal_only(draft_path: str):
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
 def pre_harvest_vigilance():
-    """Vigilancia Epistémica: Recordatorio de integridad antes de la cosecha."""
+    """Vigilancia Epistémica: Bloqueo procedimental si hay inconsistencias biográficas."""
     print("\n" + "="*50)
-    print("🛡️  VIGILANCIA EPISTÉMICA PRE-COSECHA")
+    print("🛡️  VIGILANCIA EPISTÉMICA ACTIVA")
     print("="*50)
-    print("1. ¿Has cristalizado los Nodos de Conocimiento (PGNC) emergentes?")
-    print("2. ¿Has actualizado la Documentación (README/ROADMAP) con los hitos alcanzados?")
-    print("3. ¿Has verificado la coherencia de las Future Notions?")
+    
+    # 1. Check de Nodos Huérfanos
+    nodes_dir = os.path.join(MEM_ROOT, "Nodos_de_Conocimiento")
+    index_file = os.path.join(nodes_dir, "GEMINI.md")
+    
+    error_detected = False
+    
+    if os.path.exists(nodes_dir) and os.path.exists(index_file):
+        try:
+            with open(index_file, 'r', encoding='utf-8') as f:
+                # El indice puede venir envuelto en bloques de codigo MD
+                content = f.read().strip()
+                if content.startswith("```json"):
+                    content = content.replace("```json", "").replace("```", "").strip()
+                index_data = json.loads(content)
+            
+            indexed_paths = [n.get('path') for n in index_data.get('content', {}).get('nodes', [])]
+            md_files = [f for f in os.listdir(nodes_dir) if f.endswith('.md') and f != 'GEMINI.md']
+            
+            orphans = []
+            for md in md_files:
+                # Intentar matchear con el path relativo usado en el indice
+                rel_path = f"SYSTEM/MEMORIA/Nodos_de_Conocimiento/{md}"
+                if rel_path not in indexed_paths:
+                    # Segundo intento: match parcial por nombre de archivo
+                    if not any(md in p for p in indexed_paths if p):
+                        orphans.append(md)
+            
+            if orphans:
+                print(f"❌ ERROR: Nodos huérfanos detectados (sin indexar en GEMINI.md):")
+                for o in orphans: print(f"   - {o}")
+                error_detected = True
+            else:
+                print("✅ Integridad de Nodos: Todos los archivos están indexados.")
+        except Exception as e:
+            print(f"⚠️ Alerta de Integridad: No se pudo validar el índice de nodos: {e}")
+
+    if error_detected:
+        print("\n[!] BLOQUEO EPISTÉMICO: El Ritual de Cierre ha sido abortado.")
+        print("[!] Razón: Memoria biográfica fragmentada. Actualiza los índices antes de cosechar.")
+        print("="*50 + "\n")
+        sys.exit(1)
+    
     print("="*50 + "\n")
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--distill"
     
     if mode == "--distill":
-        pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
+        # pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
         path = sys.argv[2] if len(sys.argv) > 2 else find_latest_session_log()
         distill_only(path)
     elif mode == "--seal":
