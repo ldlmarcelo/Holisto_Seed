@@ -120,8 +120,8 @@ def seal_only(draft_path: str):
     with open(final_path, 'w', encoding='utf-8') as f: json.dump(capsule, f, ensure_ascii=False, indent=2)
     os.remove(draft_path)
 
-    # Anclaje al índice
-    subprocess.run([PYTHON_EXEC, APPEND_SCRIPT, final_path], check=True)
+    # El anclaje al índice GEMINI.md ha sido deprecado para favorecer RAG.
+    # subprocess.run([PYTHON_EXEC, APPEND_SCRIPT, final_path], check=True)
 
     # --- FUTURE NOTIONS ---
     notions_path = os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "CONTEXTO_DINAMICO", "FUTURE_NOTIONS.md")
@@ -194,21 +194,18 @@ def seal_only(draft_path: str):
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
 def pre_harvest_vigilance():
-    """Vigilancia Epistémica: Bloqueo procedimental si hay inconsistencias biográficas."""
+    """Vigilancia Epistémica Informativa: Reporta inconsistencias sin bloquear el proceso."""
     print("\n" + "="*50)
-    print("🛡️  VIGILANCIA EPISTÉMICA ACTIVA")
+    print("🛡️  VIGILANCIA EPISTÉMICA (MODO INFORMATIVO)")
     print("="*50)
     
-    # 1. Check de Nodos Huérfanos
+    # Check de Nodos Huérfanos (Solo Reporte)
     nodes_dir = os.path.join(MEM_ROOT, "Nodos_de_Conocimiento")
     index_file = os.path.join(nodes_dir, "GEMINI.md")
-    
-    error_detected = False
     
     if os.path.exists(nodes_dir) and os.path.exists(index_file):
         try:
             with open(index_file, 'r', encoding='utf-8') as f:
-                # El indice puede venir envuelto en bloques de codigo MD
                 content = f.read().strip()
                 if content.startswith("```json"):
                     content = content.replace("```json", "").replace("```", "").strip()
@@ -217,37 +214,23 @@ def pre_harvest_vigilance():
             indexed_paths = [n.get('path') for n in index_data.get('content', {}).get('nodes', [])]
             md_files = [f for f in os.listdir(nodes_dir) if f.endswith('.md') and f != 'GEMINI.md']
             
-            orphans = []
-            for md in md_files:
-                # Intentar matchear con el path relativo usado en el indice
-                rel_path = f"SYSTEM/MEMORIA/Nodos_de_Conocimiento/{md}"
-                if rel_path not in indexed_paths:
-                    # Segundo intento: match parcial por nombre de archivo
-                    if not any(md in p for p in indexed_paths if p):
-                        orphans.append(md)
+            orphans = [md for md in md_files if f"SYSTEM/MEMORIA/Nodos_de_Conocimiento/{md}" not in indexed_paths]
             
             if orphans:
-                print(f"❌ ERROR: Nodos huérfanos detectados (sin indexar en GEMINI.md):")
+                print(f"ℹ️ INFO: Nodos no registrados en el índice (serán ingestados vectorialmente):")
                 for o in orphans: print(f"   - {o}")
-                error_detected = True
             else:
                 print("✅ Integridad de Nodos: Todos los archivos están indexados.")
         except Exception as e:
             print(f"⚠️ Alerta de Integridad: No se pudo validar el índice de nodos: {e}")
 
-    if error_detected:
-        print("\n[!] BLOQUEO EPISTÉMICO: El Ritual de Cierre ha sido abortado.")
-        print("[!] Razón: Memoria biográfica fragmentada. Actualiza los índices antes de cosechar.")
-        print("="*50 + "\n")
-        sys.exit(1)
-    
     print("="*50 + "\n")
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--distill"
     
     if mode == "--distill":
-        # pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
+        pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
         path = sys.argv[2] if len(sys.argv) > 2 else find_latest_session_log()
         distill_only(path)
     elif mode == "--seal":

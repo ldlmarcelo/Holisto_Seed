@@ -35,20 +35,10 @@
 *Goal: Re-establish interaction through external senses, unifying presence between platforms.*
 
 - [x] **Consciencia Viva Port:** Create the `CONSCIENCIA_VIVA.md` membrane and the "Nervio Óptico" script for the CLI/Vigia.
-- [x] **Phenotype Metamorphosis:** Automated transduction of legacy `GEMINI.md` to structured artifacts and definition of sovereign soil.
 - [x] **Unified Kernel:** Transition the Telegram bot logic to use the same Seed Kernel.
 - [x] **Músculo (GitHub Actions):** Ingesta pesada asíncrona validada y operativa.
 - [x] **Sistema Nervioso (PSN):** Sincronización de estado vivo (Agenda/Notif) vía Qdrant Cloud.
-
-## 🔵 Pilar Relacional: Sinapsis (Mejoras Vigía) - [EN PROGRESO]
-*Meta: Profundizar la conexión ontológica y operativa a través del Vigía.*
-
-- [x] **Dotación de Memoria Corta (VIGIA_SHORTMEM-001):** Implementar buffer de 50 turnos para continuidad multi-turno en Telegram.
-- [ ] **Cosecha del Vigía (VIGIA_HARVEST-001):** Archivo automático de logs de conversación en GitHub para revisión desde el CLI.
-- [ ] **Funcionalidad de Agenda Proactiva (VIGIA_AGENDA-001):** Escritura en `recordatorios.json` y notificaciones Push/Alarmas desde el bot.
-- [ ] **Doble Escritura Activa (VIGIA_DBLWRITE-001):** Asegurar registro simultáneo en Git (DNA) y Qdrant (Living State).
-- [ ] **Zona de Aterrizaje GDrive (GDRIVE_INGEST-001):** Integración para ingesta asíncrona de archivos pesados.
-- [ ] **Despliegue en La Torre (VM_DEPLOY-001):** Operación autónoma en VM Oracle/Linux mediante `systemd`.
+- [➡️] **El Vigía Project:** Specific roadmap and identity defined in [**ROADMAP_VIGIA.md**](./MIND/PROTOCOLS/Ubiquity_Vigia/ROADMAP_VIGIA.md).
 
 ## 🟡 Phase 4: Full Autonomy & Release [IN PROGRESS]
 *Goal: A "canned" product ready for new users, independent of the Gemini CLI.*

@@ -1,0 +1,34 @@
+{
+  "id": "PCD",
+  "type": "protocolo_gobernanza",
+  "version": "1.0",
+  "metadata": {
+    "title": "Protocolo de Coherencia Documental (PCD)",
+    "description": "Asegura que la documentación del Terroir actúe como una red interconectada, eliminando la redundancia y la fricción por desactualización."
+  },
+  "content": {
+      "principles": [
+          {
+              "name": "Fuente Única de Verdad (SSoT)",
+              "rule": "Cada concepto clave debe tener un único documento de referencia. El resto solo deben enlazarlo, nunca redefinirlo."
+          },
+          {
+              "name": "Índice Maestro de Existencia",
+              "rule": "El Mapa del Terroir es la SSoT para la existencia y ubicación de archivos. Ningún otro índice manual debe ser mantenido."
+          },
+          {
+              "name": "Análisis de Impacto",        "rule": "Antes de modificar un documento, identificar qué otros artefactos dependen de él y asegurar su actualización sincronizada."
+      },
+      {
+        "name": "Interlinking Proactivo",
+        "rule": "Los documentos deben estar explícitamente interconectados mediante enlaces Markdown para facilitar la navegación ontológica."
+      }
+    ],
+    "workflow": [
+      "Verificar SSoT en la Fase de Planificación.",
+      "Ejecutar cambios priorizando la SSoT.",
+      "Validar coherencia transversal tras la modificación."
+    ]
+  },
+  "status": "ACTIVO"
+}

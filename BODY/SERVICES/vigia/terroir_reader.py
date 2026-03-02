@@ -36,21 +36,26 @@ class TerroirReader:
             return f"[ERROR: No se pudo leer {absolute_path}: {str(e)}]"
 
     def load_identity(self) -> str:
-        """Carga la Constitucion General y la Especifica del Vigia."""
+        """Carga los tres pilares de identidad: Constitucion, Usuario y Proyectos."""
         general = self._read_file(self.seed_root / "CORE" / "CONSTITUTION.md")
-        especifica = self._read_file(self.seed_root / "MIND" / "CONSTITUCION_VIGIA.md")
+        usuario = self._read_file(self.phenotype_root / "USUARIO" / "gemini.md")
+        proyectos = self._read_file(self.root / "proyectos" / "gemini.md")
+        ley_vigia = self._read_file(self.seed_root / "MIND" / "PROTOCOLS" / "Ubiquity_Vigia" / "VIGIA_METABOLISM.json")
+        
         return (
             f"## 📜 CONSTITUCION GENERAL (CONSTITUTION.md)\n{general}\n\n"
-            f"## 🏠 CONSTITUCION DEL VIGIA (Locus Obligatorio)\n{especifica}\n"
+            f"## 👤 PERFIL DEL USUARIO (USUARIO/gemini.md)\n{usuario}\n\n"
+            f"## 📂 INDICE DE PROYECTOS (PROYECTOS/gemini.md)\n{proyectos}\n\n"
+            f"## 🏠 LEY METABOLICA DEL VIGIA (JSON)\n{ley_vigia}\n"
         )
 
     def load_current_status(self) -> str:
         """Carga el Roadmap del Vigia y el Contexto Dinamico."""
-        vigia_status = self._read_file(self.seed_root / "MIND" / "VIGIA.md")
+        vigia_status = self._read_file(self.seed_root / "MIND" / "KNOWLEDGE" / "Identity" / "Vigia_Interface.md")
         contexto = self._read_file(self.phenotype_root / "SYSTEM" / "CONTEXTO_DINAMICO" / "CONSCIENCIA_VIVA.md")
         
         return (
-            f"## 🗺️ ESTADO Y HOJA DE RUTA DEL VIGIA (VIGIA.md)\n{vigia_status}\n\n"
+            f"## 🗺️ ESTADO Y HOJA DE RUTA DEL VIGIA (VIGIA_INTERFACE.md)\n{vigia_status}\n\n"
             f"## 📡 CONSCIENCIA VIVA (Sincronicidad)\n{contexto}\n"
         )
 

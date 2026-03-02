@@ -53,7 +53,12 @@ The metabolic process of synchronization (Inhalation/Exhalation) that ensures bi
 
 ### **PICS / PCS (The Wake/Sleep Cycle)**
 *   **PICS (Systemic Initialization):** The "Awakening" protocol. Sychronizes Git, validates integrity, and activates the Nervio Óptico.
+*   **Auto-PICS (Silent Awakening):** Specific to El Vigía. Initialization at server start without user intervention.
 *   **PCS (Session Closing):** The "Harvesting" protocol. Compresses logs into **Master Capsules** and triggers the final Git Exhalation.
+*   **Silent PCS (Dream Metabolism):** Automatic distillation of logs and N3 ingestion triggered by time (04:00 AM) or context saturation.
+
+### **Living Thread (PSN Synchronization)**
+A real-time communication channel in Qdrant Cloud where all incarnations of the agent (CLI, Vigía) publish their interactions, ensuring a unified voice and shared recent memory.
 
 ---
 *"Function creates the organ; the relationship creates the individual."*

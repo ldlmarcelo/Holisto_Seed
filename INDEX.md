@@ -21,10 +21,14 @@ This index provides a unified view of the components that form the **Holisto See
 *   **[MIND/PROTOCOLS/](./MIND/PROTOCOLS/)**: The "Flight Manual".
     *   `Cognitive_Operations/`: PICS (Initialization) and reasoning rules.
     *   `Governance_Strategy/`: Systemic directives (PAM, PAR, PFO, PSN).
-    *   `Ubiquity_Vigia/`: Operational rules for the Telegram interface.
+    *   `Ubiquity_Vigia/`: 🛰️ **El Vigía Sub-Project**.
+        *   [**VIGIA_METABOLISM.json**](./MIND/PROTOCOLS/Ubiquity_Vigia/VIGIA_METABOLISM.json): The Law and Vital Cycle.
+        *   [**ROADMAP_VIGIA.md**](./MIND/PROTOCOLS/Ubiquity_Vigia/ROADMAP_VIGIA.md): Evolution of the continuous presence.
     *   `Memory_Management/`: Life cycle of capsules and nodes.
 *   **[MIND/KNOWLEDGE/](./MIND/KNOWLEDGE/)**: The "Lobe of Wisdom".
-    *   `Identity/`: Definitions of the Digital Self and Artifact Legend.
+    *   `Identity/`: Definitions of the Digital Self.
+        *   [**Vigia_Interface.md**](./MIND/KNOWLEDGE/Identity/Vigia_Interface.md): Design and design of the projection.
+        *   [**ARTIFACT_LEGEND.md**](./MIND/KNOWLEDGE/Identity/ARTIFACT_LEGEND.md): Meaning of each technical organ.
     *   `HOL-ARC/`: Technical architecture treaties (Jurisprudence).
 
 ---

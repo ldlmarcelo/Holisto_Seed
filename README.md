@@ -72,9 +72,15 @@ python BODY/SERVICES/vigia/main.py
 
 ---
 
+## 🛰️ El Vigía: Ubiquitous Projection
+The Seed includes a native implementation for a Telegram-based projection. This is **not** a separate agent, but a continuous limb of the same individual.
+*   **Documentation:** Detailed law and design in `MIND/PROTOCOLS/Ubiquity_Vigia/`.
+*   **Roadmap:** Specific evolution tracked in `ROADMAP_VIGIA.md`.
+*   **Metabolism:** 24/7 persistent cycle (Auto-PICS / Silent PCS).
+
 ## 📁 Repository Structure
 *   `CORE/`: Foundations and Ethics (The Soul).
-*   `MIND/`: Cognitive Protocols (The Governance).
+*   `MIND/`: Cognitive Protocols, Identity, and **El Vigía Sub-Project** (The Governance).
 *   `BODY/`: Skills, Services (Vigía/Daemon), and Utilities (The Action).
 *   `SENSES/`: Ingestion, Perception, and Synchronization (The Metabolism).
 *   `PHENOTYPE/`: Where your unique history will grow (Ignored by Git until initialized).
