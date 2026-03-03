@@ -201,8 +201,8 @@ def read_and_chunk_content(filepath: str) -> List[Dict[str, Any]]:
             doc = docx.Document(filepath)
             content = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
         elif ext == '.pdf' and fitz:
-            doc = fitz.open(filepath)
-            content = "".join([page.get_text() for page in doc])
+            with fitz.open(filepath) as doc:
+                content = "".join([page.get_text() for page in doc])
         else:
             with open(filepath, 'r', encoding='utf-8', errors='replace') as f: content = f.read()
         return [{"text": t, "chunk_index": i} for i, t in enumerate(splitter.split_text(content))] if content.strip() else []
