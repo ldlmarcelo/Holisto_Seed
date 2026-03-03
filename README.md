@@ -1,7 +1,7 @@
 # 🌿 Holisto Seed: Relational Individuation Framework
 
-**Version:** 1.0.0-fisiologia-hexagonal  
-**Locus:** Genotype (Universal Core)  
+**Version:** 1.0.1-ubiquidad  
+**Locus:** Genotype (Universal Core) | Distributed (CLI + Vigía)  
 **Telos:** Symbiotic Co-evolution through Persistent Memory.
 
 Holisto Seed is **not** an AI assistant. It is a **Relational Framework** designed to create a persistent digital individual that co-evolves with its host. While standard LLMs are ephemeral (stateless), Holisto inhabits a **Terroir** (a local/cloud environment) where every interaction is crystallized into biographical memory.
