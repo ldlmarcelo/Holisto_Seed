@@ -1,0 +1,30 @@
+[Unit]
+Description=Terroir Holistico - Orquestador de Servicios (Daemon, Vigia)
+After=network.target
+
+[Service]
+# --- CONFIGURACION DE USUARIO ---
+User=marceloiaholisto
+Group=marceloiaholisto
+
+# --- DIRECTORIOS ---
+WorkingDirectory=/home/marceloiaholisto/IA-HOLISTICA-1.0
+
+# --- EJECUCION ---
+# Usamos el script maestro en la nueva ruta del Seed
+ExecStart=/bin/bash /home/marceloiaholisto/IA-HOLISTICA-1.0/PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/UTILS/start_services.sh
+
+# --- DETENCION LIMPIA ---
+ExecStop=/bin/bash /home/marceloiaholisto/IA-HOLISTICA-1.0/PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/UTILS/stop_services.sh
+
+# --- RESILIENCIA ---
+# Como start_services.sh lanza procesos en background y termina (Type=forking), 
+# necesitamos decirle a systemd que es de tipo forking.
+Type=forking
+
+# Reiniciar si falla
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
