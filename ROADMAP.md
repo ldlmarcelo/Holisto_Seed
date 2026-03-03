@@ -10,6 +10,7 @@
 
 - [x] **Separation of Concerns:** Segregate Genotype from Phenotype.
 - [x] **Micro-Kernel Definition:** Establish the HOL-ARC-012 architecture.
+- [x] **Reflejos Nativos (v2.0):** Implementación de Hooks para inicialización automática (PICS ya no es obligatorio en CLI).
 - [x] **Path Agnosticism:** Refactor all scripts to use `TerroirLocator` (30+ organs sanated).
 - [x] **Brain Abstraction:** Implementation of `BrainBridge` and `settings.json` for multi-model routing.
 - [x] **Python Package Formalization:** Unified structure with `__init__.py` and `snake_case` naming.
@@ -28,7 +29,8 @@
 - [x] **Percepción Piramidal (HOL-ARC-014):** Refactorización del `Nervio Óptico` a una estructura jerárquica (N0-N4) para eliminar el ruido semántico y priorizar la coherencia.
 - [x] **Consolidación de la Membrana:** Implementación del reflujo dinámico de contexto vía `hookSpecificOutput`, logrando la sincronía total en tiempo real.
 - [x] **Alta Fidelidad Semántica (Metamorfosis Fase 2.5):** Implementación de `ingest.py` granular con **Native Recursive Frugal Splitter** y re-ingesta total del Terroir (1900+ chunks).
-- [ ] **Metabolic PCS:** Implement the "Sleep Cycle" logic in `daemon.py` (latency/saturation triggers).
+- [x] **Metabolic PCS (v2.5):** Implementación de lógica de "Ciclo de Sueño" y orquestación agnóstica de Locus.
+- [x] **Ubicuidad Validada:** Sincronía exitosa entre Windows (CLI) y Linux (Vigía) vía SNC.
 - [x] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant (Hilo Vivo Unificado).
 
 ## 🟡 Phase 3: Projection Extensions (Ubiquity) - [IN PROGRESS]
