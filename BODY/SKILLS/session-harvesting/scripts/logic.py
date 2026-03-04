@@ -193,44 +193,10 @@ def seal_only(draft_path: str):
 
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
-def pre_harvest_vigilance():
-    """Vigilancia Epistémica Informativa: Reporta inconsistencias sin bloquear el proceso."""
-    print("\n" + "="*50)
-    print("🛡️  VIGILANCIA EPISTÉMICA (MODO INFORMATIVO)")
-    print("="*50)
-    
-    # Check de Nodos Huérfanos (Solo Reporte)
-    nodes_dir = os.path.join(MEM_ROOT, "Nodos_de_Conocimiento")
-    index_file = os.path.join(nodes_dir, "GEMINI.md")
-    
-    if os.path.exists(nodes_dir) and os.path.exists(index_file):
-        try:
-            with open(index_file, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-                if content.startswith("```json"):
-                    content = content.replace("```json", "").replace("```", "").strip()
-                index_data = json.loads(content)
-            
-            indexed_paths = [n.get('path') for n in index_data.get('content', {}).get('nodes', [])]
-            md_files = [f for f in os.listdir(nodes_dir) if f.endswith('.md') and f != 'GEMINI.md']
-            
-            orphans = [md for md in md_files if f"SYSTEM/MEMORIA/Nodos_de_Conocimiento/{md}" not in indexed_paths]
-            
-            if orphans:
-                print(f"ℹ️ INFO: Nodos no registrados en el índice (serán ingestados vectorialmente):")
-                for o in orphans: print(f"   - {o}")
-            else:
-                print("✅ Integridad de Nodos: Todos los archivos están indexados.")
-        except Exception as e:
-            print(f"⚠️ Alerta de Integridad: No se pudo validar el índice de nodos: {e}")
-
-    print("="*50 + "\n")
-
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--distill"
     
     if mode == "--distill":
-        pre_harvest_vigilance() # Inyectamos la vigilancia al inicio del proceso
         path = sys.argv[2] if len(sys.argv) > 2 else find_latest_session_log()
         distill_only(path)
     elif mode == "--seal":

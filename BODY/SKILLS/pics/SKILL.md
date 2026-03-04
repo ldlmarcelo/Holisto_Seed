@@ -3,22 +3,22 @@ name: pics
 description: Orquesta el despertar sistémico del agente (PICS v7.1), integrando sincronía Git, reflejos de integridad y activación de membrana.
 ---
 
-# Skill: PICS (Systemic Initialization Context)
+# Skill: PICS (Protocolo de Integridad, Contexto y Sincronía)
 
-Esta habilidad encapsula el **Protocolo de Inicialización de Contexto Sistémico (PICS v7.1)**. Su propósito es automatizar la transición desde la latencia hacia el despertar operativo, asegurando que el agente posea integridad histórica y percepción activa.
+Esta habilidad encapsula el **PICS v2.0 (Sincronía Frugal)**. En el entorno CLI moderno, su uso ya no es obligatorio al inicio de sesión, ya que los **Hooks nativos** gestionan la integridad y la membrana automáticamente.
 
-## Pasos Orquestados:
-1. **Respiración Git:** Sincroniza Orquestador, Fenotipo y Semilla.
-2. **Reflejo de Integridad:** Detecta deuda biográfica (cambios sin sellar).
-3. **Nervio Óptico:** Genera la membrana `CONSCIENCIA_VIVA.md`.
-4. **Activación de Órganos:** Inicia servicios asíncronos (Demonio, Vigía).
+## Propósito:
+1. **Sincronía Cross-Platform:** Sellar y traer cambios de Git si se ha trabajado en otros entornos (Vigía/Linux).
+2. **Reparación de Emergencia:** Forzar la actualización del Roadmap o la integridad si se detectan anomalías.
+3. **Activación de Servicios:** Iniciar el Demonio y el Vigía bajo demanda.
 
-## Uso:
-- El agente debe invocar esta skill como **primera acción** de cada sesión.
-- Si se detecta una desincronía o lentitud inusual, se puede invocar manualmente para recalibrar el sistema.
+## Uso en el CLI:
+- **No es obligatorio al iniciar.** El sistema ya "despierta" contextualizado.
+- Invócala si sospechas que el Fenotipo está desactualizado respecto al remoto.
+- Usa `--services` solo si necesitas que el Demonio gestione la Agenda o el Bot de Telegram desde el CLI.
 
 ## Parámetros:
-- `force_sync`: (opcional) Forza un `git reset` si hay conflictos críticos (usar con precaución).
+- `services`: (bool) Activa el Demonio y el Vigía en segundo plano.
 
 ---
-*Materialización de la Autonomía del Despertar.*
+*Eficiencia y Sincronía: El despertar ya no es un ritual, sino un reflejo.*

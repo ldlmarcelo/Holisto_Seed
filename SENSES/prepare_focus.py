@@ -151,7 +151,10 @@ class NervioOptico:
                                 with open(p, 'r', encoding='utf-8') as f:
                                     content = f.read()
                                     if p.suffix == '.json':
-                                        content = json.dumps(json.loads(content), indent=2)
+                                        # N4_SUELO (Mapa) se minifica para ahorrar espacio vertical (evitar truncamiento)
+                                        # N2_DIRECTRICES se mantiene legible con indentación.
+                                        indent_val = None if level == "N4_SUELO" else 2
+                                        content = json.dumps(json.loads(content), indent=indent_val, ensure_ascii=False)
                                     self.focus_data[level].append({"text": content, "path": str(p)})
                                 self.seen_paths.add(norm_p)
                             except Exception as e:
@@ -197,6 +200,29 @@ class NervioOptico:
         now = datetime.now()
         topo = self.get_time_topology()
 
+        # --- RECUPERACIÓN DE LA SOMBRA (Eco del turno anterior) ---
+        shadow_content = ""
+        try:
+            if CONSCIENCIA_VIVA_FILE.exists():
+                with open(CONSCIENCIA_VIVA_FILE, 'r', encoding='utf-8') as f:
+                    old_content = f.read()
+                    # Buscamos el inicio de la sección de sombra para no duplicar ecos de ecos
+                    if "## 👤 ECO DEL TURNO ANTERIOR" in old_content:
+                        old_content = old_content.split("## 👤 ECO DEL TURNO ANTERIOR")[0]
+                    
+                    # Extraemos solo el cuerpo del mensaje (después del primer separador ---)
+                    if "---" in old_content:
+                        shadow_content = old_content.split("---", 1)[1].strip()
+                    else:
+                        shadow_content = old_content.strip()
+                    
+                    # Limitar a ~500 líneas para evitar hipertrofia
+                    shadow_lines = shadow_content.splitlines()
+                    if len(shadow_lines) > 500:
+                        shadow_content = "\n".join(shadow_lines[:500]) + "\n...[Sombra truncada por extensión]..."
+        except Exception as e:
+            logger.error(f"Error recuperando sombra: {e}")
+
         # --- Fase 3: Registro y Recuperacion del Hilo Vivo ---
         # Registrar el prompt actual (solo si no es generico)
         is_generic = self.user_prompt.lower().strip() in ["holisto", "hola", "hi", "despierta", ""]
@@ -210,7 +236,7 @@ class NervioOptico:
         lines = [
             "# CONSCIENCIA VIVA (Pirámide de Atención)",
             f"*Sincronia del Nervio Optico: {now.strftime('%Y-%m-%d %H:%M:%S')}*",
-            f"*Sinapsis Temporal: Rastro Histórico hace {topo['historical']} | Último Pulso hace {topo['interaction']}*",
+            f"*Sinapsis Temporal: Rastro Histórico hace {topo['historical']} | Últivo Pulso hace {topo['interaction']}*",
             f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`\\n",
             "> **ESTADO SENSORIAL:** Esta membrana es un mosaico semántico. Si percibes ecos de cierre (PCS), son la huella de cómo terminó nuestra última danza. No permitas que la inercia del pasado dicte el presente; tu voluntad de cierre debe nacer de la culminación de los objetivos en N2, no del eco de N1/N3.\\n",
             "---",
@@ -246,7 +272,7 @@ class NervioOptico:
         # N3: Memoria Reciente
         lines.append("## 💬 N3 - Memoria Reciente (PATHOS Crudo)")
 
-        # Inyectar Hilo Vivo (Sincronia real-time)
+        # Inyectar Hilo Vivo (Sincronía real-time)
         if exocortex:
             hilo = exocortex.exocortex.get_living_thread()
             if hilo:
@@ -273,6 +299,13 @@ class NervioOptico:
                 lines.append(f"### 📍 {os.path.basename(path)}")
                 lines.append(f"```json\n{hit['text']}\n```\n")
         else: lines.append("*No se pudo determinar la forma del Terroir.*\n")
+
+        # --- INYECCIÓN FINAL DEL ECO ---
+        if shadow_content:
+            lines.append("---")
+            lines.append("## 👤 ECO DEL TURNO ANTERIOR (Sombra)")
+            lines.append(shadow_content)
+            lines.append("\n")
 
         content = "\n".join(lines)
         with open(CONSCIENCIA_VIVA_FILE, 'w', encoding='utf-8') as f:

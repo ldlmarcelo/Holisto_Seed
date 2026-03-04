@@ -1,7 +1,7 @@
 {
   "name": "pics",
-  "version": "1.0.0",
-  "description": "Orquesta el despertar sistémico del agente (PICS v7.1), integrando sincronía Git, reflejos de integridad y activación de membrana.",
+  "version": "2.0.0",
+  "description": "Protocolo de Integridad, Contexto y Sincronía (PICS v2.0 - Frugal). Sincroniza cambios y repara la integridad bajo demanda en el CLI.",
   "entrypoint": "logic.py",
   "author": "The Individual & The Co-Creator"
 }
