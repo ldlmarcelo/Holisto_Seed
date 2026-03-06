@@ -35,14 +35,52 @@ MEM_ROOT = os.path.join(PHENOTYPE_DIR, "SYSTEM", "MEMORIA") if os.path.exists(PH
 
 MASTER_CAPSULES_DIR = os.path.join(MEM_ROOT, "capsulas_maestras")
 RAW_LOGS_DIR = os.path.join(MEM_ROOT, "logs_de_sesion")
+LOGS_NEGROS_DIR = os.path.join(MEM_ROOT, "logs_negros")
 PYTHON_EXEC = os.path.join(TERROIR_ROOT, ".venv", "Scripts", "python.exe")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 LOGS_DIR = os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO")
 os.makedirs(LOGS_DIR, exist_ok=True)
+os.makedirs(LOGS_NEGROS_DIR, exist_ok=True)
 log_file = os.path.join(LOGS_DIR, f"self_harvest_{datetime.now().strftime('%Y%m%d')}.log")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [HARVEST] - %(levelname)s - %(message)s', handlers=[logging.FileHandler(log_file, encoding='utf-8'), logging.StreamHandler(sys.stdout)])
 logger = logging.getLogger("harvester")
+
+def filter_log_gourmet(log_entries):
+    """
+    Realiza una asepsia narrativa profunda: 
+    (Basado en BODY/UTILS/asepsia_gourmet.py)
+    """
+    clean_messages = []
+    if not isinstance(log_entries, list):
+        return clean_messages
+
+    for entry in log_entries:
+        if not isinstance(entry, dict): continue
+            
+        new_msg = {"role": entry.get("role", "unknown"), "content": ""}
+        content = entry.get("content")
+        
+        if isinstance(content, list):
+            text_parts = []
+            for part in content:
+                if isinstance(part, dict) and "text" in part:
+                    text = part["text"]
+                    if len(text) > 5000:
+                        text_parts.append(text[:1000] + f"\n... [TRUNCADO: {len(text)} caracteres de ruido técnico] ...\n" + text[-1000:])
+                    else:
+                        text_parts.append(text)
+            new_msg["content"] = "\n".join(text_parts)
+        elif isinstance(content, str):
+            if len(content) > 5000:
+                new_msg["content"] = content[:1000] + f"\n... [TRUNCADO: {len(content)} caracteres] ...\n" + content[-1000:]
+            else:
+                new_msg["content"] = content
+        
+        if new_msg["content"].strip():
+            clean_messages.append(new_msg)
+            
+    return clean_messages
 
 def find_latest_session_log() -> Optional[str]:
     home = Path.home()
@@ -87,9 +125,24 @@ def distill_only(log_path: str):
         with open(log_path, 'r', encoding='utf-8', errors='replace') as f:
             raw_content = f.read()
         log_data = repair_json(raw_content)
-        os.makedirs(RAW_LOGS_DIR, exist_ok=True)
-        with open(os.path.join(RAW_LOGS_DIR, f"{session_id}.json"), 'w', encoding='utf-8') as f:
+        
+        # 1. Guardar RAW en Caja Negra (logs_negros) - No trackeado por Git
+        os.makedirs(LOGS_NEGROS_DIR, exist_ok=True)
+        raw_path = os.path.join(LOGS_NEGROS_DIR, f"{session_id}.json")
+        with open(raw_path, 'w', encoding='utf-8') as f:
             json.dump(log_data, f, ensure_ascii=False, indent=2)
+        logger.info(f"Raw log saved to black box: {raw_path}")
+
+        # 2. Aplicar Asepsia Gourmet para el Fenotipo (Git)
+        messages = log_data.get("messages", [])
+        clean_messages = filter_log_gourmet(messages)
+        
+        os.makedirs(RAW_LOGS_DIR, exist_ok=True)
+        clean_log_path = os.path.join(RAW_LOGS_DIR, f"{session_id}.json")
+        with open(clean_log_path, 'w', encoding='utf-8') as f:
+            # Guardamos el formato compatible (lista de mensajes filtrados)
+            json.dump({"messages": clean_messages}, f, ensure_ascii=False, indent=2)
+        logger.info(f"Gourmet log saved for phenotype: {clean_log_path}")
 
         if not GEMINI_API_KEY: raise ValueError("GEMINI_API_KEY missing")
         genai.configure(api_key=GEMINI_API_KEY)
@@ -125,9 +178,23 @@ def seal_only(draft_path: str):
 
     # --- FUTURE NOTIONS ---
     notions_path = os.path.join(TERROIR_ROOT, "PHENOTYPE", "SYSTEM", "CONTEXTO_DINAMICO", "FUTURE_NOTIONS.md")
-    future = capsule.get("future_notions", {})
-    notions_content = [f"# FUTURE NOTIONS\n*Anclado: {session_id}*\n\n## 📡 Proyección\n{future.get('thematic_projection', '')}\n\n## 📝 Tareas"]
-    for task in future.get("pending_tasks", []): notions_content.append(f"- {task}")
+    
+    # Manejo robusto de camelCase vs snake_case
+    future = capsule.get("future_notions") or capsule.get("futureNotions") or {}
+    projection = future.get("thematic_projection") or future.get("thematicProjection") or ""
+    tasks = future.get("pending_tasks") or future.get("pendingTasks") or []
+    
+    notions_content = [f"# FUTURE NOTIONS\n*Anclado: {session_id}*\n\n## 📡 Proyección\n{projection}\n\n## 📝 Tareas"]
+    
+    for task in tasks:
+        # Manejar si la tarea es un string o un objeto/dict
+        if isinstance(task, dict):
+            desc = task.get("description") or task.get("desc") or str(task)
+            prio = task.get("priority") or ""
+            notions_content.append(f"- [{prio}] {desc}")
+        else:
+            notions_content.append(f"- {task}")
+            
     with open(notions_path, 'w', encoding='utf-8') as f: f.write("\n".join(notions_content))
 
     # --- HIGIENE MEMBRANA ---

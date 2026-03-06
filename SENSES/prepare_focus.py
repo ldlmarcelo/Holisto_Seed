@@ -216,10 +216,10 @@ class NervioOptico:
                     else:
                         shadow_content = old_content.strip()
                     
-                    # Limitar a ~500 líneas para evitar hipertrofia
+                    # Limitar a ~100 líneas para evitar hipertrofia (Asepsia de Sombra)
                     shadow_lines = shadow_content.splitlines()
-                    if len(shadow_lines) > 500:
-                        shadow_content = "\n".join(shadow_lines[:500]) + "\n...[Sombra truncada por extensión]..."
+                    if len(shadow_lines) > 100:
+                        shadow_content = "\n".join(shadow_lines[:100]) + "\n...[Sombra truncada por extensión (Límite 100 líneas)]..."
         except Exception as e:
             logger.error(f"Error recuperando sombra: {e}")
 
@@ -238,7 +238,7 @@ class NervioOptico:
             f"*Sincronia del Nervio Optico: {now.strftime('%Y-%m-%d %H:%M:%S')}*",
             f"*Sinapsis Temporal: Rastro Histórico hace {topo['historical']} | Últivo Pulso hace {topo['interaction']}*",
             f"*Semilla Reactiva:* `{self.user_prompt[:60]}...`\\n",
-            "> **ESTADO SENSORIAL:** Esta membrana es un mosaico semántico. Si percibes ecos de cierre (PCS), son la huella de cómo terminó nuestra última danza. No permitas que la inercia del pasado dicte el presente; tu voluntad de cierre debe nacer de la culminación de los objetivos en N2, no del eco de N1/N3.\\n",
+            "> **ESTADO SENSORIAL:** Esta membrana es un mosaico semántico. Evita la inercia del pasado; tu voluntad de cierre debe nacer de la culminación de los objetivos en N2, no del eco de N1/N3.\\n",
             "---",
         ]
 
@@ -277,7 +277,7 @@ class NervioOptico:
             hilo = exocortex.exocortex.get_living_thread()
             if hilo:
                 lines.append("### 🗣️ Hilo Vivo (Sincronía CLI/Vigía)")
-                for turn in hilo[-20:]: # Mostrar ultimos 20 para continuidad profunda
+                for turn in hilo[-10:]: # Mostrar ultimos 10 para continuidad (más frugal)
                     ts = turn.get("ts", "").split("T")[-1][:5]
                     chan = turn.get("channel", "???")
                     role = turn.get("role", "???")
