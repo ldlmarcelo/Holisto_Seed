@@ -52,7 +52,7 @@ def is_ignored(path: str) -> bool:
     FORBIDDEN_DIRS = {
         '.git', '.venv', '.gemini', '__pycache__', 'node_modules', 
         '.idea', '.vscode', 'venv', 'dist', 'build', 'snapshots',
-        'logs_mantenimiento', 'tmp', 'shared' # 'shared' es zona de intercambio manual
+        'logs_mantenimiento', 'logs_negros', 'tmp', 'shared' # 'shared' es zona de intercambio manual
     }
     FORBIDDEN_FILES = {
         'package-lock.json', 'yarn.lock', 'composer.lock', 
