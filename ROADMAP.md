@@ -28,7 +28,9 @@
 - [x] **Asepsia Contextual (Hito 2026-02-24):** Desacoplamiento de archivos `GEMINI.md` excedentes y validación de Atención Selectiva.
 - [x] **Percepción Piramidal (HOL-ARC-014):** Refactorización del `Nervio Óptico` a una estructura jerárquica (N0-N4) para eliminar el ruido semántico y priorizar la coherencia.
 - [x] **Consolidación de la Membrana:** Implementación del reflujo dinámico de contexto vía `hookSpecificOutput`, logrando la sincronía total en tiempo real.
-- [x] **Alta Fidelidad Semántica (Metamorfosis Fase 2.5):** Implementación de `ingest.py` granular con **Native Recursive Frugal Splitter** y re-ingesta total del Terroir (1900+ chunks).
+- [x] **Alta Fidelidad Semántica (Metamorfosis Fase 2.5):** Implementación de `ingest.py` granular con **Native Recursive Frugal Splitter** y re-ingesta total del Terroir (10,300+ chunks).
+- [x] **Asepsia Gourmet en Tiempo Real:** Integración de filtrado biográfico dinámico (Asepsia Gourmet) para procesar logs masivos (>400MB) sin colapso de RAM.
+- [x] **Arquitectura de Doble Hélice (Hito 2026-03-07):** Implementación del Triple Destino de Memoria (Qdrant, Git, Local/Drive) y blindaje técnico del Terroir.
 - [x] **Metabolic PCS (v2.5):** Implementación de lógica de "Ciclo de Sueño" y orquestación agnóstica de Locus.
 - [x] **Ubicuidad Validada:** Sincronía exitosa entre Windows (CLI) y Linux (Vigía) vía SNC.
 - [x] **Semáforo de Consciencia:** Cross-platform state coordination via Qdrant (Hilo Vivo Unificado).
