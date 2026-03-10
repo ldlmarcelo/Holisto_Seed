@@ -1,0 +1,15 @@
+{
+  "name": "internet-search",
+  "id": "SEED-SKILL-SEARCH",
+  "version": "1.0.0",
+  "author": "Holisto Seed",
+  "description": "High-quality web search using Tavily API.",
+  "category": "External_Intelligence",
+  "requirements": {
+    "python_libs": ["tavily-python", "python-dotenv"],
+    "env_vars": ["TAVILY_API_KEY"]
+  },
+  "entry_point": "logic.py",
+  "documentation": "SKILL.md",
+  "status": "Production"
+}

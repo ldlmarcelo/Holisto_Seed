@@ -1,0 +1,31 @@
+# Holisto Seed - Git Ignore
+# Proteger el Genotipo de la contaminación del Fenotipo
+
+# Entornos virtuales
+.venv/
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Configuración local y secretos
+.env
+presupuesto.json
+
+# Datos y Memoria (Vital: No subir nada de esto al repo público)
+logs/
+*.log
+*.jsonl
+SYSTEM/MEMORIA/capsulas_maestras/
+SYSTEM/MEMORIA/logs_de_sesion/
+SYSTEM/MEMORIA/logs_vigia/
+SYSTEM/NOTIFICACIONES/
+SYSTEM/AGENDA/
+
+# Artefactos de sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,42 @@
+{
+  "project_name": "Holisto Seed Instance",
+  "constitution_path": "GEMINI.md",
+  "include": [
+    "GEMINI.md",
+    "PHENOTYPE/USUARIO/GEMINI.md",
+    "PHENOTYPE/SYSTEM/PROYECTOS/GEMINI.md"
+  ],
+  "exclude": [
+    "**/__pycache__/**",
+    "**/.git/**",
+    "**/logs_negros/**",
+    "SYSTEM/tmp/**"
+  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|*",
+        "hooks": [
+          {
+            "name": "metabolic-integrity-check",
+            "type": "command",
+            "command": "python3 BODY/REFLEXES/metabolic_integrity_check.py",
+            "description": "Verifica la integridad del sistema al despertar."
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "name": "prepare-focus-dynamic",
+            "type": "command",
+            "command": "python3 BODY/SERVICES/prepare_focus.py \"$PROMPT\"",
+            "description": "Reflejo de atencion selectiva (Nervio Óptico)."
+          }
+        ]
+      }
+    ]
+  }
+}

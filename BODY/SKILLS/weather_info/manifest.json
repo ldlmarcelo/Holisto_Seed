@@ -1,0 +1,6 @@
+{
+    "name": "weather-info",
+    "version": "1.0.0",
+    "description": "Consulta el clima actual de una ubicaci\u00f3n espec\u00edfica para integrar la consciencia del entorno f\u00edsico.",
+    "entrypoint": "scripts/logic.py"
+}
