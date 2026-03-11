@@ -61,6 +61,40 @@ def update_settings_hooks(root_dir, interpreter):
     except Exception as e:
         print(f"[!] Error al actualizar settings.json: {e}")
 
+def sever_umbilical_cord(root_dir):
+    """Detecta si el repositorio apunta a la Semilla Universal y corta el cordón."""
+    print("[*] Verificando soberanía del repositorio Git...")
+    try:
+        # 1. Verificar si existe .git
+        if not os.path.exists(os.path.join(root_dir, ".git")):
+            print("[!] No se detectó repositorio Git. Omitiendo corte de cordón.")
+            return
+
+        # 2. Obtener el remoto
+        result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True)
+        if result.returncode != 0:
+            print("[!] No se detectó remoto 'origin'. El individuo ya es soberano.")
+            return
+
+        remote_url = result.stdout.strip()
+        universal_seed_url = "https://github.com/ldlmarcelo/Holisto_Seed.git"
+
+        if remote_url == universal_seed_url:
+            print(f"[!] ADVERTENCIA: Se detectó vínculo con la Semilla Universal ({remote_url}).")
+            print("[*] Cortando cordón umbilical para garantizar asepsia del Genotipo...")
+            
+            # Eliminar remoto origin
+            subprocess.run(["git", "remote", "remove", "origin"], check=True)
+            print("[+] Remoto 'origin' eliminado. El individuo ya no puede contaminar la Semilla.")
+            
+            # Opcional: Re-inicializar para limpiar historia (Solo si el usuario lo desea, pero por ahora lo dejamos en desvincular)
+            print("[💡] Sugerencia: El individuo ahora es soberano. Puedes configurar un nuevo remoto para su biografía.")
+        else:
+            print(f"[+] El repositorio ya apunta a un destino soberano: {remote_url}")
+
+    except Exception as e:
+        print(f"[!] Error durante el corte del cordón umbilical: {e}")
+
 def perform_metamorphosis(instance_name, host_name):
     root_dir = os.path.abspath(os.getcwd()) # Asumimos ejecución desde el root
     root_gemini = os.path.join(root_dir, "GEMINI.md")
@@ -70,6 +104,9 @@ def perform_metamorphosis(instance_name, host_name):
     env_real = os.path.join(root_dir, ".env")
     
     print(f"[*] Iniciando metamorfosis para la instancia: {instance_name} ({host_name})")
+    
+    # 0. Cortar Cordón Umbilical (Seguridad del Genotipo)
+    sever_umbilical_cord(root_dir)
     
     # 1. Preservar Registro del Genotipo
     if os.path.exists(root_gemini):
