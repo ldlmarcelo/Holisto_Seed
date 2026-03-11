@@ -1,0 +1,12 @@
+{
+  "name": "vision-control",
+  "version": "1.0.0",
+  "description": "Control dinámico de la atención y el contexto (Botón de Pánico).",
+  "author": "Holisto",
+  "entrypoint": "scripts/logic.py",
+  "capabilities": [
+    "Focus mode",
+    "Full vision mode",
+    "Asepsia contextual"
+  ]
+}

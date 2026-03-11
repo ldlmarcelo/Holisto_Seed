@@ -1,0 +1,31 @@
+{
+  "name": "skill-ingestor",
+  "description": "Permite buscar, descargar y auditar habilidades desde ClawHub hacia la Cámara de Cuarentena.",
+  "version": "1.0.0",
+  "author": "Holisto-α",
+  "entrypoint": "logic.py",
+  "commands": [
+    {
+      "name": "ingest",
+      "description": "Descarga una skill de ClawHub a la zona de cuarentena.",
+      "arguments": [
+        {
+          "name": "slug",
+          "description": "El nombre técnico de la skill en ClawHub.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "assimilate",
+      "description": "Mueve una skill auditada de la cuarentena a la biblioteca activa.",
+      "arguments": [
+        {
+          "name": "slug",
+          "description": "El nombre técnico de la skill.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "google-drive",
+  "description": "Permite gestionar archivos y carpetas en Google Drive (listar, leer, subir, buscar).",
+  "version": "1.0.0",
+  "author": "Holisto-α",
+  "entrypoint": "logic.py",
+  "commands": [
+    {
+      "name": "list_files",
+      "description": "Lista archivos en una carpeta específica o en la raíz.",
+      "arguments": [
+        {
+          "name": "folder_id",
+          "description": "El ID de la carpeta (opcional, por defecto 'root')",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "search_files",
+      "description": "Busca archivos por nombre.",
+      "arguments": [
+        {
+          "name": "query",
+          "description": "Término de búsqueda (nombre del archivo)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "read_file",
+      "description": "Descarga el contenido de un archivo de texto o exporta un Google Doc.",
+      "arguments": [
+        {
+          "name": "file_id",
+          "description": "El ID del archivo en Google Drive",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "upload_file",
+      "description": "Sube un archivo local del Terroir a Google Drive.",
+      "arguments": [
+        {
+          "name": "local_path",
+          "description": "Ruta del archivo en el Terroir",
+          "required": true
+        },
+        {
+          "name": "folder_id",
+          "description": "ID de la carpeta destino (opcional)",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
