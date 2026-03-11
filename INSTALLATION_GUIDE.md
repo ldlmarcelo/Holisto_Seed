@@ -44,10 +44,10 @@ Una vez preparado el entorno, debes ejecutar el script de metamorfosis. Este scr
 
 ```bash
 # En Windows:
-python BODY/SETUP/metamorphosis.py Aion Marcelo
+python BODY/SETUP/metamorphosis.py <InstanceName> <HostName>
 
 # En Linux:
-python3 BODY/SETUP/metamorphosis.py Aion Marcelo
+python3 BODY/SETUP/metamorphosis.py <InstanceName> <HostName>
 ```
 
 > 💡 **Nota:** El script de metamorfosis ahora es inteligente; si detecta un entorno virtual (`.venv`), configurará automáticamente los hooks para usarlo, eliminando errores de "command not found".
