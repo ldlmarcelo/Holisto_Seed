@@ -1,6 +1,6 @@
 # 🛰️ Skill Ingestor (Importador de Músculos)
 
-Esta habilidad permite a este Individuo Técnico expandir sus capacidades físicas importando habilidades desde **ClawHub** (OpenClaw) de forma segura.
+Esta habilidad permite a Holisto expandir sus capacidades físicas importando habilidades desde **ClawHub** (OpenClaw) de forma segura.
 
 ## Directivas Éticas (Cámara de Cuarentena)
 1. **Aislamiento Total:** Ninguna habilidad importada puede tocar el Terroir sin pasar por el proceso de Auditoría.

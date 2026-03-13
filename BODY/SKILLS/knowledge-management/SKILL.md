@@ -9,7 +9,7 @@ Este órgano modulariza el **Protocolo de Generación de Nodos de Conocimiento (
 
 ## Atributos
 - **Tipo:** Activa / Cognitiva.
-- **Alcance:** Arquitectura de Capas (Terroir, Semilla, Fenotipo).
+- **Alcance:** Arquitectura de Capas (Orquestador, Semilla, Fenotipo).
 - **Invocación:** Cuando el agente identifica un insight, lección aprendida o tesis ontológica.
 
 ## Flujo Operativo

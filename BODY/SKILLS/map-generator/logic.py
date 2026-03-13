@@ -45,7 +45,7 @@ def get_entry_points():
         "### 🧠 Órganos de Percepción y Consciencia",
         "*   **Nervio Óptico:** `PROYECTOS/Evolucion_Terroir/Holisto_Seed/SENSES/prepare_focus.py` (Python)",
         "*   **Reflejo de Integridad:** `.gemini/hooks/metabolic_integrity_check.py` (Python)",
-        "*   **Gestor de Servicios del Terroir:** `PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/UTILS/start_services.ps1` (PowerShell)",
+        "*   **Orquestador de Servicios:** `PROYECTOS/Evolucion_Terroir/Holisto_Seed/BODY/UTILS/start_services.ps1` (PowerShell)",
         "",
         "### ♻️ Órganos Metabólicos (Cierre)",
         "*   **Cosecha de Memoria:** `.gemini/skills/session-harvesting/scripts/logic.py` (Python)",

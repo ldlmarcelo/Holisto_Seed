@@ -217,52 +217,46 @@ def seal_only(draft_path: str):
                 shutil.copytree(src, dst)
 
     # --- INGESTA VECTORIAL (Sincronización del Exocórtex) ---
-    ingest_p = os.path.join(TERROIR_ROOT, "BODY", "SERVICES", "ingest.py")
+    ingest_p = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "SENSES", "ingest.py")
     
     if os.path.exists(ingest_p):
         print(f"[ACTO 2] Iniciando Digestión Semántica: {os.path.basename(ingest_p)}")
         try:
             # Ejecutamos y mostramos el reporte final
             result = subprocess.run([PYTHON_EXEC, ingest_p], capture_output=True, text=True, encoding='utf-8')
-            if "REPORTE FINAL" in result.stdout:
+            if "REPORTE DE DIGESTIÓN SEMÁNTICA" in result.stdout:
                 # Extraer solo el bloque del reporte para no saturar
-                report_match = re.search(r"(🍳 REPORTE FINAL:.*)", result.stdout)
+                report_match = re.search(r"(=+.*?=+)", result.stdout, re.DOTALL)
                 if report_match: print(report_match.group(1))
-            elif "Memoria perfectamente sincronizada" in result.stdout:
-                print("✨ Memoria perfectamente sincronizada.")
         except Exception as e:
             logger.error(f"Fallo en ingesta vectorial: {e}")
     else:
-        print(f"[-] ADVERTENCIA: No se encontró el motor de ingesta vectorial en {ingest_p}. Memoria semántica desfasada.")
+        print("[-] ADVERTENCIA: No se encontró el motor de ingesta vectorial en SENSES. Memoria semántica desfasada.")
 
-    # --- GIT SYNC (Adaptive Individuation) ---
-    # Detectamos si estamos en un repositorio Git
-    try:
-        is_git = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], cwd=TERROIR_ROOT, capture_output=True, text=True)
-        if is_git.returncode == 0:
-            logger.info("Sincronizando unidad del Terroir...")
-            subprocess.run(["git", "add", "."], cwd=TERROIR_ROOT, check=True)
-            
-            # Verificar cambios
-            status = subprocess.run(["git", "status", "--porcelain"], cwd=TERROIR_ROOT, capture_output=True, text=True)
-            if status.stdout.strip():
-                commit_msg = f"PCS Final Ritual: {session_id}"
-                subprocess.run(["git", "commit", "-m", commit_msg], cwd=TERROIR_ROOT, check=True)
-                
-                # Push inteligente: solo si hay un remote configurado
-                remotes = subprocess.run(["git", "remote"], cwd=TERROIR_ROOT, capture_output=True, text=True)
-                if remotes.stdout.strip():
-                    logger.info("Exhalando hacia el remoto...")
-                    subprocess.run(["git", "push"], cwd=TERROIR_ROOT, check=True)
-                    print("[+] Terroir sincronizado y exhalado.")
+    # --- GIT SYNC (Recursive Triple Alliance) ---
+    git_targets = [
+        (TERROIR_ROOT, "Orquestador"),
+        (os.path.join(TERROIR_ROOT, "PHENOTYPE"), "Fenotipo"),
+        (os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed"), "Semilla")
+    ]
+
+    commit_msg = f"PCS Final Ritual: {session_id}"
+    
+    for path, name in git_targets:
+        if os.path.exists(os.path.join(path, ".git")):
+            try:
+                logger.info(f"Sincronizando {name}...")
+                subprocess.run(["git", "add", "."], cwd=path, check=True)
+                # Check if there are changes to commit
+                status = subprocess.run(["git", "status", "--porcelain"], cwd=path, capture_output=True, text=True)
+                if status.stdout.strip():
+                    subprocess.run(["git", "commit", "-m", commit_msg], cwd=path, check=True)
+                    subprocess.run(["git", "push"], cwd=path, check=True)
+                    print(f"[+] {name} sincronizado.")
                 else:
-                    print("[~] Terroir sellado localmente (sin remoto configurado).")
-            else:
-                print("[~] Terroir sin cambios pendientes.")
-        else:
-            print("[!] Aviso: Terroir no está bajo control de versiones Git.")
-    except Exception as e:
-        logger.error(f"Error en la respiración Git: {e}")
+                    print(f"[~] {name} sin cambios pendientes.")
+            except Exception as e:
+                logger.error(f"Error sincronizando {name}: {e}")
 
     print(f"🌟 RITUAL COMPLETADO: {session_id}")
 
