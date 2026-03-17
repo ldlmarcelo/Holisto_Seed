@@ -20,7 +20,7 @@
           {
             "name": "metabolic-integrity-check",
             "type": "command",
-            "command": "python3 BODY/REFLEXES/metabolic_integrity_check.py",
+            "command": "../../../../.venv/bin/python BODY/REFLEXES/metabolic_integrity_check.py",
             "description": "Verifica la integridad del sistema al despertar."
           }
         ]
@@ -32,7 +32,7 @@
           {
             "name": "prepare-focus-dynamic",
             "type": "command",
-            "command": "python3 BODY/SERVICES/prepare_focus.py \"$PROMPT\"",
+            "command": "../../../../.venv/bin/python BODY/SERVICES/prepare_focus.py \"$PROMPT\"",
             "description": "Reflejo de atencion selectiva (Nervio Óptico)."
           }
         ]

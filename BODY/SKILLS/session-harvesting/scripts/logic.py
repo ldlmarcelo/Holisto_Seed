@@ -37,6 +37,8 @@ MASTER_CAPSULES_DIR = os.path.join(MEM_ROOT, "capsulas_maestras")
 RAW_LOGS_DIR = os.path.join(MEM_ROOT, "logs_de_sesion")
 LOGS_NEGROS_DIR = os.path.join(MEM_ROOT, "logs_negros")
 PYTHON_EXEC = os.path.join(TERROIR_ROOT, ".venv", "Scripts", "python.exe")
+if not os.path.exists(PYTHON_EXEC):
+    PYTHON_EXEC = os.path.join(TERROIR_ROOT, ".venv", "bin", "python")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 LOGS_DIR = os.path.join(TERROIR_ROOT, "SYSTEM", "LOGS_MANTENIMIENTO")
