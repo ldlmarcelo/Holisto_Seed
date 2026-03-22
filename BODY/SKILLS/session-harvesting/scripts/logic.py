@@ -263,7 +263,7 @@ def seal_only(draft_path: str):
                 shutil.copytree(src, dst)
 
     # --- INGESTA VECTORIAL (Sincronización del Exocórtex) ---
-    ingest_p = os.path.join(TERROIR_ROOT, "PROYECTOS", "Evolucion_Terroir", "Holisto_Seed", "BODY", "SERVICES", "ingest.py")
+    ingest_p = os.path.join(TERROIR_ROOT, "BODY", "SERVICES", "ingest.py")
 
     
     if os.path.exists(ingest_p):

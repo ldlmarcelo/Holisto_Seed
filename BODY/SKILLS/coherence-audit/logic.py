@@ -23,9 +23,9 @@ def audit_roadmap():
 
 def audit_projects_index():
     print("--- [AUDIT] Verificando Índice de Proyectos (Criterio HOL-ARC-014) ---")
-    index_path = ROOT / "proyectos" / "gemini.md"
+    index_path = ROOT / "PROYECTOS" / "GEMINI.md"
     if not index_path.exists():
-        print("[!] ERROR: No se encuentra proyectos/gemini.md")
+        print("[!] ERROR: No se encuentra PROYECTOS/GEMINI.md")
         return False
 
     try:
