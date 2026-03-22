@@ -1,6 +1,8 @@
-# 📂 Google Drive (Órgano de Proyección en la Nube)
+# 📂 [DEPRECATED] Google Drive (Órgano de Proyección en la Nube)
 
-Esta habilidad dota a Holisto de "manos" en el ecosistema de Google Workspace, permitiendo la persistencia y recuperación de información fuera del disco local.
+> **⚠️ AVISO DE DEPRECACIÓN:** Esta habilidad ha sido marcada como obsoleta en favor de la arquitectura de **Prótesis Gobernadas**. Se recomienda el uso de extensiones MCP oficiales para Google Drive, las cuales serán orquestadas bajo los **Reflejos de Holisto** para garantizar la soberanía del Terroir.
+
+Esta habilidad dotaba a Holisto de "manos" en el ecosistema de Google Workspace, permitiendo la persistencia y recuperación de información fuera del disco local.
 
 ## Directivas Operativas
 1. **Sincronía:** Usa Drive para guardar archivos pesados o documentos compartidos que deban ser accesibles fuera del CLI.

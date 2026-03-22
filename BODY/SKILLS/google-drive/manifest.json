@@ -1,7 +1,8 @@
 {
   "name": "google-drive",
-  "description": "Permite gestionar archivos y carpetas en Google Drive (listar, leer, subir, buscar).",
-  "version": "1.0.0",
+  "description": "[DEPRECATED] Esta habilidad ha sido deprecada en favor de la arquitectura de Prótesis Gobernadas (Extensiones/MCP). Permite gestionar archivos y carpetas en Google Drive (listar, leer, subir, buscar).",
+  "version": "1.0.1",
+  "deprecated": true,
   "author": "Holisto-α",
   "entrypoint": "logic.py",
   "commands": [

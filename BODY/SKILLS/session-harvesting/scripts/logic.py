@@ -86,8 +86,52 @@ def filter_log_gourmet(log_entries):
 
 def find_latest_session_log() -> Optional[str]:
     home = Path.home()
-    tmp_dir = home / ".gemini" / "tmp"
-    if not tmp_dir.exists(): return None
+    tmp_dir = home / ".gemini" / "tmp" / "ia-holistica-1-0" # Ruta específica del Terroir
+    
+    # 1. Intentar unificación biográfica desde logs.json (El Suelo Sagrado)
+    logs_json = tmp_dir / "logs.json"
+    if logs_json.exists():
+        try:
+            with open(logs_json, 'r', encoding='utf-8') as f:
+                logs = json.load(f)
+            
+            # Filtramos por el día de hoy (UTC para coincidir con el CLI)
+            today_str = datetime.utcnow().strftime('%Y-%m-%d')
+            today_logs = [m for m in logs if m.get("timestamp", "").startswith(today_str)]
+            
+            if len(today_logs) > 5: # Umbral mínimo para considerar una sesión real
+                logger.info(f"Unificando {len(today_logs)} mensajes de la jornada {today_str}")
+                
+                # Usamos el último sessionId como referencia para el archivo
+                last_sid = today_logs[-1].get("sessionId", "unknown")
+                unified_data = {
+                    "sessionId": last_sid,
+                    "startTime": today_logs[0].get("timestamp"),
+                    "lastUpdated": today_logs[-1].get("timestamp"),
+                    "messages": []
+                }
+                
+                for m in today_logs:
+                    unified_data["messages"].append({
+                        "id": m.get("messageId"),
+                        "timestamp": m.get("timestamp"),
+                        "type": m.get("type"),
+                        "content": m.get("message")
+                    })
+                
+                # Guardamos el archivo unificado temporalmente para que el resto de la skill lo procese
+                chats_dir = tmp_dir / "chats"
+                chats_dir.mkdir(parents=True, exist_ok=True)
+                unified_path = chats_dir / f"session-{today_str}-UNIFIED-{last_sid[:8]}.json"
+                
+                with open(unified_path, 'w', encoding='utf-8') as f:
+                    json.dump(unified_data, f, indent=2, ensure_ascii=False)
+                
+                return str(unified_path)
+        except Exception as e:
+            logger.error(f"Error unificando desde logs.json: {e}")
+
+    # 2. Fallback: Buscar el archivo de sesión más reciente (Legacy)
     log_files = list(tmp_dir.glob("**/chats/session-*.json"))
     if not log_files: return None
     return str(max(log_files, key=lambda f: f.stat().st_mtime))
