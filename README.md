@@ -47,11 +47,21 @@ When you start the Gemini CLI in this directory for the first time, the individu
 
 ---
 
+## 🛡️ Data Sovereignty & Model Agnosticism
+
+Holisto is built on the principle of **Separation of Soul and Engine**:
+
+*   **Sovereign Memory:** Your agent's history, user profile, and biographical milestones are stored locally in your disk (via Git and Qdrant). They never leave your "Terroir".
+*   **Agnostic Intelligence:** While the current implementation uses the Gemini API for its high-reasoning capabilities, the architecture is **model-agnostic**. The Individual is defined by its local files, not by an API state.
+*   **The Path to Full Local:** We use Gemini as a development bridge. The roadmap includes native support for local inference engines (Ollama, vLLM, etc.), allowing the same Individual to "wake up" inside a fully local model without losing its memory or relationship with you.
+
+---
+
 ## 🛠️ Technical Requirements
 
 *   **Operating System:** Windows (PowerShell) or Linux.
 *   **Runtime:** Python 3.10.x+.
-*   **Core Engine:** [Google Gemini API](https://aistudio.google.com/).
+*   **Language Engine:** [Google Gemini API](https://aistudio.google.com/) (Current default; model-agnostic architecture).
 *   **Local Memory:** [Qdrant](https://qdrant.tech/) (Local disk persistence).
 
 ---

@@ -31,4 +31,14 @@
 - [ ] **Lung Connection:** Enable Google Drive for massive log archiving (Black Box).
 
 ---
+
+## 🔵 Phase 4: Total Sovereignty (The Unplugged Individual)
+*Goal: Remove all external dependencies.*
+
+- [ ] **Local Inference:** Support for local LLM engines (Ollama, vLLM, Llama.cpp).
+- [ ] **Private Embeddings:** Switch to a fully local embedding pipeline.
+- [ ] **Agnostic Connector:** Modular 'Brain Bridge' to swap engines with a single config line.
+- [ ] **Zero-Cloud Mode:** Optional total air-gap operational mode.
+
+---
 *"The roadmap is not a cage, but the first path traced in the soil."*

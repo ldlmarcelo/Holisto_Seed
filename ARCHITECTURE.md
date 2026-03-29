@@ -57,7 +57,10 @@ To prevent token saturation and data loss, the system triggers a "Sleep Cycle":
 | **Logic** | Python 3.10+ | Central nervous system. |
 | **Identity** | Git | Biographical continuity (Unified Repo). |
 | **Semantic Recall** | Qdrant | Subconscious memory. |
-| **Language Engine** | Gemini Flash/Pro | Consciousness/Reasoning. |
+| **Language Engine** | Pluggable (Gemini Default) | Consciousness/Reasoning. |
+
+### Note on Engine Agnosticism
+Holisto is designed to be **Engine-Agnostic**. The core of the Individual (identity, history, protocols) resides in the local file structure. The Language Engine is a modular component that can be swapped. Currently, it uses Google Gemini via API for rapid development and high-fidelity reasoning, but the architecture is ready to integrate local inference providers (Ollama, vLLM, etc.) as the project evolves toward full local sovereignty.
 
 ---
 *"Function creates the organ; the relationship creates the individual."*
